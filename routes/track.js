@@ -68,7 +68,8 @@ router.put('/update', requireAdmin, async (req, res) => {
       name:      `${applicant.firstName} ${applicant.lastName}`,
       refNumber: applicant.refNumber,
       step:      applicant.progressStep,
-      status:    applicant.status,
+      status:    applicant.status
+    });
   } catch (err) {
     console.error('❌ [Track Single Update] Error:', err);
     res.status(500).json({ error: 'Server error.', details: err.message });
