@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COS Professional Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="logo-icon"><i class="fas fa-id-card-clip"></i></div>
+    <h1>Professional Registration</h1>
+    <p>Join our network of skilled professionals today</p>
+  </div>
+
+  <div class="card">
+    <!-- Tab Nav -->
+    <div class="tab-nav">
+      <button class="tab-btn active" id="tabReg" onclick="switchTab('reg')">
+        <i class="fas fa-user-plus"></i> Register
+      </button>
+      <button class="tab-btn" id="tabTrack" onclick="switchTab('track')">
+        <i class="fas fa-magnifying-glass"></i> Track Application
+      </button>
+    </div>
+
+    <!-- REGISTRATION PANEL -->
+    <div class="reg-panel" id="regPanel">
+      <div class="section-label">Select Your Profession</div>
+      <div class="profession-grid">
+        <button type="button" class="prof-btn active" data-prof="nurse" id="btn-nurse">
+          <i class="fas fa-user-nurse"></i>Nurse
+        </button>
+        <button type="button" class="prof-btn" data-prof="caregiver">
+          <i class="fas fa-hands-holding-heart"></i>Caregiver
+        </button>
+        <button type="button" class="prof-btn" data-prof="construction">
+          <i class="fas fa-hard-hat"></i>Construction
+        </button>
+        <button type="button" class="prof-btn" data-prof="truck">
+          <i class="fas fa-truck"></i>Truck Driver
+        </button>
+        <button type="button" class="prof-btn" data-prof="gardener">
+          <i class="fas fa-seedling"></i>Gardener
+        </button>
+      </div>
+
+      <form id="regForm" novalidate>
+        <div class="divider"><span>Personal Information</span></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <div class="input-wrap">
+              <input type="text" id="firstName" placeholder="John" required>
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <div class="input-wrap">
+              <input type="text" id="lastName" placeholder="Doe" required>
+              <i class="fas fa-user"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrap">
+            <input type="email" id="email" placeholder="john.doe@email.com" required>
+            <i class="fas fa-envelope"></i>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <div class="input-wrap">
+              <input type="tel" id="phone" placeholder="+1 234 567 8900">
+              <i class="fas fa-phone"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <div class="input-wrap">
+              <input type="date" id="dob">
+              <i class="fas fa-calendar"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Gender</label>
+          <div class="radio-group">
+            <label><input type="radio" name="gender" value="male" checked> <i class="fas fa-mars" style="color:#64b5f6"></i> Male</label>
+            <label><input type="radio" name="gender" value="female"> <i class="fas fa-venus" style="color:#f48fb1"></i> Female</label>
+            <label><input type="radio" name="gender" value="other"> <i class="fas fa-genderless" style="color:#b0bec5"></i> Other</label>
+          </div>
+        </div>
+
+        <div class="divider"><span>Professional Details</span></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="experience">Years of Experience</label>
+            <div class="input-wrap">
+              <input type="number" id="experience" placeholder="e.g. 5" min="0" max="50">
+              <i class="fas fa-briefcase"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <div class="input-wrap">
+              <select id="country" required>
+                <option value="" disabled selected>Select country</option>
+                <option>Uganda</option><option>Kenya</option><option>Tanzania</option>
+                <option>United States</option><option>United Kingdom</option>
+                <option>Canada</option><option>Australia</option><option>Germany</option>
+                <option>South Africa</option><option>Nigeria</option><option>India</option>
+                <option>Other</option>
+              </select>
+              <i class="fas fa-globe"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="qualification">Highest Qualification</label>
+          <div class="input-wrap">
+            <select id="qualification">
+              <option value="" disabled selected>Select qualification</option>
+              <option>Certificate</option><option>Diploma</option>
+              <option>Bachelor's Degree</option><option>Master's Degree</option>
+              <option>PhD</option><option>Vocational Training</option>
+              <option>No Formal Education</option>
+            </select>
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bio">Brief Bio / Skills</label>
+          <div class="input-wrap">
+            <textarea id="bio" placeholder="Tell us about your experience and key skills..."></textarea>
+            <i class="fas fa-file-lines" style="top:18px;transform:none"></i>
+          </div>
+        </div>
+
+        <div class="divider"><span>Upload CV / Resume</span></div>
+
+        <div class="form-group">
+          <label>CV / Resume <span style="color:rgba(255,255,255,.35);font-weight:400">(PDF, DOC, DOCX – max 5MB)</span></label>
+          <div class="cv-drop" id="cvDrop">
+            <input type="file" id="cvFile" accept=".pdf,.doc,.docx" onchange="handleCvFile(this)">
+            <i class="fas fa-cloud-arrow-up upload-icon"></i>
+            <p><strong>Click to browse</strong> or drag &amp; drop your CV here</p>
+            <p style="font-size:.75rem;margin-top:4px">Supported: PDF, DOC, DOCX</p>
+            <div class="cv-name" id="cvName"><i class="fas fa-file-check"></i><span id="cvFileName"></span></div>
+          </div>
+        </div>
+
+        <div class="divider"><span>Account Security</span></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="password" placeholder="Min. 8 characters" required>
+              <i class="fas fa-lock"></i>
+              <span class="toggle-pw" onclick="togglePw('password','eyePw1')"><i id="eyePw1" class="fas fa-eye"></i></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="confirmPw">Confirm Password</label>
+            <div class="input-wrap">
+              <input type="password" id="confirmPw" placeholder="Repeat password" required>
+              <i class="fas fa-lock"></i>
+              <span class="toggle-pw" onclick="togglePw('confirmPw','eyePw2')"><i id="eyePw2" class="fas fa-eye"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="terms-row">
+          <input type="checkbox" id="terms">
+          <span>I agree to the <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a>. I confirm all information provided is accurate.</span>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <span><i class="fas fa-paper-plane"></i> &nbsp;Submit Registration</span>
+        </button>
+      </form>
+
+      <div class="login-link">Already registered? <a href="#">Sign In</a></div>
+    </div><!-- /reg-panel -->
+
+    <!-- TRACKER PANEL -->
+    <div class="track-panel" id="trackPanel">
+      <div class="section-label">Track Your Application</div>
+
+      <div class="track-row">
+        <div class="input-wrap">
+          <input type="text" id="trackRef" placeholder="Reference No. (e.g. COS-20240001)">
+          <i class="fas fa-hashtag"></i>
+        </div>
+      </div>
+
+      <div class="track-row">
+        <div class="input-wrap">
+          <input type="email" id="trackEmail" placeholder="Registered email address">
+          <i class="fas fa-envelope"></i>
+        </div>
+        <button class="btn-track" onclick="trackApplication()">
+          <i class="fas fa-search"></i> Track
+        </button>
+      </div>
+
+      <div class="track-msg" id="trackMsg"></div>
+
+      <div class="progress-card" id="progressCard">
+        <div class="prog-meta">
+          <h3 id="progName"></h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px">
+            <span id="progRef" style="color:rgba(255,255,255,.45);font-size:.8rem"></span>
+            <span id="progBatch" style="color:#a5d6a7;font-size:.8rem;font-weight:600"></span>
+          </div>
+        </div>
+        <div class="steps" id="stepsContainer"></div>
+      </div>
+    </div><!-- /track-panel -->
+
+  </div><!-- /card -->
+</div><!-- /container -->
+
+<!-- Success Overlay -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="check"><i class="fas fa-circle-check"></i></div>
+    <h2>You're In!</h2>
+    <p>Welcome, <strong id="successName"></strong>! Your application has been received.</p>
+    <div style="margin:16px 0;display:flex;flex-direction:column;gap:10px">
+      <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;text-align:left">
+        <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:3px">REFERENCE NUMBER</div>
+        <div style="font-size:1rem;font-weight:700;color:#64b5f6;letter-spacing:.5px" id="successRef">--</div>
+      </div>
+      <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;text-align:left">
+        <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:3px">ASSIGNED BATCH</div>
+        <div style="font-size:1rem;font-weight:700;color:#a5d6a7;letter-spacing:.5px" id="successBatch">--</div>
+      </div>
+    </div>
+    <p style="font-size:.8rem;color:rgba(255,255,255,.5)">Save your reference number to track your application progress.</p>
+    <button class="btn-ok" onclick="document.getElementById('successOverlay').classList.remove('show')">
+      <i class="fas fa-check"></i> Done
+    </button>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# ── Environment Variables (NEVER upload – contains passwords & secrets) ──
+.env
+.env.local
+.env.production
+
+# ── Node Dependencies (too large, reinstalled via npm install) ──
+node_modules/
+
+# ── Uploaded CV Files (user data, should not be in source control) ──
+uploads/
+
+# ── OS & Editor Junk ──
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# ── Logs ──
+*.log
+npm-debug.log*
