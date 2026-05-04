@@ -55,7 +55,7 @@ app.get('/admin', (req, res) => {
 });
 
 // 404 handler for unknown API routes
-app.use('/api/*', (req, res) => {
+app.use('/api', (req, res) => {
   res.status(404).json({ error: 'API endpoint not found' });
 });
 
