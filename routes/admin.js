@@ -15,6 +15,10 @@ router.post('/login', (req, res) => {
     const adminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
     const adminPass  = (process.env.ADMIN_PASSWORD || '').trim();
 
+    console.log(`DEBUG: Comparing Login...`);
+    console.log(`DEBUG: Server Email starts with: ${adminEmail.substring(0,3)}...`);
+    console.log(`DEBUG: Server Pass starts with:  ${adminPass.substring(0,3)}...`);
+
     if (email.trim().toLowerCase() === adminEmail && password.trim() === adminPass) {
       if (!process.env.JWT_SECRET) {
         console.error('❌ JWT_SECRET is missing in environment variables');
