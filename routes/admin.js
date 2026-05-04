@@ -11,8 +11,11 @@ router.post('/login', (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
-    // Check against environment variables
-    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+    // Check against environment variables (trimming to avoid space errors)
+    const adminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+    const adminPass  = (process.env.ADMIN_PASSWORD || '').trim();
+
+    if (email.trim().toLowerCase() === adminEmail && password.trim() === adminPass) {
       if (!process.env.JWT_SECRET) {
         console.error('❌ JWT_SECRET is missing in environment variables');
         return res.status(500).json({ error: 'Server configuration error: Missing JWT_SECRET' });
