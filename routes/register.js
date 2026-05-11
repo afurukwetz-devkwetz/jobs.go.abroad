@@ -78,10 +78,12 @@ router.post('/', upload.single('cvFile'), async (req, res) => {
 
     // ── SEND VERIFICATION EMAIL ──
     try {
+      console.log('📧 [Email] Attempting to send verification to:', email);
+      
       const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
-        secure: true, // Use SSL
+        secure: true,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS
@@ -89,9 +91,15 @@ router.post('/', upload.single('cvFile'), async (req, res) => {
       });
 
       // Verify connection configuration
-      await transporter.verify();
+      try {
+        await transporter.verify();
+        console.log('✅ [Email] SMTP Connection verified');
+      } catch (verifyErr) {
+        console.error('❌ [Email] SMTP Connection failed:', verifyErr.message);
+        throw verifyErr;
+      }
 
-      const verifyUrl = `${process.env.FRONTEND_URL || 'https://jobs-go-abroad.onrender.com'}/api/verify/${verificationToken}`;
+      const verifyUrl = `${process.env.FRONTEND_URL || 'https://jobs-go-abroad-3pbi.onrender.com'}/api/verify/${verificationToken}`;
 
       const mailOptions = {
         from: `"CoSNurses Team" <${process.env.EMAIL_USER}>`,
@@ -113,9 +121,9 @@ router.post('/', upload.single('cvFile'), async (req, res) => {
       };
 
       await transporter.sendMail(mailOptions);
+      console.log('🚀 [Email] Verification email sent successfully to:', email);
     } catch (mailErr) {
-      console.error('❌ [Email] Failed to send verification email:', mailErr);
-      // We don't fail registration if email fails, but we should log it
+      console.error('❌ [Email] Major failure:', mailErr);
     }
 
     res.status(201).json({
