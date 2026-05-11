@@ -117,15 +117,31 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 #pwText { font-size: 0.72rem; color: rgba(255,255,255,0.45); font-weight: 500; }
 
 /* Intl-Tel-Input Overrides */
-.iti { width: 100%; }
-.iti__country-list { background-color: #0d2d6b !important; border: 1px solid rgba(255,255,255,.2) !important; color: #fff !important; z-index: 9999 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
-.iti--container { z-index: 9999 !important; }
-.iti__country:hover, .iti__country.iti__highlight { background-color: rgba(66,165,245,.2) !important; }
+.iti { width: 100%; display: block; }
+.iti__country-list { 
+    background-color: #0d2d6b !important; 
+    border: 1px solid rgba(255,255,255,.2) !important; 
+    color: #fff !important; 
+    z-index: 999999 !important; 
+    box-shadow: 0 15px 50px rgba(0,0,0,0.6) !important;
+    max-height: 200px !important;
+}
+.iti--container { z-index: 999999 !important; position: absolute !important; }
+.iti__search-input {
+    background-color: rgba(255,255,255,0.1) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    padding: 8px !important;
+    margin: 5px !important;
+    width: calc(100% - 10px) !important;
+    border-radius: 6px !important;
+}
+.iti__country:hover, .iti__country.iti__highlight { background-color: #42a5f5 !important; }
 .iti__country-name, .iti__dial-code { color: #fff !important; }
 .iti__selected-dial-code { color: #fff !important; margin-left: 4px; }
 .tel-wrap input { padding-left: 52px !important; }
-.iti__flag-container { padding: 2px; }
+.iti__flag-container { z-index: 5 !important; }
 
 /* Flatpickr Overrides */
-.flatpickr-calendar.dark { background: #0d2d6b !important; box-shadow: 0 12px 32px rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+.flatpickr-calendar.dark { background: #0d2d6b !important; box-shadow: 0 12px 32px rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,255,255,0.1) !important; z-index: 999999 !important; }
 .flatpickr-day.selected { background: #1565c0 !important; border-color: #1565c0 !important; }
