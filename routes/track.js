@@ -59,7 +59,7 @@ router.put('/update', requireAdmin, async (req, res) => {
     const applicant = await Applicant.findOneAndUpdate(
       { refNumber: refNumber.trim().toUpperCase() },
       updateFields,
-      { new: true }
+      { returnDocument: 'after' }
     );
     if (!applicant) return res.status(404).json({ error: 'Applicant not found.' });
 
