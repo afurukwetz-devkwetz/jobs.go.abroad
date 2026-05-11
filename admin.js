@@ -90,6 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function fetchApplicants() {
     try {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (refreshBtn) {
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = '<i class="fas fa-sync fa-spin"></i> Loading...';
+      }
+
       const res = await fetch(API_BASE_URL + '/api/track/applicants', {
         headers: getAuthHeaders()
       });
@@ -106,6 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       console.error('Failed to fetch applicants', err);
       alert('Error fetching data. Check server console.');
+    } finally {
+      const refreshBtn = document.getElementById('refreshBtn');
+      if (refreshBtn) {
+        refreshBtn.disabled = false;
+        refreshBtn.innerHTML = 'Refresh Data';
+      }
     }
   }
 
