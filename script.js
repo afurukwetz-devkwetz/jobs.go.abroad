@@ -1,3 +1,56 @@
+// ── Initialize Libraries ──
+let iti;
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Initialize Phone Input
+  const phoneInput = document.querySelector("#phone");
+  iti = window.intlTelInput(phoneInput, {
+    initialCountry: "auto",
+    geoIpLookup: callback => {
+      fetch("https://ipapi.co/json")
+        .then(res => res.json())
+        .then(data => callback(data.country_code))
+        .catch(() => callback("us"));
+    },
+    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/utils.js",
+  });
+
+  // 2. Initialize Calendar (Flatpickr)
+  flatpickr("#dob", {
+    altInput: true,
+    altFormat: "F j, Y",
+    dateFormat: "Y-m-d",
+    maxDate: "today",
+    theme: "dark",
+    disableMobile: "true"
+  });
+
+  // 3. Password Strength Logic
+  const password = document.getElementById('password');
+  const pwMeter = document.getElementById('pwMeter');
+  const pwText = document.getElementById('pwText');
+
+  password.addEventListener('input', () => {
+    const val = password.value;
+    let strength = 0;
+    if (val.length >= 8) strength++;
+    if (val.match(/[a-z]/) && val.match(/[A-Z]/)) strength++;
+    if (val.match(/\d/)) strength++;
+    if (val.match(/[^a-zA-Z\d]/)) strength++;
+
+    const colors = ['#ef5350', '#ff9800', '#ffeb3b', '#8bc34a', '#4caf50'];
+    const labels = ['Too weak', 'Weak', 'Fair', 'Good', 'Strong'];
+    
+    if (val.length === 0) {
+        pwMeter.style.width = '0';
+        pwText.textContent = 'Strength: Too short';
+    } else {
+        pwMeter.style.width = (strength + 1) * 20 + '%';
+        pwMeter.style.background = colors[strength];
+        pwText.textContent = 'Strength: ' + labels[strength];
+    }
+  });
+});
+
 // ── Tab switching ──
 function switchTab(tab) {
   const isReg = tab === 'reg';
@@ -57,13 +110,27 @@ document.getElementById('regForm').addEventListener('submit', async function(e) 
   const email    = document.getElementById('email').value.trim();
   const pw       = document.getElementById('password').value;
   const cpw      = document.getElementById('confirmPw').value;
-  const country  = document.getElementById('country').value;
   const terms    = document.getElementById('terms').checked;
+  
+  // Get validated phone and country from intl-tel-input
+  const phoneRaw = document.getElementById('phone').value.trim();
+  const isValidPhone = iti.isValidNumber();
+  const countryData = iti.getSelectedCountryData();
+  const countryName = countryData.name;
+  const fullPhone = iti.getNumber();
 
   if (!first || !last) { alert('Please fill in your first and last name.'); shake('firstName'); shake('lastName'); return; }
   if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return shake('email'); }
-  if (!country) { alert('Please select a country.'); return shake('country'); }
-  if (pw.length < 8) { alert('Password must be at least 8 characters long.'); return shake('password'); }
+  if (!phoneRaw || !isValidPhone) { alert('Please enter a valid phone number for the selected country.'); return shake('phone'); }
+  
+  // Password Strength Check (Minimum "Good" required - 3 points)
+  let pwStrength = 0;
+  if (pw.length >= 8) pwStrength++;
+  if (pw.match(/[a-z]/) && pw.match(/[A-Z]/)) pwStrength++;
+  if (pw.match(/\d/)) pwStrength++;
+  if (pw.match(/[^a-zA-Z\d]/)) pwStrength++;
+
+  if (pwStrength < 3) { alert('Please use a stronger password. Include uppercase, lowercase, numbers, and symbols.'); return shake('password'); }
   if (pw !== cpw) { alert('Passwords do not match.'); return shake('confirmPw'); }
   if (!terms) { alert('Please agree to the Terms & Conditions.'); return; }
 
@@ -76,12 +143,12 @@ document.getElementById('regForm').addEventListener('submit', async function(e) 
     formData.append('firstName',     first);
     formData.append('lastName',      last);
     formData.append('email',         email);
-    formData.append('phone',         document.getElementById('phone').value);
+    formData.append('phone',         fullPhone);
     formData.append('dob',           document.getElementById('dob').value);
     formData.append('gender',        document.querySelector('[name=gender]:checked')?.value || '');
     formData.append('profession',    selectedProf);
     formData.append('experience',    document.getElementById('experience').value);
-    formData.append('country',       country);
+    formData.append('country',       countryName);
     formData.append('qualification', document.getElementById('qualification').value);
     formData.append('bio',           document.getElementById('bio').value);
     formData.append('password',      pw);

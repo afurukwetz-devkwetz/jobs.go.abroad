@@ -6,6 +6,9 @@
 <title>COS Professional Registration</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/css/intlTelInput.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -80,15 +83,14 @@
         <div class="form-row">
           <div class="form-group">
             <label for="phone">Phone Number</label>
-            <div class="input-wrap">
-              <input type="tel" id="phone" placeholder="+1 234 567 8900">
-              <i class="fas fa-phone"></i>
+            <div class="input-wrap tel-wrap">
+              <input type="tel" id="phone" placeholder="Enter phone number">
             </div>
           </div>
           <div class="form-group">
             <label for="dob">Date of Birth</label>
             <div class="input-wrap">
-              <input type="date" id="dob">
+              <input type="text" id="dob" placeholder="Select your birth date">
               <i class="fas fa-calendar"></i>
             </div>
           </div>
@@ -113,22 +115,6 @@
               <i class="fas fa-briefcase"></i>
             </div>
           </div>
-          <div class="form-group">
-            <label for="country">Country</label>
-            <div class="input-wrap">
-              <select id="country" required>
-                <option value="" disabled selected>Select country</option>
-                <option>Uganda</option><option>Kenya</option><option>Tanzania</option>
-                <option>United States</option><option>United Kingdom</option>
-                <option>Canada</option><option>Australia</option><option>Germany</option>
-                <option>South Africa</option><option>Nigeria</option><option>India</option>
-                <option>Other</option>
-              </select>
-              <i class="fas fa-globe"></i>
-            </div>
-          </div>
-        </div>
-
         <div class="form-group">
           <label for="qualification">Highest Qualification</label>
           <div class="input-wrap">
@@ -170,9 +156,13 @@
           <div class="form-group">
             <label for="password">Password</label>
             <div class="input-wrap">
-              <input type="password" id="password" placeholder="Min. 8 characters" required>
+              <input type="password" id="password" placeholder="Create a strong password" required>
               <i class="fas fa-lock"></i>
               <span class="toggle-pw" onclick="togglePw('password','eyePw1')"><i id="eyePw1" class="fas fa-eye"></i></span>
+            </div>
+            <div class="pw-strength-container">
+              <div class="pw-bar"><div id="pwMeter"></div></div>
+              <span id="pwText">Strength: Too short</span>
             </div>
           </div>
           <div class="form-group">
@@ -259,6 +249,8 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/intlTelInput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="config.js"></script>
 <script src="script.js"></script>
 </body>

@@ -109,3 +109,22 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 .success-box p{color:rgba(255,255,255,.65);font-size:.9rem;line-height:1.6}
 .btn-ok{margin-top:24px;padding:12px 36px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:.95rem;cursor:pointer;transition:transform .2s}
 .btn-ok:hover{transform:scale(1.04)}
+
+/* Password Strength Meter */
+.pw-strength-container { margin-top: 8px; }
+.pw-bar { height: 4px; background: rgba(255,255,255,.1); border-radius: 2px; overflow: hidden; margin-bottom: 4px; }
+#pwMeter { height: 100%; width: 0; transition: all 0.3s ease; }
+#pwText { font-size: 0.72rem; color: rgba(255,255,255,0.45); font-weight: 500; }
+
+/* Intl-Tel-Input Overrides */
+.iti { width: 100%; }
+.iti__country-list { background-color: #0d2d6b !important; border: 1px solid rgba(255,255,255,.1) !important; color: #fff !important; z-index: 100 !important; }
+.iti__country:hover, .iti__country.iti__highlight { background-color: rgba(66,165,245,.2) !important; }
+.iti__country-name, .iti__dial-code { color: #fff !important; }
+.iti__selected-dial-code { color: #fff !important; margin-left: 4px; }
+.tel-wrap input { padding-left: 52px !important; }
+.iti__flag-container { padding: 2px; }
+
+/* Flatpickr Overrides */
+.flatpickr-calendar.dark { background: #0d2d6b !important; box-shadow: 0 12px 32px rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+.flatpickr-day.selected { background: #1565c0 !important; border-color: #1565c0 !important; }
