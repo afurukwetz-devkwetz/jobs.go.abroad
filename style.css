@@ -32,8 +32,7 @@ body::after{content:'';position:fixed;width:400px;height:400px;background:radial
 /* Form */
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:480px){.form-row{grid-template-columns:1fr}}
-.form-group{margin-bottom:18px;opacity:0;animation:flyInLeft .6s cubic-bezier(.22,1,.36,1) forwards}
-.form-group:nth-child(1){animation-delay:.45s}.form-group:nth-child(2){animation-delay:.52s}.form-group:nth-child(3){animation-delay:.59s}.form-group:nth-child(4){animation-delay:.66s}.form-group:nth-child(5){animation-delay:.73s}.form-group:nth-child(6){animation-delay:.80s}.form-group:nth-child(7){animation-delay:.87s}.form-group:nth-child(8){animation-delay:.94s}.form-group:nth-child(9){animation-delay:1.01s}.form-group:nth-child(10){animation-delay:1.08s}.form-group:nth-child(11){animation-delay:1.15s}
+.form-group{margin-bottom:18px}
 label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:7px}
 .input-wrap{position:relative}
 .input-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.35);font-size:.95rem;pointer-events:none;transition:color .3s}
