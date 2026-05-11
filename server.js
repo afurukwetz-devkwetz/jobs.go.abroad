@@ -38,6 +38,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/register', require('./routes/register'));
 app.use('/api/track',    require('./routes/track'));
 app.use('/api/admin',    require('./routes/admin'));
+app.use('/api/verify',   require('./routes/verify'));
 
 // Serve uploaded CVs
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

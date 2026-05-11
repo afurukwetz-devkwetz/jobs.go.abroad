@@ -134,11 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const date = new Date(app.createdAt).toLocaleDateString();
       const statusClass = app.status ? `status-${app.status.toLowerCase()}` : 'status-pending';
       const statusText = app.status || 'Pending';
+      const verifiedIcon = app.isVerified ? '<i class="fas fa-check-circle" style="color:#4caf50" title="Verified"></i>' : '<i class="fas fa-times-circle" style="color:#ef5350" title="Unverified"></i>';
 
       tr.innerHTML = `
         <td><strong>${app.refNumber || 'N/A'}</strong></td>
         <td>${app.firstName} ${app.lastName}</td>
         <td>${app.profession}</td>
+        <td style="text-align:center;">${verifiedIcon}</td>
         <td>${date}</td>
         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
         <td><button class="btn btn-secondary btn-sm" onclick="viewApplicant('${app.refNumber}')">Review</button></td>
@@ -161,6 +163,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('modalExperience').textContent = currentApplicant.experience || '0';
     document.getElementById('modalQualification').textContent = currentApplicant.qualification || 'N/A';
     document.getElementById('modalBio').textContent = currentApplicant.bio || 'No bio provided.';
+    
+    // Show verification status in modal
+    const verifEl = document.getElementById('modalVerified');
+    if (verifEl) {
+      verifEl.textContent = currentApplicant.isVerified ? 'VERIFIED' : 'NOT VERIFIED';
+      verifEl.style.color = currentApplicant.isVerified ? '#4caf50' : '#ef5350';
+    }
     
     const cvLink = document.getElementById('modalCV');
     if (currentApplicant.cvFile) {

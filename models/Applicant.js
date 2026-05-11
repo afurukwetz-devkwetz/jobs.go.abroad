@@ -25,6 +25,10 @@ const ApplicantSchema = new mongoose.Schema({
   progressStep:  { type: Number, default: 0 },
   progressNote:  { type: String, default: '' },
   status:        { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+  
+  // Verification
+  isVerified:    { type: Boolean, default: false },
+  verificationToken: { type: String },
 
   createdAt:     { type: Date, default: Date.now }
 });

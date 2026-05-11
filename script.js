@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const phoneInput = document.querySelector("#phone");
   iti = window.intlTelInput(phoneInput, {
     initialCountry: "auto",
+    dropdownContainer: document.body,
     geoIpLookup: callback => {
       fetch("https://ipapi.co/json")
         .then(res => res.json())
@@ -47,6 +48,21 @@ document.addEventListener('DOMContentLoaded', () => {
         pwMeter.style.width = (strength + 1) * 20 + '%';
         pwMeter.style.background = colors[strength];
         pwText.textContent = 'Strength: ' + labels[strength];
+    }
+  });
+
+  // 4. Real-time Password Matching
+  const confirmPw = document.getElementById('confirmPw');
+  confirmPw.addEventListener('input', () => {
+    if (confirmPw.value === password.value && confirmPw.value.length > 0) {
+      confirmPw.style.borderColor = '#4caf50';
+      confirmPw.style.boxShadow = '0 0 0 3px rgba(76,175,80,0.2)';
+    } else if (confirmPw.value.length > 0) {
+      confirmPw.style.borderColor = '#ef5350';
+      confirmPw.style.boxShadow = '0 0 0 3px rgba(239,83,80,0.2)';
+    } else {
+      confirmPw.style.borderColor = '';
+      confirmPw.style.boxShadow = '';
     }
   });
 });
