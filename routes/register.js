@@ -79,12 +79,17 @@ router.post('/', upload.single('cvFile'), async (req, res) => {
     // ── SEND VERIFICATION EMAIL ──
     try {
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true, // Use SSL
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS
         }
       });
+
+      // Verify connection configuration
+      await transporter.verify();
 
       const verifyUrl = `${process.env.FRONTEND_URL || 'https://jobs-go-abroad.onrender.com'}/api/verify/${verificationToken}`;
 
