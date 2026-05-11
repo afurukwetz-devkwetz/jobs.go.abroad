@@ -42,7 +42,7 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 .input-wrap select option{background:#0d2d6b;color:#fff}
 .input-wrap input::placeholder,.input-wrap textarea::placeholder{color:rgba(255,255,255,.3)}
 .input-wrap input:focus,.input-wrap select:focus,.input-wrap textarea:focus{border-color:#42a5f5;background:rgba(255,255,255,.11);box-shadow:0 0 0 3px rgba(66,165,245,.2)}
-.toggle-pw{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(255,255,255,.35);font-size:.9rem;z-index:2;transition:color .3s}
+.toggle-pw{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(255,255,255,.35);font-size:.9rem;z-index:10;transition:color .3s;padding: 5px;}
 .toggle-pw:hover{color:#42a5f5}
 .radio-group{display:flex;gap:14px;margin-top:4px}
 .radio-group label{display:flex;align-items:center;gap:7px;cursor:pointer;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:500;margin-bottom:0}
@@ -118,7 +118,8 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 
 /* Intl-Tel-Input Overrides */
 .iti { width: 100%; }
-.iti__country-list { background-color: #0d2d6b !important; border: 1px solid rgba(255,255,255,.1) !important; color: #fff !important; z-index: 100 !important; }
+.iti__country-list { background-color: #0d2d6b !important; border: 1px solid rgba(255,255,255,.2) !important; color: #fff !important; z-index: 9999 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
+.iti--container { z-index: 9999 !important; }
 .iti__country:hover, .iti__country.iti__highlight { background-color: rgba(66,165,245,.2) !important; }
 .iti__country-name, .iti__dial-code { color: #fff !important; }
 .iti__selected-dial-code { color: #fff !important; margin-left: 4px; }
