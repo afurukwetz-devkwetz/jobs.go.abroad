@@ -36,7 +36,7 @@ body::after{content:'';position:fixed;width:400px;height:400px;background:radial
 label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:7px}
 .input-wrap{position:relative}
 .input-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.35);font-size:.95rem;pointer-events:none;transition:color .3s}
-.input-wrap input,.input-wrap select,.input-wrap textarea{width:100%;padding:12px 14px 12px 40px;border-radius:12px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s,background .3s,box-shadow .3s}
+.input-wrap input,.input-wrap select,.input-wrap textarea{width:100%;padding:12px 45px 12px 40px;border-radius:12px;border:1.5px solid rgba(255,255,255,.12);background:rgba(255,255,255,.07);color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:border-color .3s,background .3s,box-shadow .3s}
 .input-wrap textarea{padding-top:12px;resize:vertical;min-height:90px}
 .input-wrap select option{background:#0d2d6b;color:#fff}
 .input-wrap input::placeholder,.input-wrap textarea::placeholder{color:rgba(255,255,255,.3)}
