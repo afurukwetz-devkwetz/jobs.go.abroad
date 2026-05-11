@@ -41,8 +41,8 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 .input-wrap select option{background:#0d2d6b;color:#fff}
 .input-wrap input::placeholder,.input-wrap textarea::placeholder{color:rgba(255,255,255,.3)}
 .input-wrap input:focus,.input-wrap select:focus,.input-wrap textarea:focus{border-color:#42a5f5;background:rgba(255,255,255,.11);box-shadow:0 0 0 3px rgba(66,165,245,.2)}
-.toggle-pw{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(255,255,255,.35);font-size:.9rem;z-index:10;transition:color .3s;padding: 5px;}
-.toggle-pw:hover{color:#42a5f5}
+.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(255,255,255,.5);font-size:1.1rem;z-index:20;transition:all .3s;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.toggle-pw:hover{color:#42a5f5;background:rgba(255,255,255,.1)}
 .radio-group{display:flex;gap:14px;margin-top:4px}
 .radio-group label{display:flex;align-items:center;gap:7px;cursor:pointer;color:rgba(255,255,255,.7);font-size:.85rem;font-weight:500;margin-bottom:0}
 .radio-group input[type=radio]{accent-color:#42a5f5;width:16px;height:16px}
