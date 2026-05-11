@@ -164,9 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const cvLink = document.getElementById('modalCV');
     if (currentApplicant.cvFile) {
-      // Build clean URL: /uploads/filename (cvFile now stores just the filename)
-      const filename = currentApplicant.cvFile.replace(/\\/g, '/').split('/').pop();
-      cvLink.href = `${API_BASE_URL}/uploads/${filename}`;
+      // Handle both full URLs (Cloudinary) and local filenames
+      if (currentApplicant.cvFile.startsWith('http')) {
+        cvLink.href = currentApplicant.cvFile;
+      } else {
+        const filename = currentApplicant.cvFile.replace(/\\/g, '/').split('/').pop();
+        cvLink.href = `${API_BASE_URL}/uploads/${filename}`;
+      }
       cvLink.target = '_blank';
       cvLink.rel = 'noopener noreferrer';
       cvLink.style.display = 'inline-block';
