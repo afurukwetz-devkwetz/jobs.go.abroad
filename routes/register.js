@@ -53,7 +53,7 @@ router.post('/', upload.single('cvFile'), async (req, res) => {
       firstName, lastName, email, phone, dob, gender,
       profession, experience, country, qualification, bio,
       password: hashed,
-      cvFile:   req.file ? req.file.path : null,
+      cvFile:   req.file ? req.file.filename : null,
       refNumber,
       batchId:   batch._id,
       batchCode: batch.batchCode
