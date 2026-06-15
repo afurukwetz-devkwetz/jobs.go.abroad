@@ -70,10 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── Tab switching ──
 function switchTab(tab) {
   const isReg = tab === 'reg';
-  document.getElementById('regPanel').classList.toggle('hidden', !isReg);
+
+  // Show/hide registration panel
+  const regPanel = document.getElementById('regPanel');
+  regPanel.style.display = isReg ? 'block' : 'none';
+
+  // Show/hide track panel via .active class
   document.getElementById('trackPanel').classList.toggle('active', !isReg);
+
+  // Update tab button active states
   document.getElementById('tabReg').classList.toggle('active', isReg);
   document.getElementById('tabTrack').classList.toggle('active', !isReg);
+
+  // Reset tracker state when switching away
   if (!isReg) {
     document.getElementById('progressCard').classList.remove('show');
     document.getElementById('trackMsg').style.display = 'none';
