@@ -70,9 +70,9 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 .btn-submit span{position:relative;z-index:1}
 .login-link{text-align:center;margin-top:20px;font-size:.85rem;color:rgba(255,255,255,.5);animation:flyInBottom .7s 1.3s both}
 .login-link a{color:#64b5f6;font-weight:600;text-decoration:none}
-/* Panels */
-.reg-panel{display:block}.reg-panel.hidden{display:none}
-.track-panel{display:none}.track-panel.active{display:block}
+/* Panels — visibility is controlled purely by JS inline style */
+.reg-panel{display:block}
+.track-panel{display:none}
 /* Tracker */
 .track-row{display:flex;gap:10px;margin-bottom:16px;animation:flyInBottom .6s .3s both}
 .track-row .input-wrap{flex:1}

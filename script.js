@@ -71,18 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
 function switchTab(tab) {
   const isReg = tab === 'reg';
 
-  // Show/hide registration panel
-  const regPanel = document.getElementById('regPanel');
-  regPanel.style.display = isReg ? 'block' : 'none';
-
-  // Show/hide track panel via .active class
-  document.getElementById('trackPanel').classList.toggle('active', !isReg);
+  // Show/hide panels via direct inline style — no CSS class dependency
+  document.getElementById('regPanel').style.display   = isReg ? 'block' : 'none';
+  document.getElementById('trackPanel').style.display = isReg ? 'none'  : 'block';
 
   // Update tab button active states
   document.getElementById('tabReg').classList.toggle('active', isReg);
   document.getElementById('tabTrack').classList.toggle('active', !isReg);
 
-  // Reset tracker state when switching away
+  // Reset tracker state when switching away from track
   if (!isReg) {
     document.getElementById('progressCard').classList.remove('show');
     document.getElementById('trackMsg').style.display = 'none';
