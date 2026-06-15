@@ -24,7 +24,7 @@
     <!-- Tab Nav -->
     <div class="tab-nav">
       <button class="tab-btn active" id="tabReg" onclick="switchTab('reg')">
-        <i class="fas fa-user-plus"></i> Register
+        <i class="fas fa-file-signature"></i> Apply Now
       </button>
       <button class="tab-btn" id="tabTrack" onclick="switchTab('track')">
         <i class="fas fa-magnifying-glass"></i> Track Application
@@ -181,11 +181,11 @@
         </div>
 
         <button type="submit" class="btn-submit" id="submitBtn">
-          <span><i class="fas fa-paper-plane"></i> &nbsp;Submit Registration</span>
+          <span><i class="fas fa-paper-plane"></i> &nbsp;Submit Application</span>
         </button>
       </form>
 
-      <div class="login-link">Already registered? <a href="#">Sign In</a></div>
+      <div class="login-link">Already applied? <a href="#" onclick="switchTab('track'); return false;">Track your status</a></div>
     </div><!-- /reg-panel -->
 
     <!-- TRACKER PANEL -->
