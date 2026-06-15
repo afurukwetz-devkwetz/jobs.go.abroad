@@ -74,7 +74,7 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 .reg-panel{display:block}
 .track-panel{display:none}
 /* Tracker */
-.track-row{display:flex;gap:10px;margin-bottom:16px;animation:flyInBottom .6s .3s both}
+.track-row{display:flex;gap:10px;margin-bottom:16px}
 .track-row .input-wrap{flex:1}
 .btn-track{padding:12px 20px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:.88rem;cursor:pointer;white-space:nowrap;transition:transform .2s,box-shadow .2s;flex-shrink:0}
 .btn-track:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(21,101,192,.5)}
