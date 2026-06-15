@@ -94,7 +94,7 @@ router.post('/', upload.single('cvFile'), async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
 
     // Unique reference number
-    const refNumber = 'COS-' + Date.now().toString().slice(-8);
+    const refNumber = 'GJB-' + Date.now().toString().slice(-8);
 
     // Batch assignment
     const batch = await Batch.getOrCreate(profession.toLowerCase());
