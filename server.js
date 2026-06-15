@@ -83,6 +83,14 @@ mongoose.connect(process.env.MONGO_URI)
     app.listen(PORT, () => {
       console.log(`🚀  Server running → http://localhost:${PORT}`);
       console.log(`📋  Batch size     → ${process.env.BATCH_SIZE || 20} applicants per batch`);
+
+      // ⏰ Keep Render free tier awake — self-ping every 10 minutes
+      const RENDER_URL = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+      setInterval(() => {
+        fetch(`${RENDER_URL}/api/health`)
+          .then(() => console.log('🏓  Self-ping: server is awake'))
+          .catch(err => console.log('⚠️  Self-ping failed:', err.message));
+      }, 10 * 60 * 1000); // every 10 minutes
     });
   })
   .catch(err => {
