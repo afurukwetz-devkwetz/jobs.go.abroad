@@ -190,39 +190,52 @@
 
     <!-- TRACKER PANEL -->
     <div class="track-panel" id="trackPanel">
-      <div class="section-label">Track Your Application</div>
 
-      <div class="track-row">
-        <div class="input-wrap">
-          <input type="text" id="trackRef" placeholder="Reference No. (e.g. GJB-20240001)"
-            onkeydown="if(event.key==='Enter') trackApplication()">
-          <i class="fas fa-hashtag"></i>
+      <!-- Search Box -->
+      <div class="tracker-search-box">
+        <div class="tracker-search-title">
+          <i class="fas fa-satellite-dish"></i>
+          <span>Application Tracker</span>
         </div>
-      </div>
-
-      <div class="track-row">
-        <div class="input-wrap">
-          <input type="email" id="trackEmail" placeholder="Or enter Registered Email"
-            onkeydown="if(event.key==='Enter') trackApplication()">
-          <i class="fas fa-envelope"></i>
+        <p class="tracker-search-sub">Enter your reference number <em>or</em> registered email to check your status</p>
+        <div class="tracker-input-group">
+          <div class="input-wrap">
+            <input type="text" id="trackRef" placeholder="Reference No. e.g. GJB-20240001"
+              onkeydown="if(event.key==='Enter') trackApplication()">
+            <i class="fas fa-hashtag"></i>
+          </div>
+          <div class="tracker-or"><span>or</span></div>
+          <div class="input-wrap">
+            <input type="email" id="trackEmail" placeholder="Registered email address"
+              onkeydown="if(event.key==='Enter') trackApplication()">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <button class="btn-track-new" id="btnTrack" onclick="trackApplication()">
+            <i class="fas fa-magnifying-glass-location"></i>
+            <span>Track My Application</span>
+          </button>
         </div>
-        <button class="btn-track" onclick="trackApplication()">
-          <i class="fas fa-search"></i> Track
-        </button>
       </div>
 
       <div class="track-msg" id="trackMsg"></div>
 
-      <div class="progress-card" id="progressCard">
-        <div class="prog-meta">
-          <h3 id="progName"></h3>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px">
-            <span id="progRef" style="color:rgba(255,255,255,.45);font-size:.8rem"></span>
-            <span id="progBatch" style="color:#a5d6a7;font-size:.8rem;font-weight:600"></span>
+      <!-- Result Card -->
+      <div class="track-result-card" id="progressCard">
+        <div class="track-result-header">
+          <div class="track-avatar" id="trackAvatar"></div>
+          <div class="track-result-info">
+            <h3 id="progName"></h3>
+            <div class="track-meta-pills">
+              <span class="track-pill track-pill-ref"><i class="fas fa-hashtag"></i><span id="progRef"></span></span>
+              <span class="track-pill track-pill-batch"><i class="fas fa-layer-group"></i><span id="progBatch"></span></span>
+            </div>
           </div>
+          <div class="track-status-badge" id="trackStatusBadge"></div>
         </div>
-        <div class="steps" id="stepsContainer"></div>
+        <div class="track-timeline" id="stepsContainer"></div>
+        <div class="track-note" id="trackNote" style="display:none"></div>
       </div>
+
     </div><!-- /track-panel -->
 
   </div><!-- /card -->

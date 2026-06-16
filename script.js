@@ -265,30 +265,62 @@ function showTrackMsg(type, html) {
 }
 
 function renderProgress(data) {
-  document.getElementById('progName').textContent  = data.name;
-  document.getElementById('progRef').textContent   = 'Ref: ' + data.ref;
-  document.getElementById('progBatch').textContent = 'Batch: ' + data.batchCode;
+  // Avatar initials
+  const names    = (data.name || '').split(' ');
+  const initials = ((names[0] || '')[0] || '') + ((names[1] || '')[0] || '');
+  document.getElementById('trackAvatar').textContent = initials.toUpperCase();
 
+  document.getElementById('progName').textContent  = data.name;
+  document.getElementById('progRef').textContent   = data.ref;
+  document.getElementById('progBatch').textContent = data.batchCode;
+
+  // Status badge
+  const sb = document.getElementById('trackStatusBadge');
+  const statusMap = {
+    Approved: { cls: 'tsb-approved', icon: 'fa-circle-check',  label: 'Approved' },
+    Rejected: { cls: 'tsb-rejected', icon: 'fa-circle-xmark',  label: 'Rejected' },
+    Pending:  { cls: 'tsb-pending',  icon: 'fa-clock',         label: 'In Review' }
+  };
+  const st = statusMap[data.status] || statusMap.Pending;
+  sb.className = 'track-status-badge ' + st.cls;
+  sb.innerHTML = `<i class="fas ${st.icon}"></i>${st.label}`;
+
+  // Timeline steps
   const c = document.getElementById('stepsContainer');
   c.innerHTML = '';
-  STAGES.forEach((s, i) => {
+  STAGES.forEach((stage, i) => {
     const done    = i < data.currentStep;
     const current = i === data.currentStep;
-    const dot     = done ? 'done' : current ? 'current' : '';
-    const badge   = done ? 'b-done' : current ? 'b-current' : 'b-wait';
-    const label   = done ? 'Completed' : current ? 'In Progress' : 'Pending';
-    const icon    = done ? 'fa-check' : s.icon;
-    c.innerHTML += `<div class="step">
-      <div class="step-dot ${dot}"><i class="fas ${icon}"></i></div>
-      <div class="step-info">
-        <h4>${s.label}</h4><p>${s.desc}</p>
-        <span class="step-badge ${badge}">${label}</span>
-      </div></div>`;
+
+    const dotCls   = done ? 'tl-dot-done'  : current ? 'tl-dot-current'  : 'tl-dot-wait';
+    const stepCls  = done ? 'tl-done'       : current ? 'tl-current'       : '';
+    const lblCls   = done ? 'tl-step-label-done'  : current ? 'tl-step-label-current'  : 'tl-step-label-wait';
+    const dscCls   = done ? 'tl-step-desc-done'   : current ? 'tl-step-desc-current'   : 'tl-step-desc-wait';
+    const badgeCls = done ? 'tl-b-done'     : current ? 'tl-b-current'     : 'tl-b-wait';
+    const badgeIcon= done ? 'fa-check'      : current ? 'fa-circle-dot'    : 'fa-circle';
+    const badgeTxt = done ? 'Completed'     : current ? 'In Progress'      : 'Pending';
+    const dotIcon  = done ? 'fa-check'      : stage.icon;
+
+    c.innerHTML += `
+      <div class="tl-step ${stepCls}">
+        <div class="tl-left">
+          <div class="tl-dot ${dotCls}"><i class="fas ${dotIcon}"></i></div>
+        </div>
+        <div class="tl-content">
+          <div class="tl-step-label ${lblCls}">${stage.label}</div>
+          <div class="tl-step-desc ${dscCls}">${stage.desc}</div>
+          <span class="tl-badge ${badgeCls}"><i class="fas ${badgeIcon}"></i>${badgeTxt}</span>
+        </div>
+      </div>`;
   });
 
+  // Admin note
+  const noteEl = document.getElementById('trackNote');
   if (data.note) {
-    c.innerHTML += `<div style="margin-top:14px;padding:10px 14px;border-radius:10px;background:rgba(66,165,245,.1);border:1px solid rgba(66,165,245,.2);font-size:.8rem;color:rgba(255,255,255,.7)">
-      <i class="fas fa-circle-info" style="color:#64b5f6;margin-right:6px"></i>${data.note}</div>`;
+    noteEl.innerHTML = `<i class="fas fa-circle-info"></i>${data.note}`;
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.style.display = 'none';
   }
 
   document.getElementById('progressCard').classList.add('show');
