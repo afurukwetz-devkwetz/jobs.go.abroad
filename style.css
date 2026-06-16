@@ -74,7 +74,7 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 .reg-panel{display:block}
 .track-panel{display:none}
 /* ── New Tracker ── */
-.tracker-search-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:22px 18px;margin-bottom:18px}
+.tracker-search-box{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:22px 18px;margin-bottom:18px}
 .tracker-search-title{display:flex;align-items:center;gap:10px;font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px}
 .tracker-search-title i{color:#42a5f5;font-size:1.15rem}
 .tracker-search-sub{font-size:.79rem;color:rgba(255,255,255,.42);margin-bottom:18px;line-height:1.55}
