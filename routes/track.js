@@ -19,21 +19,27 @@ router.post('/', async (req, res) => {
     if (!ref && !email)
       return res.status(400).json({ error: 'Provide a reference number or email.' });
 
-    const query = ref ? { refNumber: ref.trim().toUpperCase() } : { email: email.trim().toLowerCase() };
+    const query = ref
+      ? { refNumber: ref.trim().toUpperCase() }
+      : { email: email.trim().toLowerCase() };
+
     const applicant = await Applicant.findOne(query).select('-password');
-    if (!applicant) return res.status(404).json({ found: false });
+    if (!applicant) return res.json({ found: false });
+
+    // Guard: clamp progressStep to valid STAGES range
+    const step = Math.min(Math.max(Number(applicant.progressStep) || 0, 0), STAGES.length - 1);
 
     res.json({
       found:       true,
       name:        `${applicant.firstName} ${applicant.lastName}`,
       ref:         applicant.refNumber,
       profession:  applicant.profession,
-      batchCode:   applicant.batchCode,
-      currentStep: applicant.progressStep,
-      stageName:   STAGES[applicant.progressStep].label,
-      stageDesc:   STAGES[applicant.progressStep].desc,
-      note:        applicant.progressNote,
-      status:      applicant.status,
+      batchCode:   applicant.batchCode  || 'N/A',
+      currentStep: step,
+      stageName:   STAGES[step].label,
+      stageDesc:   STAGES[step].desc,
+      note:        applicant.progressNote || '',
+      status:      applicant.status      || 'Pending',
       stages:      STAGES
     });
 

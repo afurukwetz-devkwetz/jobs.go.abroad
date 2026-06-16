@@ -194,14 +194,16 @@
 
       <div class="track-row">
         <div class="input-wrap">
-          <input type="text" id="trackRef" placeholder="Reference No. (e.g. GJB-20240001)">
+          <input type="text" id="trackRef" placeholder="Reference No. (e.g. GJB-20240001)"
+            onkeydown="if(event.key==='Enter') trackApplication()">
           <i class="fas fa-hashtag"></i>
         </div>
       </div>
 
       <div class="track-row">
         <div class="input-wrap">
-          <input type="email" id="trackEmail" placeholder="Registered Email (e.g. email@example.com)">
+          <input type="email" id="trackEmail" placeholder="Or enter Registered Email"
+            onkeydown="if(event.key==='Enter') trackApplication()">
           <i class="fas fa-envelope"></i>
         </div>
         <button class="btn-track" onclick="trackApplication()">

@@ -225,15 +225,18 @@ async function trackApplication() {
   const cardEl = document.getElementById('progressCard');
 
   if (!ref && !email) {
-    showTrackMsg('error', 'Please enter your reference number or email.');
+    showTrackMsg('error', '<i class="fas fa-triangle-exclamation"></i> Please enter your reference number or email.');
     cardEl.classList.remove('show'); return;
   }
 
-  showTrackMsg('loading', '<i class="fas fa-circle-notch"></i> Fetching your application status...');
+  showTrackMsg('loading', '<i class="fas fa-circle-notch fa-spin"></i> &nbsp;Fetching your application status...');
   cardEl.classList.remove('show');
 
+  // Fallback in case config.js failed to load
+  const baseUrl = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
+
   try {
-    const res  = await fetch(API_BASE_URL + '/api/track', {
+    const res  = await fetch(baseUrl + '/api/track', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ ref, email })
@@ -250,7 +253,7 @@ async function trackApplication() {
 
   } catch (err) {
     console.error("Tracker Error:", err);
-    showTrackMsg('error', '<i class="fas fa-wifi"></i> Error: ' + err.message);
+    showTrackMsg('error', '<i class="fas fa-wifi"></i> Could not connect to the server. Please try again later.');
   }
 }
 
