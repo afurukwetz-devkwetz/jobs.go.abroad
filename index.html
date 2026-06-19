@@ -241,6 +241,19 @@
   </div><!-- /card -->
 </div><!-- /container -->
 
+<!-- Wake-Up Banner -->
+<div id="wakeBanner" style="display:none" aria-live="polite">
+  <div class="wake-inner">
+    <span class="wake-spinner"></span>
+    <div class="wake-text">
+      <strong>Server is warming up…</strong>
+      <span id="wakeMsg">Free hosting sleeps after inactivity. Please wait <span id="wakeSecs">30</span>s.</span>
+    </div>
+    <button class="wake-retry" id="wakeRetryBtn" style="display:none" onclick="wakeRetry()">Retry Now</button>
+  </div>
+  <div class="wake-bar"><div class="wake-bar-fill" id="wakeBarFill"></div></div>
+</div>
+
 <!-- Success Overlay -->
 <div class="success-overlay" id="successOverlay">
   <div class="success-box">
@@ -275,5 +288,6 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="config.js?v=6"></script>
 <script src="script.js?v=6"></script>
+<script src="wake.js?v=1"></script>
 </body>
 </html>

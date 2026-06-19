@@ -181,3 +181,123 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 /* Flatpickr Overrides */
 .flatpickr-calendar.dark { background: #0d2d6b !important; box-shadow: 0 12px 32px rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,255,255,0.1) !important; z-index: 999999 !important; }
 .flatpickr-day.selected { background: #1565c0 !important; border-color: #1565c0 !important; }
+
+/* ── Wake-Up Banner ────────────────────────────────────────────── */
+@keyframes wakeSlideIn {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes wakeBarPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+@keyframes wakeSpin {
+  to { transform: rotate(360deg); }
+}
+
+#wakeBanner {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, rgba(13,45,107,0.97), rgba(21,101,192,0.97));
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(66,165,245,0.35);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.45);
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.22,1,.36,1);
+}
+#wakeBanner.wake-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wake-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 20px;
+  max-width: 700px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+/* Spinning ring */
+.wake-spinner {
+  width: 26px;
+  height: 26px;
+  border: 3px solid rgba(66,165,245,0.25);
+  border-top-color: #42a5f5;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: wakeSpin 0.9s linear infinite;
+}
+
+.wake-text {
+  flex: 1;
+  min-width: 0;
+}
+.wake-text strong {
+  display: block;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 1px;
+}
+.wake-text span {
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.4;
+}
+.wake-text #wakeSecs {
+  color: #64b5f6;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Retry button */
+.wake-retry {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(66,165,245,0.5);
+  background: rgba(66,165,245,0.12);
+  color: #64b5f6;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.wake-retry:hover {
+  background: rgba(66,165,245,0.25);
+  border-color: #42a5f5;
+  color: #fff;
+  transform: scale(1.04);
+}
+
+/* Progress bar */
+.wake-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.07);
+  width: 100%;
+}
+.wake-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #1565c0, #42a5f5, #64b5f6);
+  background-size: 200% 100%;
+  transition: width 1s linear;
+  animation: wakeBarPulse 2s ease-in-out infinite;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Push page content down so banner doesn't overlap on small screens */
+@media (max-width: 480px) {
+  .wake-inner { gap: 10px; padding: 11px 14px; }
+  .wake-text strong { font-size: 0.8rem; }
+}
