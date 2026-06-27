@@ -89,14 +89,111 @@ function switchTab(tab) {
 }
 
 // ── Profession buttons ──
-const profBtns = document.querySelectorAll('.prof-btn');
 let selectedProf = 'nurse';
-profBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    profBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    selectedProf = btn.dataset.prof;
+let profBtns = [];
+document.addEventListener('DOMContentLoaded', function() {
+  profBtns = Array.from(document.querySelectorAll('.prof-btn'));
+  profBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      profBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedProf = btn.dataset.prof;
+    });
   });
+
+  // ── CV Upload ──
+  const cvDrop = document.getElementById('cvDrop');
+  if (cvDrop) {
+    cvDrop.addEventListener('dragover', e => { e.preventDefault(); cvDrop.classList.add('drag-over'); });
+    cvDrop.addEventListener('dragleave', () => cvDrop.classList.remove('drag-over'));
+    cvDrop.addEventListener('drop', e => {
+      e.preventDefault(); cvDrop.classList.remove('drag-over');
+      if (e.dataTransfer.files[0]) showCvFile(e.dataTransfer.files[0]);
+    });
+  }
+
+  // ── Form Submit ──
+  const regForm = document.getElementById('regForm');
+  if (regForm) {
+    regForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const first    = document.getElementById('firstName').value.trim();
+      const last     = document.getElementById('lastName').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const pw       = document.getElementById('password').value;
+      const cpw      = document.getElementById('confirmPw').value;
+      const terms    = document.getElementById('terms').checked;
+
+      // Get validated phone and country from intl-tel-input
+      const phoneRaw = document.getElementById('phone').value.trim();
+      const isValidPhone = iti.isValidNumber();
+      const countryData = iti.getSelectedCountryData();
+      const countryName = countryData.name;
+      const fullPhone = iti.getNumber();
+
+      if (!first || !last) { alert('Please fill in your first and last name.'); shake('firstName'); shake('lastName'); return; }
+      if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return shake('email'); }
+      if (!phoneRaw || !isValidPhone) { alert('Please enter a valid phone number for the selected country.'); return shake('phone'); }
+
+      // Password Strength Check (Minimum "Good" required - 3 points)
+      let pwStrength = 0;
+      if (pw.length >= 8) pwStrength++;
+      if (pw.match(/[a-z]/) && pw.match(/[A-Z]/)) pwStrength++;
+      if (pw.match(/\d/)) pwStrength++;
+      if (pw.match(/[^a-zA-Z\d]/)) pwStrength++;
+
+      if (pwStrength < 3) { alert('Please use a stronger password. Include uppercase, lowercase, numbers, and symbols.'); return shake('password'); }
+      if (pw !== cpw) { alert('Passwords do not match.'); return shake('confirmPw'); }
+      if (!terms) { alert('Please agree to the Terms & Conditions.'); return; }
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.querySelector('span').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> &nbsp;Submitting...';
+
+      try {
+        const formData = new FormData();
+        formData.append('firstName',     first);
+        formData.append('lastName',      last);
+        formData.append('email',         email);
+        formData.append('phone',         fullPhone);
+        formData.append('dob',           document.getElementById('dob').value);
+        formData.append('gender',        document.querySelector('[name=gender]:checked')?.value || '');
+        formData.append('profession',    selectedProf);
+        formData.append('experience',    document.getElementById('experience').value);
+        formData.append('country',       countryName);
+        formData.append('qualification', document.getElementById('qualification').value);
+        formData.append('bio',           document.getElementById('bio').value);
+        formData.append('password',      pw);
+        const cvInput = document.getElementById('cvFile');
+        if (cvInput && cvInput.files[0]) formData.append('cvFile', cvInput.files[0]);
+
+        const res  = await fetch(API_BASE_URL + '/api/register', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (!res.ok) { alert(data.error || 'Registration failed.'); return; }
+
+        // Show success with batch code
+        document.getElementById('successRef').textContent   = data.refNumber;
+        document.getElementById('successBatch').textContent = data.batchCode;
+        document.getElementById('successName').textContent  = first;
+        document.getElementById('successOverlay').classList.add('show');
+
+        regForm.reset();
+        profBtns.forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-nurse').classList.add('active');
+        selectedProf = 'nurse';
+        const cvNameEl = document.getElementById('cvName');
+        if (cvNameEl) cvNameEl.style.display = 'none';
+
+      } catch (err) {
+        alert('Could not connect to the server. Make sure the backend is running.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.querySelector('span').innerHTML = '<i class="fas fa-paper-plane"></i> &nbsp;Submit Registration';
+      }
+    });
+  }
 });
 
 // ── Password toggle ──
@@ -107,108 +204,24 @@ function togglePw(inputId, iconId) {
   ico.className = inp.type === 'text' ? 'fas fa-eye-slash' : 'fas fa-eye';
 }
 
-// ── CV Upload ──
-const cvDrop = document.getElementById('cvDrop');
-cvDrop.addEventListener('dragover', e => { e.preventDefault(); cvDrop.classList.add('drag-over'); });
-cvDrop.addEventListener('dragleave', () => cvDrop.classList.remove('drag-over'));
-cvDrop.addEventListener('drop', e => {
-  e.preventDefault(); cvDrop.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) showCvFile(e.dataTransfer.files[0]);
-});
+function shake(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.borderColor = '#ef5350';
+  el.focus();
+  setTimeout(() => { el.style.borderColor = ''; }, 1500);
+}
+
 function handleCvFile(input) { if (input.files[0]) showCvFile(input.files[0]); }
 function showCvFile(file) {
   const ok = ['application/pdf','application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
   if (!ok.includes(file.type)) { alert('Please upload PDF, DOC or DOCX.'); return; }
   if (file.size > 5 * 1024 * 1024) { alert('File must be under 5MB.'); return; }
-  document.getElementById('cvFileName').textContent = file.name;
-  document.getElementById('cvName').style.display = 'block';
-}
-
-// ── Form Submit ──
-document.getElementById('regForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  const first    = document.getElementById('firstName').value.trim();
-  const last     = document.getElementById('lastName').value.trim();
-  const email    = document.getElementById('email').value.trim();
-  const pw       = document.getElementById('password').value;
-  const cpw      = document.getElementById('confirmPw').value;
-  const terms    = document.getElementById('terms').checked;
-  
-  // Get validated phone and country from intl-tel-input
-  const phoneRaw = document.getElementById('phone').value.trim();
-  const isValidPhone = iti.isValidNumber();
-  const countryData = iti.getSelectedCountryData();
-  const countryName = countryData.name;
-  const fullPhone = iti.getNumber();
-
-  if (!first || !last) { alert('Please fill in your first and last name.'); shake('firstName'); shake('lastName'); return; }
-  if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return shake('email'); }
-  if (!phoneRaw || !isValidPhone) { alert('Please enter a valid phone number for the selected country.'); return shake('phone'); }
-  
-  // Password Strength Check (Minimum "Good" required - 3 points)
-  let pwStrength = 0;
-  if (pw.length >= 8) pwStrength++;
-  if (pw.match(/[a-z]/) && pw.match(/[A-Z]/)) pwStrength++;
-  if (pw.match(/\d/)) pwStrength++;
-  if (pw.match(/[^a-zA-Z\d]/)) pwStrength++;
-
-  if (pwStrength < 3) { alert('Please use a stronger password. Include uppercase, lowercase, numbers, and symbols.'); return shake('password'); }
-  if (pw !== cpw) { alert('Passwords do not match.'); return shake('confirmPw'); }
-  if (!terms) { alert('Please agree to the Terms & Conditions.'); return; }
-
-  const submitBtn = document.getElementById('submitBtn');
-  submitBtn.disabled = true;
-  submitBtn.querySelector('span').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> &nbsp;Submitting...';
-
-  try {
-    const formData = new FormData();
-    formData.append('firstName',     first);
-    formData.append('lastName',      last);
-    formData.append('email',         email);
-    formData.append('phone',         fullPhone);
-    formData.append('dob',           document.getElementById('dob').value);
-    formData.append('gender',        document.querySelector('[name=gender]:checked')?.value || '');
-    formData.append('profession',    selectedProf);
-    formData.append('experience',    document.getElementById('experience').value);
-    formData.append('country',       countryName);
-    formData.append('qualification', document.getElementById('qualification').value);
-    formData.append('bio',           document.getElementById('bio').value);
-    formData.append('password',      pw);
-    const cvInput = document.getElementById('cvFile');
-    if (cvInput.files[0]) formData.append('cvFile', cvInput.files[0]);
-
-    const res  = await fetch(API_BASE_URL + '/api/register', { method: 'POST', body: formData });
-    const data = await res.json();
-
-    if (!res.ok) { alert(data.error || 'Registration failed.'); return; }
-
-    // Show success with batch code
-    document.getElementById('successRef').textContent   = data.refNumber;
-    document.getElementById('successBatch').textContent = data.batchCode;
-    document.getElementById('successName').textContent  = first;
-    document.getElementById('successOverlay').classList.add('show');
-
-    this.reset();
-    profBtns.forEach(b => b.classList.remove('active'));
-    document.getElementById('btn-nurse').classList.add('active');
-    selectedProf = 'nurse';
-    document.getElementById('cvName').style.display = 'none';
-
-  } catch (err) {
-    alert('Could not connect to the server. Make sure the backend is running.');
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.querySelector('span').innerHTML = '<i class="fas fa-paper-plane"></i> &nbsp;Submit Registration';
-  }
-});
-
-function shake(id) {
-  const el = document.getElementById(id);
-  el.style.borderColor = '#ef5350';
-  el.focus();
-  setTimeout(() => { el.style.borderColor = ''; }, 1500);
+  const fileNameEl = document.getElementById('cvFileName');
+  const cvNameEl   = document.getElementById('cvName');
+  if (fileNameEl) fileNameEl.textContent = file.name;
+  if (cvNameEl)   cvNameEl.style.display = 'block';
 }
 
 // ── Application Tracker ──
