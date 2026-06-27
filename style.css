@@ -70,10 +70,10 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 .btn-submit span{position:relative;z-index:1}
 .login-link{text-align:center;margin-top:20px;font-size:.85rem;color:rgba(255,255,255,.5);animation:flyInBottom .7s 1.3s both}
 .login-link a{color:#64b5f6;font-weight:600;text-decoration:none}
-/* Panels — visibility is controlled purely by JS inline style */
-.reg-panel{display:block}
-.track-panel{display:none}
-/* Ensure progress card animates in properly */
+/* Panels — display controlled ONLY by inline styles in HTML + JS. No CSS display rules here. */
+.reg-panel{}
+.track-panel{}
+/* Ensure progress card shows properly */
 .track-result-card{display:none}
 .track-result-card.show{display:block !important}
 /* ── New Tracker ── */
