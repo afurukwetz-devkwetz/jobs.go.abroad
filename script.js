@@ -220,7 +220,9 @@ const STAGES = [
   { label: 'Final Decision',         desc: 'A placement decision will be communicated.',        icon: 'fa-trophy' }
 ];
 
-async function trackApplication() {
+async function trackApplication(e) {
+  if (e) e.preventDefault();
+  
   const ref    = document.getElementById('trackRef').value.trim();
   const email  = document.getElementById('trackEmail').value.trim();
   const msgEl  = document.getElementById('trackMsg');
