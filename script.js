@@ -223,20 +223,23 @@ const STAGES = [
 async function trackApplication(e) {
   if (e) e.preventDefault();
   
-  const ref    = document.getElementById('trackRef').value.trim();
-  const email  = document.getElementById('trackEmail').value.trim();
+  const ref    = (document.getElementById('trackRef').value   || '').trim();
+  const email  = (document.getElementById('trackEmail').value || '').trim();
   const msgEl  = document.getElementById('trackMsg');
   const cardEl = document.getElementById('progressCard');
+  const btn    = document.getElementById('btnTrack');
 
   if (!ref && !email) {
     showTrackMsg('error', '<i class="fas fa-triangle-exclamation"></i> Please enter your reference number or email.');
-    cardEl.classList.remove('show'); return;
+    cardEl.classList.remove('show');
+    return;
   }
 
+  // Show loading state
   showTrackMsg('loading', '<i class="fas fa-circle-notch fa-spin"></i> &nbsp;Fetching your application status...');
   cardEl.classList.remove('show');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; }
 
-  // Fallback in case config.js failed to load
   const baseUrl = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
 
   try {
@@ -245,19 +248,32 @@ async function trackApplication(e) {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ ref, email })
     });
-    const data = await res.json();
 
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      showTrackMsg('error', '<i class="fas fa-circle-exclamation"></i> Server error: ' + (errData.error || res.statusText));
+      return;
+    }
+
+    const data = await res.json();
     msgEl.style.display = 'none';
 
     if (!data.found) {
-      showTrackMsg('error', '<i class="fas fa-triangle-exclamation"></i> No application found. Check your reference number or email.');
+      showTrackMsg('error', '<i class="fas fa-triangle-exclamation"></i> No application found. Check your reference number or email and try again.');
       return;
     }
+
     renderProgress(data);
 
   } catch (err) {
-    console.error("Tracker Error:", err);
-    showTrackMsg('error', '<i class="fas fa-wifi"></i> Could not connect to the server. Please try again later.');
+    console.error('Tracker Error:', err);
+    if (err.name === 'TypeError' && err.message.includes('fetch')) {
+      showTrackMsg('error', '<i class="fas fa-wifi"></i> Cannot reach the server. Please check your connection and try again.');
+    } else {
+      showTrackMsg('error', '<i class="fas fa-wifi"></i> Could not connect to the server. Please try again in a moment.');
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
   }
 }
 

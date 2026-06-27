@@ -73,6 +73,9 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
 /* Panels — visibility is controlled purely by JS inline style */
 .reg-panel{display:block}
 .track-panel{display:none}
+/* Ensure progress card animates in properly */
+.track-result-card{display:none}
+.track-result-card.show{display:block !important}
 /* ── New Tracker ── */
 .tracker-search-box{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:22px 18px;margin-bottom:18px}
 .tracker-search-title{display:flex;align-items:center;gap:10px;font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px}
@@ -206,10 +209,16 @@ label{display:block;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);
   opacity: 0;
   transform: translateY(-100%);
   transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.22,1,.36,1);
+  pointer-events: none;
 }
 #wakeBanner.wake-visible {
   opacity: 1;
   transform: translateY(0);
+  pointer-events: auto;
+}
+/* Push whole page down so banner never overlaps card content */
+body.wake-active {
+  padding-top: 70px;
 }
 
 .wake-inner {
