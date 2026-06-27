@@ -3,289 +3,299 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>jobs.go.abroad — Global Jobs Board</title>
+<title>Global Jobs Board — jobs.go.abroad</title>
+<meta name="description" content="Apply for international nursing, caregiving, and skilled trade jobs abroad. Track your application status in real time.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/css/intlTelInput.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-      <div class="logo-icon"><i class="fas fa-plane-departure"></i></div>
-      <h1 style="text-transform:uppercase; letter-spacing:1px; font-size:1.8rem;">GLOBAL JOBS BOARD</h1>
-      <p style="font-size:0.85rem; letter-spacing:1px; color:#34d399; font-weight:600;">jobs.go.abroad</p>
-    </div>
+<div class="page-wrap">
 
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo-ring"><i class="fas fa-plane-departure"></i></div>
+    <h1>GLOBAL JOBS BOARD</h1>
+    <p class="tagline">jobs.go.abroad</p>
+  </header>
+
+  <!-- Main Card -->
   <div class="card">
+
     <!-- Tab Nav -->
-    <div class="tab-nav">
-      <button class="tab-btn active" id="tabReg" onclick="switchTab('reg')">
+    <div class="tabs" role="tablist">
+      <button id="tabReg" class="tab tab--active" role="tab" aria-selected="true"
+              onclick="showPanel('reg')">
         <i class="fas fa-file-signature"></i> Apply Now
       </button>
-      <button class="tab-btn" id="tabTrack" onclick="switchTab('track')">
+      <button id="tabTrack" class="tab" role="tab" aria-selected="false"
+              onclick="showPanel('track')">
         <i class="fas fa-magnifying-glass"></i> Track Application
       </button>
     </div>
 
-    <!-- REGISTRATION PANEL -->
-    <div class="reg-panel" id="regPanel">
-      <div class="section-label">Select Your Profession</div>
-      <div class="profession-grid">
-        <button type="button" class="prof-btn active" data-prof="nurse" id="btn-nurse">
-          <i class="fas fa-user-nurse"></i>Nurse
+    <!-- ══════════════ REGISTRATION PANEL ══════════════ -->
+    <section id="panelReg" role="tabpanel">
+
+      <p class="section-label">Select Your Profession</p>
+      <div class="prof-grid">
+        <button type="button" class="prof-btn prof-btn--active" data-prof="nurse" id="btn-nurse">
+          <i class="fas fa-user-nurse"></i><span>Nurse</span>
         </button>
         <button type="button" class="prof-btn" data-prof="caregiver">
-          <i class="fas fa-hands-holding-heart"></i>Caregiver
+          <i class="fas fa-hands-holding-heart"></i><span>Caregiver</span>
         </button>
         <button type="button" class="prof-btn" data-prof="construction">
-          <i class="fas fa-hard-hat"></i>Construction
+          <i class="fas fa-hard-hat"></i><span>Construction</span>
         </button>
         <button type="button" class="prof-btn" data-prof="truck">
-          <i class="fas fa-truck"></i>Truck Driver
+          <i class="fas fa-truck"></i><span>Truck Driver</span>
         </button>
         <button type="button" class="prof-btn" data-prof="gardener">
-          <i class="fas fa-seedling"></i>Gardener
+          <i class="fas fa-leaf"></i><span>Gardener</span>
         </button>
       </div>
 
       <form id="regForm" novalidate>
-        <div class="divider"><span>Personal Information</span></div>
-
-        <div class="form-row">
-          <div class="form-group">
+        <!-- Name Row -->
+        <div class="row-2">
+          <div class="field">
             <label for="firstName">First Name</label>
             <div class="input-wrap">
-              <input type="text" id="firstName" placeholder="John" required>
               <i class="fas fa-user"></i>
+              <input type="text" id="firstName" placeholder="John" required>
             </div>
           </div>
-          <div class="form-group">
+          <div class="field">
             <label for="lastName">Last Name</label>
             <div class="input-wrap">
-              <input type="text" id="lastName" placeholder="Doe" required>
               <i class="fas fa-user"></i>
+              <input type="text" id="lastName" placeholder="Doe" required>
             </div>
           </div>
         </div>
 
-        <div class="form-group">
+        <!-- Email -->
+        <div class="field">
           <label for="email">Email Address</label>
           <div class="input-wrap">
-            <input type="email" id="email" placeholder="john.doe@email.com" required>
             <i class="fas fa-envelope"></i>
+            <input type="email" id="email" placeholder="john@example.com" required>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="phone">Phone Number</label>
-            <div class="input-wrap tel-wrap">
-              <input type="tel" id="phone" placeholder="Enter phone number">
-            </div>
+        <!-- Phone -->
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <div class="input-wrap tel-wrap">
+            <input type="tel" id="phone" placeholder="Phone number" required>
           </div>
-          <div class="form-group">
+        </div>
+
+        <!-- DOB & Gender -->
+        <div class="row-2">
+          <div class="field">
             <label for="dob">Date of Birth</label>
             <div class="input-wrap">
-              <input type="text" id="dob" placeholder="Select your birth date">
               <i class="fas fa-calendar"></i>
+              <input type="text" id="dob" placeholder="Pick a date" required>
+            </div>
+          </div>
+          <div class="field">
+            <label>Gender</label>
+            <div class="radio-row">
+              <label class="radio-lbl"><input type="radio" name="gender" value="Male" checked> Male</label>
+              <label class="radio-lbl"><input type="radio" name="gender" value="Female"> Female</label>
+              <label class="radio-lbl"><input type="radio" name="gender" value="Other"> Other</label>
             </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Gender</label>
-          <div class="radio-group">
-            <label><input type="radio" name="gender" value="male" checked> <i class="fas fa-mars" style="color:#64b5f6"></i> Male</label>
-            <label><input type="radio" name="gender" value="female"> <i class="fas fa-venus" style="color:#f48fb1"></i> Female</label>
-            <label><input type="radio" name="gender" value="other"> <i class="fas fa-genderless" style="color:#b0bec5"></i> Other</label>
-          </div>
-        </div>
-
-        <div class="divider"><span>Professional Details</span></div>
-
-        <div class="form-row">
-          <div class="form-group">
+        <!-- Experience & Qualification -->
+        <div class="row-2">
+          <div class="field">
             <label for="experience">Years of Experience</label>
             <div class="input-wrap">
-              <input type="number" id="experience" placeholder="e.g. 5" min="0" max="50">
               <i class="fas fa-briefcase"></i>
+              <select id="experience">
+                <option value="">Select</option>
+                <option>0-1</option><option>1-3</option>
+                <option>3-5</option><option>5-10</option><option>10+</option>
+              </select>
             </div>
           </div>
-        <div class="form-group">
-          <label for="qualification">Highest Qualification</label>
+          <div class="field">
+            <label for="qualification">Highest Qualification</label>
+            <div class="input-wrap">
+              <i class="fas fa-graduation-cap"></i>
+              <select id="qualification">
+                <option value="">Select</option>
+                <option>Certificate</option><option>Diploma</option>
+                <option>Bachelor's</option><option>Master's</option><option>PhD</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="field">
+          <label for="bio">Professional Bio</label>
           <div class="input-wrap">
-            <select id="qualification">
-              <option value="" disabled selected>Select qualification</option>
-              <option>Certificate</option><option>Diploma</option>
-              <option>Bachelor's Degree</option><option>Master's Degree</option>
-              <option>PhD</option><option>Vocational Training</option>
-              <option>No Formal Education</option>
-            </select>
-            <i class="fas fa-graduation-cap"></i>
+            <i class="fas fa-align-left"></i>
+            <textarea id="bio" rows="3" placeholder="Brief description of your background..."></textarea>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="bio">Brief Bio / Skills</label>
-          <div class="input-wrap">
-            <textarea id="bio" placeholder="Tell us about your experience and key skills..."></textarea>
-            <i class="fas fa-file-lines" style="top:18px;transform:none"></i>
-          </div>
-        </div>
-
-        <div class="divider"><span>Upload CV / Resume</span></div>
-
-        <div class="form-group">
-          <label>CV / Resume <span style="color:rgba(255,255,255,.35);font-weight:400">(PDF, DOC, DOCX – max 5MB)</span></label>
-          <div class="cv-drop" id="cvDrop">
-            <input type="file" id="cvFile" accept=".pdf,.doc,.docx" onchange="handleCvFile(this)">
-            <i class="fas fa-cloud-arrow-up upload-icon"></i>
-            <p><strong>Click to browse</strong> or drag &amp; drop your CV here</p>
-            <p style="font-size:.75rem;margin-top:4px">Supported: PDF, DOC, DOCX</p>
-            <div class="cv-name" id="cvName"><i class="fas fa-file-check"></i><span id="cvFileName"></span></div>
-          </div>
-        </div>
-
-        <div class="divider"><span>Account Security</span></div>
-
-        <div class="form-row">
-          <div class="form-group">
+        <!-- Password -->
+        <div class="row-2">
+          <div class="field">
             <label for="password">Password</label>
             <div class="input-wrap">
-              <input type="password" id="password" placeholder="Create a strong password" required>
               <i class="fas fa-lock"></i>
-              <span class="toggle-pw" onclick="togglePw('password','eyePw1')"><i id="eyePw1" class="fas fa-eye"></i></span>
+              <input type="password" id="password" placeholder="Create password" required>
+              <span class="eye-btn" onclick="togglePw('password','eye1')"><i id="eye1" class="fas fa-eye"></i></span>
             </div>
-            <div class="pw-strength-container">
-              <div class="pw-bar"><div id="pwMeter"></div></div>
-              <span id="pwText">Strength: Too short</span>
-            </div>
+            <div class="pw-bar"><div id="pwMeter"></div></div>
+            <span id="pwText" class="pw-text"></span>
           </div>
-          <div class="form-group">
+          <div class="field">
             <label for="confirmPw">Confirm Password</label>
             <div class="input-wrap">
-              <input type="password" id="confirmPw" placeholder="Repeat password" required>
               <i class="fas fa-lock"></i>
-              <span class="toggle-pw" onclick="togglePw('confirmPw','eyePw2')"><i id="eyePw2" class="fas fa-eye"></i></span>
+              <input type="password" id="confirmPw" placeholder="Repeat password" required>
+              <span class="eye-btn" onclick="togglePw('confirmPw','eye2')"><i id="eye2" class="fas fa-eye"></i></span>
             </div>
           </div>
         </div>
 
+        <!-- CV Upload -->
+        <div class="field">
+          <label>Upload CV / Resume</label>
+          <div class="cv-drop" id="cvDrop">
+            <input type="file" id="cvFile" accept=".pdf,.doc,.docx" onchange="handleCvFile(this)">
+            <i class="fas fa-cloud-arrow-up cv-icon"></i>
+            <p>Drag & drop or <strong>click to browse</strong></p>
+            <p style="font-size:.75rem;color:rgba(255,255,255,.3)">PDF, DOC, DOCX — max 5 MB</p>
+          </div>
+          <p id="cvName" class="cv-name" style="display:none">
+            <i class="fas fa-file-check"></i> <span id="cvFileName"></span>
+          </p>
+        </div>
+
+        <!-- Terms -->
         <div class="terms-row">
           <input type="checkbox" id="terms">
-          <span>I agree to the <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a>. I confirm all information provided is accurate.</span>
+          <span>I agree to the <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a>. All information is accurate.</span>
         </div>
 
-        <button type="submit" class="btn-submit" id="submitBtn">
-          <span><i class="fas fa-paper-plane"></i> &nbsp;Submit Application</span>
+        <!-- Submit -->
+        <button type="submit" class="btn-primary" id="submitBtn">
+          <span><i class="fas fa-paper-plane"></i>&nbsp;&nbsp;Submit Application</span>
         </button>
+
+        <p class="switch-link">Already applied? <a href="#" onclick="showPanel('track'); return false;">Track your status →</a></p>
       </form>
+    </section><!-- /panelReg -->
 
-      <div class="login-link">Already applied? <a href="#" onclick="switchTab('track'); return false;">Track your status</a></div>
-    </div><!-- /reg-panel -->
+    <!-- ══════════════ TRACKER PANEL ══════════════ -->
+    <section id="panelTrack" hidden role="tabpanel">
 
-    <!-- TRACKER PANEL -->
-    <div class="track-panel" id="trackPanel" style="display:none">
-
-      <!-- Search Box -->
-      <form class="tracker-search-box" id="trackForm" onsubmit="trackApplication(event)">
-        <div class="tracker-search-title">
+      <!-- Search box -->
+      <div class="track-box">
+        <div class="track-box-head">
           <i class="fas fa-satellite-dish"></i>
-          <span>Application Tracker</span>
+          <strong>Application Tracker</strong>
         </div>
-        <p class="tracker-search-sub">Enter your reference number <em>or</em> registered email to check your status</p>
-        <div class="tracker-input-group">
+        <p class="track-box-sub">Enter your <em>reference number</em> or <em>registered email</em></p>
+
+        <div class="track-field">
           <div class="input-wrap">
-            <input type="text" id="trackRef" placeholder="Reference No. e.g. GJB-20240001">
             <i class="fas fa-hashtag"></i>
+            <input type="text" id="trackRef" placeholder="Reference No. e.g. GJB-20240001">
           </div>
-          <div class="tracker-or"><span>or</span></div>
-          <div class="input-wrap">
-            <input type="email" id="trackEmail" placeholder="Registered email address">
-            <i class="fas fa-envelope"></i>
-          </div>
-          <button type="submit" class="btn-track-new" id="btnTrack">
-            <i class="fas fa-magnifying-glass-location"></i>
-            <span>Track My Application</span>
-          </button>
         </div>
-      </form>
+        <div class="track-or"><span>or</span></div>
+        <div class="track-field">
+          <div class="input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="trackEmail" placeholder="Registered email address">
+          </div>
+        </div>
 
-      <div class="track-msg" id="trackMsg"></div>
+        <button class="btn-primary" id="btnTrack" onclick="trackApplication()">
+          <span><i class="fas fa-magnifying-glass-location"></i>&nbsp;&nbsp;Track My Application</span>
+        </button>
+      </div>
 
-      <!-- Result Card -->
-      <div class="track-result-card" id="progressCard">
-        <div class="track-result-header">
-          <div class="track-avatar" id="trackAvatar"></div>
-          <div class="track-result-info">
-            <h3 id="progName"></h3>
-            <div class="track-meta-pills">
-              <span class="track-pill track-pill-ref"><i class="fas fa-hashtag"></i><span id="progRef"></span></span>
-              <span class="track-pill track-pill-batch"><i class="fas fa-layer-group"></i><span id="progBatch"></span></span>
+      <!-- Status message -->
+      <div id="trackMsg" style="display:none"></div>
+
+      <!-- Result card -->
+      <div id="trackResult" style="display:none">
+        <div class="result-header">
+          <div class="result-avatar" id="resultAvatar"></div>
+          <div class="result-info">
+            <h3 id="resultName"></h3>
+            <div class="result-pills">
+              <span class="pill pill-ref"><i class="fas fa-hashtag"></i> <span id="resultRef"></span></span>
+              <span class="pill pill-batch"><i class="fas fa-layer-group"></i> <span id="resultBatch"></span></span>
             </div>
           </div>
-          <div class="track-status-badge" id="trackStatusBadge"></div>
+          <span class="status-badge" id="resultStatus"></span>
         </div>
-        <div class="track-timeline" id="stepsContainer"></div>
-        <div class="track-note" id="trackNote" style="display:none"></div>
+        <div class="timeline" id="timeline"></div>
+        <div id="resultNote" style="display:none" class="result-note"></div>
       </div>
 
-    </div><!-- /track-panel -->
+      <p class="switch-link" style="margin-top:16px">
+        <a href="#" onclick="showPanel('reg'); return false;">← Back to Apply</a>
+      </p>
+    </section><!-- /panelTrack -->
 
   </div><!-- /card -->
-</div><!-- /container -->
-
-<!-- Wake-Up Banner -->
-<div id="wakeBanner" style="display:none" aria-live="polite">
-  <div class="wake-inner">
-    <span class="wake-spinner"></span>
-    <div class="wake-text">
-      <strong>Server is warming up…</strong>
-      <span id="wakeMsg">Free hosting sleeps after inactivity. Please wait <span id="wakeSecs">30</span>s.</span>
-    </div>
-    <button class="wake-retry" id="wakeRetryBtn" style="display:none" onclick="wakeRetry()">Retry Now</button>
-  </div>
-  <div class="wake-bar"><div class="wake-bar-fill" id="wakeBarFill"></div></div>
-</div>
+</div><!-- /page-wrap -->
 
 <!-- Success Overlay -->
-<div class="success-overlay" id="successOverlay">
+<div id="successOverlay" style="display:none" class="overlay">
   <div class="success-box">
-    <div class="check"><i class="fas fa-circle-check"></i></div>
-    <h2>You're In!</h2>
-    <p>Welcome, <strong id="successName"></strong>! Your application has been received.</p>
-    <div style="margin:16px 0;display:flex;flex-direction:column;gap:10px">
-      <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;text-align:left">
-        <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:3px">REFERENCE NUMBER</div>
-        <div style="font-size:1rem;font-weight:700;color:#64b5f6;letter-spacing:.5px" id="successRef">--</div>
-      </div>
-      <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:12px 16px;text-align:left">
-        <div style="font-size:.72rem;color:rgba(255,255,255,.45);margin-bottom:3px">ASSIGNED BATCH</div>
-        <div style="font-size:1rem;font-weight:700;color:#a5d6a7;letter-spacing:.5px" id="successBatch">--</div>
-      </div>
-    </div>
-    <div style="background:rgba(255,152,0,.15);border:1px solid rgba(255,152,0,.3);border-radius:12px;padding:12px;margin:10px 0;display:flex;align-items:center;gap:12px;text-align:left">
-      <i class="fas fa-envelope-circle-check" style="color:#ff9800;font-size:1.4rem"></i>
-      <div>
-        <div style="font-weight:700;color:#fff;font-size:.85rem">Verify your email</div>
-        <div style="font-size:.75rem;color:rgba(255,255,255,.7)">Check your inbox for a verification link to activate your application.</div>
-      </div>
-    </div>
-    <p style="font-size:.8rem;color:rgba(255,255,255,.5)">Save your reference number to track your application progress.</p>
-    <button class="btn-ok" onclick="document.getElementById('successOverlay').classList.remove('show')">
-      <i class="fas fa-check"></i> Done
+    <div class="success-icon"><i class="fas fa-circle-check"></i></div>
+    <h2>Application Submitted!</h2>
+    <p>Welcome, <strong id="successName"></strong>!</p>
+    <p style="margin-top:8px">Your reference number is:</p>
+    <div class="ref-box" id="successRef"></div>
+    <p style="margin-top:8px;font-size:.82rem;color:rgba(255,255,255,.55)">
+      Batch: <strong id="successBatch"></strong>
+    </p>
+    <p style="margin-top:10px;font-size:.8rem;color:rgba(255,255,255,.4)">
+      Save this number to track your application status.
+    </p>
+    <button class="btn-primary" style="margin-top:24px" onclick="closeSuccess()">
+      <span>Done</span>
     </button>
   </div>
+</div>
+
+<!-- Wake Banner -->
+<div id="wakeBanner" style="display:none" aria-live="polite">
+  <div class="wake-inner">
+    <span class="wake-spin"></span>
+    <div>
+      <strong>Server warming up…</strong>
+      <span id="wakeMsg">Free hosting sleeps after inactivity. Please wait <span id="wakeSecs">30</span>s.</span>
+    </div>
+    <button id="wakeRetryBtn" style="display:none" onclick="wakeRetry()">Retry</button>
+  </div>
+  <div class="wake-bar"><div id="wakeBarFill"></div></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="config.js?v=6"></script>
-<script src="script.js?v=9"></script>
-<script src="wake.js?v=1"></script>
+<script src="script.js?v=10"></script>
+<script src="wake.js?v=2"></script>
 </body>
 </html>

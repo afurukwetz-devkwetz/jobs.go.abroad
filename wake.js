@@ -28,8 +28,7 @@
     countdownSecs   = MAX_WAIT_S;
     banner.style.display = 'block';
     document.body.classList.add('wake-active');
-    // animate in
-    requestAnimationFrame(() => banner.classList.add('wake-visible'));
+    requestAnimationFrame(() => banner.classList.add('wake-on'));
 
     // tick countdown
     countdownTmr = setInterval(() => {
@@ -57,7 +56,7 @@
     clearInterval(countdownTmr);
     clearInterval(retryTmr);
     clearTimeout(slowTmr);
-    banner.classList.remove('wake-visible');
+    banner.classList.remove('wake-on');
     document.body.classList.remove('wake-active');
     setTimeout(() => { banner.style.display = 'none'; }, 400);
     bannerShown = false;
