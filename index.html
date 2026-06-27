@@ -192,7 +192,7 @@
     <div class="track-panel" id="trackPanel">
 
       <!-- Search Box -->
-      <div class="tracker-search-box">
+      <form class="tracker-search-box" id="trackForm" onsubmit="event.preventDefault(); trackApplication();">
         <div class="tracker-search-title">
           <i class="fas fa-satellite-dish"></i>
           <span>Application Tracker</span>
@@ -200,22 +200,20 @@
         <p class="tracker-search-sub">Enter your reference number <em>or</em> registered email to check your status</p>
         <div class="tracker-input-group">
           <div class="input-wrap">
-            <input type="text" id="trackRef" placeholder="Reference No. e.g. GJB-20240001"
-              onkeydown="if(event.key==='Enter') trackApplication()">
+            <input type="text" id="trackRef" placeholder="Reference No. e.g. GJB-20240001">
             <i class="fas fa-hashtag"></i>
           </div>
           <div class="tracker-or"><span>or</span></div>
           <div class="input-wrap">
-            <input type="email" id="trackEmail" placeholder="Registered email address"
-              onkeydown="if(event.key==='Enter') trackApplication()">
+            <input type="email" id="trackEmail" placeholder="Registered email address">
             <i class="fas fa-envelope"></i>
           </div>
-          <button class="btn-track-new" id="btnTrack" onclick="trackApplication()">
+          <button type="submit" class="btn-track-new" id="btnTrack">
             <i class="fas fa-magnifying-glass-location"></i>
             <span>Track My Application</span>
           </button>
         </div>
-      </div>
+      </form>
 
       <div class="track-msg" id="trackMsg"></div>
 

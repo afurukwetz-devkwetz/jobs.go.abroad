@@ -79,10 +79,12 @@ function switchTab(tab) {
   document.getElementById('tabReg').classList.toggle('active', isReg);
   document.getElementById('tabTrack').classList.toggle('active', !isReg);
 
-  // Reset tracker state when switching away from track
-  if (!isReg) {
+  // Reset tracker state when switching away from track (to reg)
+  if (isReg) {
     document.getElementById('progressCard').classList.remove('show');
     document.getElementById('trackMsg').style.display = 'none';
+    document.getElementById('trackRef').value = '';
+    document.getElementById('trackEmail').value = '';
   }
 }
 
@@ -289,8 +291,9 @@ function renderProgress(data) {
   const c = document.getElementById('stepsContainer');
   c.innerHTML = '';
   STAGES.forEach((stage, i) => {
-    const done    = i < data.currentStep;
-    const current = i === data.currentStep;
+    const isFinalDecision = (data.status === 'Approved' || data.status === 'Rejected');
+    const done    = i < data.currentStep || (i === STAGES.length - 1 && isFinalDecision);
+    const current = i === data.currentStep && !isFinalDecision;
 
     const dotCls   = done ? 'tl-dot-done'  : current ? 'tl-dot-current'  : 'tl-dot-wait';
     const stepCls  = done ? 'tl-done'       : current ? 'tl-current'       : '';
