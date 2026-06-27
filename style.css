@@ -444,43 +444,7 @@ label:not(.radio-lbl){
   margin:10px auto 0;display:inline-block;
 }
 
-/* ── Wake Banner ── */
-#wakeBanner{
-  position:fixed;top:0;left:0;right:0;
-  z-index:9999;
-  background:linear-gradient(135deg,rgba(13,45,107,.97),rgba(21,101,192,.97));
-  backdrop-filter:blur(14px);
-  border-bottom:1px solid rgba(66,165,245,.3);
-  box-shadow:0 4px 28px rgba(0,0,0,.4);
-  opacity:0;transform:translateY(-100%);
-  transition:opacity .4s,transform .4s cubic-bezier(.22,1,.36,1);
-  pointer-events:none;
-}
-#wakeBanner.wake-on{opacity:1;transform:translateY(0);pointer-events:auto}
-body.wake-active{padding-top:68px}
-.wake-inner{
-  display:flex;align-items:center;gap:13px;
-  padding:12px 20px;max-width:720px;margin:0 auto;flex-wrap:wrap;
-}
-.wake-spin{
-  width:24px;height:24px;border-radius:50%;
-  border:3px solid rgba(66,165,245,.2);border-top-color:#42a5f5;
-  flex-shrink:0;animation:spin .9s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.wake-inner strong{display:block;color:#fff;font-size:.83rem;font-weight:700;margin-bottom:1px}
-.wake-inner span{font-size:.74rem;color:rgba(255,255,255,.5)}
-#wakeSecs{color:#64b5f6;font-weight:700}
-#wakeRetryBtn{
-  padding:6px 14px;border-radius:7px;
-  border:1.5px solid rgba(66,165,245,.45);
-  background:rgba(66,165,245,.1);color:#64b5f6;
-  font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;
-  cursor:pointer;transition:all .2s;flex-shrink:0;
-}
-#wakeRetryBtn:hover{background:rgba(66,165,245,.22);color:#fff}
-.wake-bar{height:3px;background:rgba(255,255,255,.06)}
-#wakeBarFill{height:100%;width:0;background:linear-gradient(90deg,#1565c0,#42a5f5);transition:width 1s linear}
+
 
 /* ── Responsive ── */
 @media(max-width:560px){
