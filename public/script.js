@@ -242,6 +242,23 @@ function renderProgress(data) {
 }
 
 // ── DOMContentLoaded init ─────────────────────────────────────
+// Toast Notification System
+function showToast(message, type = 'error') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const msg = document.createElement('div');
+  msg.className = `toast-msg ${type}`;
+  msg.innerHTML = type === 'error' 
+    ? `<i class="fas fa-exclamation-circle"></i> ${message}`
+    : `<i class="fas fa-check-circle"></i> ${message}`;
+  
+  container.appendChild(msg);
+  setTimeout(() => {
+    msg.classList.add('fadeOut');
+    setTimeout(() => msg.remove(), 300);
+  }, 5000);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
   // 1. Phone input
@@ -352,11 +369,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const cpw   = document.getElementById('confirmPw')?.value        || '';
       const terms = document.getElementById('terms')?.checked;
 
-      if (!first || !last) { alert('Please enter your first and last name.'); shake('firstName'); return; }
-      if (!email.includes('@')) { alert('Please enter a valid email.'); shake('email'); return; }
+      if (!first || !last) { showToast('Please enter your first and last name.', 'error'); shake('firstName'); return; }
+      if (!email.includes('@')) { showToast('Please enter a valid email.', 'error'); shake('email'); return; }
 
       if (iti) {
-        if (!iti.isValidNumber()) { alert('Please enter a valid phone number.'); shake('phone'); return; }
+        if (!iti.isValidNumber()) { showToast('Please enter a valid phone number.', 'error'); shake('phone'); return; }
       }
 
       let pwStr = 0;
@@ -364,9 +381,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (pw.match(/[a-z]/) && pw.match(/[A-Z]/)) pwStr++;
       if (pw.match(/\d/)) pwStr++;
       if (pw.match(/[^a-zA-Z\d]/)) pwStr++;
-      if (pwStr < 3) { alert('Please use a stronger password (uppercase, lowercase, number, symbol).'); shake('password'); return; }
-      if (pw !== cpw) { alert('Passwords do not match.'); shake('confirmPw'); return; }
-      if (!terms) { alert('Please agree to the Terms & Conditions.'); return; }
+      if (pwStr < 3) { showToast('Please use a stronger password (uppercase, lowercase, number, symbol).', 'error'); shake('password'); return; }
+      if (pw !== cpw) { showToast('Passwords do not match.', 'error'); shake('confirmPw'); return; }
+      if (!terms) { showToast('Please agree to the Terms & Conditions.', 'error'); return; }
 
       // Nurse: qualification assessment is required
       if (selectedProf === 'nurse') {
@@ -382,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function () {
             qualSection.style.outline = '2px solid #f43f5e';
             setTimeout(() => { qualSection.style.outline = ''; }, 2000);
           }
-          alert('Please complete the Professional Qualification Assessment and tick all declaration checkboxes.');
+          showToast('Please complete the Professional Qualification Assessment and tick all declaration checkboxes.', 'error');
           return;
         }
       }
@@ -424,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const base = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
         const res  = await fetch(base + '/api/register', { method: 'POST', body: fd });
         const data = await res.json();
-        if (!res.ok) { alert(data.error || 'Registration failed.'); return; }
+        if (!res.ok) { showToast(data.error || 'Registration failed.', 'error'); return; }
 
         // Show success
         document.getElementById('successName').textContent  = first;
@@ -441,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (cvNameEl) cvNameEl.style.display = 'none';
 
       } catch (err) {
-        alert('Could not reach the server. Please try again.');
+        showToast(err.message || 'An error occurred during registration.', 'error');
       } finally {
         if (btn) { btn.disabled = false; btn.querySelector('span').innerHTML = '<i class="fas fa-paper-plane"></i>&nbsp;&nbsp;Submit Application'; }
       }

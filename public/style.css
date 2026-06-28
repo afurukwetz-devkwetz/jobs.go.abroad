@@ -724,3 +724,40 @@ label:not(.radio-lbl){
   .input-wrap input, .input-wrap select, .input-wrap textarea { font-size: 16px; /* Prevents iOS zoom */ }
   .whatsapp-float { bottom: 16px; right: 16px; width: 54px; height: 54px; font-size: 28px; }
 }
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast-msg {
+  background: #f44336;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(100px);
+  opacity: 0;
+  animation: slideInUp 0.3s forwards;
+}
+.toast-msg.success { background: #4caf50; }
+.toast-msg.error { background: #d32f2f; }
+.toast-msg i { font-size: 18px; }
+@keyframes slideInUp {
+  to { transform: translateY(0); opacity: 1; }
+}
+.toast-msg.fadeOut {
+  animation: fadeOutDown 0.3s forwards;
+}
+@keyframes fadeOutDown {
+  to { transform: translateY(100px); opacity: 0; }
+}
