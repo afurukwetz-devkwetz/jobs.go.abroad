@@ -8,7 +8,7 @@ const ApplicantSchema = new mongoose.Schema({
   dob:           { type: Date },
   gender:        { type: String },
   profession:    { type: String, required: true },
-  experience:    { type: Number },
+  experience:    { type: String },
   country:       { type: String },
   qualification: { type: String },
   bio:           { type: String },
