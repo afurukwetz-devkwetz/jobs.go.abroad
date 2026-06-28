@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Job Connect — Nursing, Caregiving & Skilled Jobs Abroad</title>
+<meta name="description" content="Apply for international nursing, caregiving, construction, and skilled trade jobs abroad with Global Job Connect. Get visa and recruitment support, and track your application status in real-time.">
+<meta name="keywords" content="international jobs, nursing jobs abroad, overseas caregiver jobs, work abroad, global recruitment, international visa support, jobs in UK, jobs in USA, jobs in Germany, jobs in Canada">
+<meta name="author" content="Global Job Connect">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jobs-go-abroad-3pbi.onrender.com/">
+<meta property="og:title" content="Global Job Connect — Work Anywhere. Grow Everywhere.">
+<meta property="og:description" content="Apply for international nursing, caregiving, and skilled trade jobs abroad with Global Job Connect. Track your application status in real-time.">
+<meta property="og:image" content="https://jobs-go-abroad-3pbi.onrender.com/favicon.ico"> <!-- Replace with high-res banner if available -->
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://jobs-go-abroad-3pbi.onrender.com/">
+<meta property="twitter:title" content="Global Job Connect — Work Anywhere. Grow Everywhere.">
+<meta property="twitter:description" content="Apply for international nursing, caregiving, and skilled trade jobs abroad with Global Job Connect. Track your application status in real-time.">
+<meta property="twitter:image" content="https://jobs-go-abroad-3pbi.onrender.com/favicon.ico">
+
+<link rel="canonical" href="https://jobs-go-abroad-3pbi.onrender.com/" />
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/css/intlTelInput.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<link rel="stylesheet" href="style.css?v=13">
+<!-- Favicon -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2250%22 fill=%22%231565c0%22/><path d=%22M25 50 L75 50 M50 25 L50 75%22 stroke=%22%23ffffff%22 stroke-width=%2210%22 transform=%22rotate(45 50 50)%22/><path d=%22M30 65 L70 45 L70 55 L30 75 Z%22 fill=%22%23ffffff%22/></svg>">
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo-ring"><i class="fas fa-plane-departure"></i></div>
+    <h1>GLOBAL JOB CONNECT</h1>
+    <p class="tagline">Work Anywhere. Grow Everywhere.</p>
+  </header>
+
+  <!-- Main Card -->
+  <div class="card">
+
+    <!-- Tab Nav -->
+    <div class="tabs" role="tablist">
+      <button id="tabReg" class="tab tab--active" role="tab" aria-selected="true"
+              onclick="showPanel('reg')">
+        <i class="fas fa-file-signature"></i> Apply Now
+      </button>
+      <button id="tabTrack" class="tab" role="tab" aria-selected="false"
+              onclick="showPanel('track')">
+        <i class="fas fa-magnifying-glass"></i> Track Application
+      </button>
+    </div>
+
+    <!-- ══════════════ REGISTRATION PANEL ══════════════ -->
+    <section id="panelReg" role="tabpanel">
+
+      <p class="section-label">Select Your Profession</p>
+      <div class="prof-grid">
+        <button type="button" class="prof-btn prof-btn--active" data-prof="nurse" id="btn-nurse">
+          <i class="fas fa-user-nurse"></i><span>Nurse</span>
+        </button>
+        <button type="button" class="prof-btn" data-prof="caregiver">
+          <i class="fas fa-hands-holding-heart"></i><span>Caregiver</span>
+        </button>
+        <button type="button" class="prof-btn" data-prof="construction">
+          <i class="fas fa-hard-hat"></i><span>Construction</span>
+        </button>
+        <button type="button" class="prof-btn" data-prof="truck">
+          <i class="fas fa-truck"></i><span>Truck Driver</span>
+        </button>
+        <button type="button" class="prof-btn" data-prof="gardener">
+          <i class="fas fa-leaf"></i><span>Gardener</span>
+        </button>
+      </div>
+
+      <form id="regForm" novalidate>
+        <!-- Name Row -->
+        <div class="row-2">
+          <div class="field">
+            <label for="firstName">First Name</label>
+            <div class="input-wrap">
+              <i class="fas fa-user"></i>
+              <input type="text" id="firstName" placeholder="John" required>
+            </div>
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <div class="input-wrap">
+              <i class="fas fa-user"></i>
+              <input type="text" id="lastName" placeholder="Doe" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label for="email">Email Address</label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" placeholder="john@example.com" required>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <div class="input-wrap tel-wrap">
+            <input type="tel" id="phone" placeholder="Phone number" required>
+          </div>
+        </div>
+
+        <!-- DOB & Gender -->
+        <div class="row-2">
+          <div class="field">
+            <label for="dob">Date of Birth</label>
+            <div class="input-wrap">
+              <i class="fas fa-calendar"></i>
+              <input type="text" id="dob" placeholder="Pick a date" required>
+            </div>
+          </div>
+          <div class="field">
+            <label>Gender</label>
+            <div class="radio-row">
+              <label class="radio-lbl"><input type="radio" name="gender" value="Male" checked> Male</label>
+              <label class="radio-lbl"><input type="radio" name="gender" value="Female"> Female</label>
+              <label class="radio-lbl"><input type="radio" name="gender" value="Other"> Other</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experience & Qualification -->
+        <div class="row-2">
+          <div class="field">
+            <label for="experience">Years of Experience</label>
+            <div class="input-wrap">
+              <i class="fas fa-briefcase"></i>
+              <select id="experience">
+                <option value="">Select</option>
+                <option>0-1</option><option>1-3</option>
+                <option>3-5</option><option>5-10</option><option>10+</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="qualification">Highest Qualification</label>
+            <div class="input-wrap">
+              <i class="fas fa-graduation-cap"></i>
+              <select id="qualification">
+                <option value="">Select</option>
+                <option>Certificate</option><option>Diploma</option>
+                <option>Bachelor's</option><option>Master's</option><option>PhD</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="field">
+          <label for="bio">Professional Bio</label>
+          <div class="input-wrap">
+            <i class="fas fa-align-left"></i>
+            <textarea id="bio" rows="3" placeholder="Brief description of your background..."></textarea>
+          </div>
+        </div>
+
+        <!-- ══ Nurse-only Qualification Assessment ══ -->
+        <div id="nurseQualSection" style="display:none; margin-bottom:16px;">
+          <button type="button" class="qual-toggle" id="qualToggleBtn" onclick="toggleQualPanel()">
+            <span><i class="fas fa-stethoscope"></i>&nbsp; Professional Qualification Assessment <span class="qual-required-badge">Required</span></span>
+            <span class="qual-toggle-right"><span class="qual-click-hint" id="qualClickHint">Click to expand</span><i class="fas fa-chevron-down" id="qualChevron"></i></span>
+          </button>
+          <div id="qualPanel" style="display:none;">
+            <div class="qual-panel">
+
+              <!-- Destination -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-earth-americas"></i> Preferred Destination(s)</p>
+                <div class="qual-checks">
+                  <label class="qual-check"><input type="checkbox" name="dest" value="UK"> United Kingdom</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="US"> United States</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="Canada"> Canada</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="Australia"> Australia</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="New Zealand"> New Zealand</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="Germany"> Germany</label>
+                  <label class="qual-check qual-other-row">
+                    <input type="checkbox" name="dest" value="Other" id="destOther"> Other:
+                    <input type="text" id="destOtherText" class="qual-other-input" placeholder="Specify…">
+                  </label>
+                </div>
+              </div>
+
+              <!-- English Language -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-language"></i> English Language Qualifications</p>
+                <div class="qual-checks">
+                  <label class="qual-check"><input type="checkbox" name="english" value="IELTS Academic"> IELTS Academic</label>
+                  <label class="qual-check"><input type="checkbox" name="english" value="OET"> Occupational English Test (OET)</label>
+                  <label class="qual-check"><input type="checkbox" name="english" value="Other"> Other English Language Qualification</label>
+                  <label class="qual-check"><input type="checkbox" name="english" value="None"> I have not completed an English language test</label>
+                </div>
+              </div>
+
+              <!-- Professional Registration -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-id-card-clip"></i> Professional Registration &amp; Licensing</p>
+                <div class="qual-checks">
+                  <label class="qual-check"><input type="checkbox" name="reg" value="CBT"> UK Computer Based Test (CBT)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="OSCE"> UK Objective Structured Clinical Examination (OSCE)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="NCLEX-RN"> NCLEX-RN (USA/Canada)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="CGFNS"> CGFNS Credential Evaluation</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="Nursing Council"> Nursing Council Competence Assessment</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="AHPRA"> Registration Assessment (Australia)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="Germany Recognition"> Recognition of Qualifications (Germany)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="None"> None of the above</label>
+                </div>
+              </div>
+
+              <!-- German Language -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-flag"></i> German Language Level <span style="font-size:.72rem;color:rgba(255,255,255,.35)">(For Germany applicants)</span></p>
+                <div class="qual-checks qual-checks--inline">
+                  <label class="qual-check"><input type="checkbox" name="german" value="A1"> A1</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="A2"> A2</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="B1"> B1</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="B2"> B2</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="C1"> C1</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="N/A"> Not applicable</label>
+                </div>
+              </div>
+
+              <!-- Supporting Documents -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-folder-open"></i> Supporting Documents Available</p>
+                <div class="qual-checks">
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Passport"> Valid Passport</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Registration Certificate"> Professional Registration Certificate</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Good Standing"> Certificate of Good Standing</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Degree"> Degree/Diploma Certificate</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Transcripts"> Academic Transcripts</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="CV"> Updated CV/Resume</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Police Clearance"> Police Clearance Certificate</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Medical"> Medical Examination Report</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Vaccination"> Vaccination Records</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="References"> Employment Reference Letters</label>
+                </div>
+              </div>
+
+              <!-- Declaration -->
+              <div class="qual-group qual-declaration">
+                <p class="qual-label"><i class="fas fa-pen-to-square"></i> Declaration</p>
+                <label class="qual-check"><input type="checkbox" name="decl" value="accurate"> I confirm that the information provided is true and accurate.</label>
+                <label class="qual-check"><input type="checkbox" name="decl" value="aware-requirements"> I understand that additional examinations, professional registration requirements, visa requirements, or supporting documents may be required depending on the destination country and employer.</label>
+                <label class="qual-check"><input type="checkbox" name="decl" value="aware-no-guarantee"> I understand that passing the recruitment process does not guarantee employment, professional registration, or visa approval, as these decisions are made by employers and the relevant licensing and immigration authorities.</label>
+              </div>
+
+            </div><!-- /qual-panel -->
+          </div>
+        </div><!-- /nurseQualSection -->
+
+        <!-- Password -->
+        <div class="row-2">
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="password" placeholder="Create password" required>
+              <span class="eye-btn" onclick="togglePw('password','eye1')"><i id="eye1" class="fas fa-eye"></i></span>
+            </div>
+            <div class="pw-bar"><div id="pwMeter"></div></div>
+            <span id="pwText" class="pw-text"></span>
+          </div>
+          <div class="field">
+            <label for="confirmPw">Confirm Password</label>
+            <div class="input-wrap">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="confirmPw" placeholder="Repeat password" required>
+              <span class="eye-btn" onclick="togglePw('confirmPw','eye2')"><i id="eye2" class="fas fa-eye"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CV Upload -->
+        <div class="field">
+          <label>Upload CV / Resume</label>
+          <div class="cv-drop" id="cvDrop">
+            <input type="file" id="cvFile" accept=".pdf,.doc,.docx" onchange="handleCvFile(this)">
+            <i class="fas fa-cloud-arrow-up cv-icon"></i>
+            <p>Drag & drop or <strong>click to browse</strong></p>
+            <p style="font-size:.75rem;color:rgba(255,255,255,.3)">PDF, DOC, DOCX — max 5 MB</p>
+          </div>
+          <p id="cvName" class="cv-name" style="display:none">
+            <i class="fas fa-file-check"></i> <span id="cvFileName"></span>
+          </p>
+        </div>
+
+        <!-- Terms -->
+        <div class="terms-row">
+          <input type="checkbox" id="terms">
+          <span>I agree to the <a href="#">Terms &amp; Conditions</a> and <a href="#">Privacy Policy</a>. All information is accurate.</span>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-primary" id="submitBtn">
+          <span><i class="fas fa-paper-plane"></i>&nbsp;&nbsp;Submit Application</span>
+        </button>
+
+        <p class="switch-link">Already applied? <a href="#" onclick="showPanel('track'); return false;">Track your status →</a></p>
+      </form>
+    </section><!-- /panelReg -->
+
+    <!-- ══════════════ TRACKER PANEL ══════════════ -->
+    <section id="panelTrack" hidden role="tabpanel">
+
+      <!-- Search box -->
+      <div class="track-box">
+        <div class="track-box-head">
+          <i class="fas fa-satellite-dish"></i>
+          <strong>Application Tracker</strong>
+        </div>
+        <p class="track-box-sub">Enter your <em>reference number</em> or <em>registered email</em></p>
+
+        <div class="track-field">
+          <div class="input-wrap">
+            <i class="fas fa-hashtag"></i>
+            <input type="text" id="trackRef" placeholder="Reference No. e.g. GJB-20240001">
+          </div>
+        </div>
+        <div class="track-or"><span>or</span></div>
+        <div class="track-field">
+          <div class="input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="trackEmail" placeholder="Registered email address">
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btnTrack" onclick="trackApplication()">
+          <span><i class="fas fa-magnifying-glass-location"></i>&nbsp;&nbsp;Track My Application</span>
+        </button>
+      </div>
+
+      <!-- Status message -->
+      <div id="trackMsg" style="display:none"></div>
+
+      <!-- Result card -->
+      <div id="trackResult" style="display:none">
+        <div class="result-header">
+          <div class="result-avatar" id="resultAvatar"></div>
+          <div class="result-info">
+            <h3 id="resultName"></h3>
+            <div class="result-pills">
+              <span class="pill pill-ref"><i class="fas fa-hashtag"></i> <span id="resultRef"></span></span>
+              <span class="pill pill-batch"><i class="fas fa-layer-group"></i> <span id="resultBatch"></span></span>
+            </div>
+          </div>
+          <span class="status-badge" id="resultStatus"></span>
+        </div>
+        <div class="timeline" id="timeline"></div>
+        <div id="resultNote" style="display:none" class="result-note"></div>
+      </div>
+
+      <p class="switch-link" style="margin-top:16px">
+        <a href="#" onclick="showPanel('reg'); return false;">← Back to Apply</a>
+      </p>
+    </section><!-- /panelTrack -->
+
+  </div><!-- /card -->
+
+  <!-- ══════════════ SERVICES INFO SECTION ══════════════ -->
+  <div class="services-section">
+
+    <div class="services-header">
+      <div class="services-icon-ring"><i class="fas fa-globe"></i></div>
+      <h2>End-to-End Recruitment &amp; Visa Processing Support</h2>
+      <p class="services-subtitle">Your journey to international employment should be exciting—not stressful. Our team is committed to making the recruitment, application, and relocation process as smooth and successful as possible.</p>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <i class="fas fa-user-tie"></i>
+        <h3>Job Matching</h3>
+        <p>Professional matching based on your qualifications and experience.</p>
+      </div>
+      <div class="service-card">
+        <i class="fas fa-handshake"></i>
+        <h3>Employer Coordination</h3>
+        <p>Full application management and direct employer liaison on your behalf.</p>
+      </div>
+      <div class="service-card">
+        <i class="fas fa-file-shield"></i>
+        <h3>Document Support</h3>
+        <p>End-to-end document preparation, verification, and submission.</p>
+      </div>
+      <div class="service-card">
+        <i class="fas fa-passport"></i>
+        <h3>Visa &amp; Immigration</h3>
+        <p>Expert guidance through the entire visa and immigration process.</p>
+      </div>
+      <div class="service-card">
+        <i class="fas fa-comments"></i>
+        <h3>Interview Preparation</h3>
+        <p>Coaching and ongoing communication to help you succeed at every stage.</p>
+      </div>
+      <div class="service-card">
+        <i class="fas fa-plane-departure"></i>
+        <h3>Pre-Departure Support</h3>
+        <p>Travel coordination and relocation assistance where applicable.</p>
+      </div>
+    </div>
+
+    <!-- Fee Notice -->
+    <div class="fee-notice">
+      <div class="fee-notice-header">
+        <i class="fas fa-circle-info"></i>
+        <h3>Our Processing Fee</h3>
+      </div>
+      <p>To deliver these premium services, we charge a processing and application support fee of up to <strong>USD $1,000</strong>, depending on the destination country, employer requirements, and complexity of your application.</p>
+      <p style="margin-top:10px;">This fee covers professional time, administrative work, documentation support, employer liaison, and application management required throughout your recruitment journey. <strong>Any applicable fees will be clearly explained before you proceed.</strong></p>
+    </div>
+
+    <!-- Why Choose Us -->
+    <div class="why-us">
+      <h3><i class="fas fa-star"></i>&nbsp; Why Choose Us?</h3>
+      <ul class="why-list">
+        <li><i class="fas fa-check-circle"></i> Experienced international recruitment specialists</li>
+        <li><i class="fas fa-check-circle"></i> Personalized support from application to placement</li>
+        <li><i class="fas fa-check-circle"></i> Regular updates throughout the entire process</li>
+        <li><i class="fas fa-check-circle"></i> Professional handling of all documentation</li>
+        <li><i class="fas fa-check-circle"></i> Dedicated customer support every step of the way</li>
+      </ul>
+      <p class="why-cta">Your success is our priority. We work diligently to maximize your chances of securing international employment while ensuring your application is handled with professionalism, accuracy, and care.</p>
+    </div>
+
+  </div><!-- /services-section -->
+
+  <!-- Footer -->
+  <footer class="site-footer" style="text-align:center; margin-top:40px; padding-bottom:20px; font-size:0.75rem; color:rgba(255,255,255,0.4);">
+    <p>&copy; 2026 Global Job Connect. All rights reserved.</p>
+    <div style="margin-top:8px; display:flex; justify-content:center; gap:15px;">
+      <a href="#" style="color:rgba(255,255,255,0.5); text-decoration:none;">Privacy Policy</a>
+      <a href="#" style="color:rgba(255,255,255,0.5); text-decoration:none;">Terms of Service</a>
+      <a href="#" style="color:rgba(255,255,255,0.5); text-decoration:none;">Contact Support</a>
+    </div>
+  </footer>
+
+</div><!-- /page-wrap -->
+
+<!-- Success Overlay -->
+<div id="successOverlay" style="display:none" class="overlay">
+  <div class="success-box">
+    <div class="success-icon"><i class="fas fa-circle-check"></i></div>
+    <h2>Application Submitted!</h2>
+    <p>Welcome, <strong id="successName"></strong>!</p>
+    <p style="margin-top:8px">Your reference number is:</p>
+    <div class="ref-box" id="successRef"></div>
+    <p style="margin-top:8px;font-size:.82rem;color:rgba(255,255,255,.55)">
+      Batch: <strong id="successBatch"></strong>
+    </p>
+    <p style="margin-top:10px;font-size:.8rem;color:rgba(255,255,255,.4)">
+      Save this number to track your application status.
+    </p>
+    <button class="btn-primary" style="margin-top:24px" onclick="closeSuccess()">
+      <span>Done</span>
+    </button>
+  </div>
+</div>
+
+<!-- Wake Banner Removed since UptimeRobot keeps the server awake -->
+
+<!-- ══ Floating WhatsApp Button ══ -->
+<a href="https://wa.me/254700000000?text=Hi,%20I%20need%20help%20with%20my%20Global%20Job%20Connect%20application" 
+   class="whatsapp-float" 
+   target="_blank" 
+   rel="noopener noreferrer" 
+   title="Chat with us on WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/intlTelInput.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="config.js?v=6"></script>
+<script src="script.js?v=11"></script>
+</body>
+</html>

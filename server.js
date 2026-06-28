@@ -63,16 +63,16 @@ app.use('/api/verify',   require('./routes/verify'));
 // Serve uploaded CVs
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve frontend static files robustly
-app.use(express.static(path.join(__dirname, './')));
+// Serve frontend static files robustly from 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve main frontend pages explicitly for cleaner URLs
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin.html'));
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 // 404 handler for unknown API routes
@@ -82,10 +82,13 @@ app.use('/api', (req, res) => {
 
 // Catch-all: Redirect any other unknown routes to index.html
 app.use((req, res) => {
-  if (req.accepts('html')) {
-    res.sendFile(path.join(__dirname, 'index.html'));
+  // Only fallback to index.html for navigation requests
+  if (req.method === 'GET' && req.accepts('html') && !req.url.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/i)) {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
   } else {
-    res.status(404).json({ error: 'Not found' });
+    // If it's a static file request that missed (like style.css), return a plain 404 text instead of JSON
+    // to prevent strict MIME checking errors in the browser console.
+    res.status(404).type('text/plain').send('Not found');
   }
 });
 
