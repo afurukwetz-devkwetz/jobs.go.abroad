@@ -6,6 +6,7 @@ const fs         = require('fs');
 const bcrypt     = require('bcryptjs');
 const crypto     = require('crypto');
 const Applicant  = require('../models/Applicant');
+const Otp        = require('../models/Otp');
 const Batch      = require('../models/Batch');
 const { sendVerificationEmail, sendRefNumberEmail } = require('../middleware/emailService');
 
@@ -93,12 +94,18 @@ router.post('/', (req, res, next) => {
       firstName, lastName, email, phone, dob, gender,
       profession, experience, country, qualification, bio, password,
       destinations, destOther, englishQuals, professionalRegs,
-      germanLevel, docsAvailable, qualDeclarations,
+      germanLevel, docsAvailable, qualDeclarations, otp,
     } = req.body;
 
     // Basic validation
-    if (!firstName || !lastName || !email || !password || !profession)
-      return res.status(400).json({ error: 'Required fields missing.' });
+    if (!firstName || !lastName || !email || !password || !profession || !otp)
+      return res.status(400).json({ error: 'Required fields missing, including OTP.' });
+
+    // Validate OTP
+    const validOtp = await Otp.findOne({ email: email.toLowerCase(), otp });
+    if (!validOtp) {
+      return res.status(400).json({ error: 'Invalid or expired Verification Code.' });
+    }
 
     // Duplicate-email check
     if (await Applicant.findOne({ email: email.toLowerCase() }))
@@ -114,9 +121,6 @@ router.post('/', (req, res, next) => {
     const batch = await Batch.getOrCreate(profession.toLowerCase());
     await Batch.addMember(batch._id);
 
-    // Verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-
     // Resolve CV path/URL
     let cvFile = null;
     if (req.file) {
@@ -130,7 +134,7 @@ router.post('/', (req, res, next) => {
       profession, experience, country, qualification, bio,
       password: hashed, cvFile, refNumber,
       batchId: batch._id, batchCode: batch.batchCode,
-      verificationToken,
+      isVerified: true,
       destinations:     parseArray(destinations),
       destOther:        (destOther || '').trim(),
       englishQuals:     parseArray(englishQuals),
@@ -142,14 +146,11 @@ router.post('/', (req, res, next) => {
 
     await applicant.save();
 
+    // Delete OTP now that it's used
+    await Otp.deleteOne({ _id: validOtp._id });
+
     // ── SEND EMAILS (non-blocking — runs after response) ─────────────────────
     setImmediate(async () => {
-      try {
-        await sendVerificationEmail({ firstName, email, verificationToken });
-        console.log('✅ [Email] Verification email sent to:', email);
-      } catch (e) {
-        console.error('❌ [Email] Verification email failed:', e.message);
-      }
       try {
         await sendRefNumberEmail({ firstName, email, refNumber, batchCode: batch.batchCode });
         console.log('✅ [Email] Reference number email sent to:', email);

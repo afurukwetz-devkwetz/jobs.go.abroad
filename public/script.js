@@ -404,12 +404,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       }
 
-      const btn = document.getElementById('submitBtn');
-      if (btn) { btn.disabled = true; btn.querySelector('span').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>&nbsp;&nbsp;Submitting…'; }
+      // ── OTP + Fee Alert Flow ──────────────────────────────────────────────
+      // Store validated form data, show Fee modal first
+      let pendingFormData = null;
+      let otpTimerInterval = null;
 
-      try {
+      function buildFormData() {
         const fd = new FormData();
-        // Core fields
         fd.append('firstName',     first.replace(/[<>]/g, '').slice(0, 60));
         fd.append('lastName',      last.replace(/[<>]/g, '').slice(0, 60));
         fd.append('email',         email.toLowerCase().trim());
@@ -424,8 +425,6 @@ document.addEventListener('DOMContentLoaded', function () {
         fd.append('password',      pw);
         const cvFile = document.getElementById('cvFile');
         if (cvFile?.files[0]) fd.append('cvFile', cvFile.files[0]);
-
-        // Nurse qualification assessment data
         if (selectedProf === 'nurse') {
           const getChecked = name => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
           getChecked('dest').forEach(v    => fd.append('destinations',     v));
@@ -437,33 +436,117 @@ document.addEventListener('DOMContentLoaded', function () {
           const destOther = (document.getElementById('destOtherText')?.value || '').trim().slice(0, 100);
           if (destOther) fd.append('destOther', destOther);
         }
-
-        const base = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
-        const res  = await fetch(base + '/api/register', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (!res.ok) { showToast(data.error || 'Registration failed.', 'error'); return; }
-
-        // Show success
-        document.getElementById('successName').textContent  = first;
-        document.getElementById('successRef').textContent   = data.refNumber;
-        document.getElementById('successBatch').textContent = data.batchCode;
-        document.getElementById('successOverlay').style.display = 'flex';
-
-        // Reset form
-        regForm.reset();
-        document.querySelectorAll('.prof-btn').forEach(b => b.classList.remove('prof-btn--active'));
-        document.getElementById('btn-nurse')?.classList.add('prof-btn--active');
-        selectedProf = 'nurse';
-        const cvNameEl = document.getElementById('cvName');
-        if (cvNameEl) cvNameEl.style.display = 'none';
-
-      } catch (err) {
-        showToast(err.message || 'An error occurred during registration.', 'error');
-      } finally {
-        if (btn) { btn.disabled = false; btn.querySelector('span').innerHTML = '<i class="fas fa-paper-plane"></i>&nbsp;&nbsp;Submit Application'; }
+        return fd;
       }
-    });
-  }
+
+      function startOtpTimer() {
+        let seconds = 60;
+        const timerEl = document.getElementById('otpTimer');
+        const resendBtn = document.getElementById('btnResendOtp');
+        if (resendBtn) resendBtn.disabled = true;
+        clearInterval(otpTimerInterval);
+        otpTimerInterval = setInterval(() => {
+          seconds--;
+          if (timerEl) timerEl.textContent = seconds;
+          if (seconds <= 0) {
+            clearInterval(otpTimerInterval);
+            if (resendBtn) { resendBtn.disabled = false; resendBtn.innerHTML = 'Resend Code'; }
+          }
+        }, 1000);
+      }
+
+      async function sendOtp() {
+        const base = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
+        const otpRes = await fetch(base + '/api/verify/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.toLowerCase().trim() })
+        });
+        const otpData = await otpRes.json();
+        if (!otpRes.ok) { showToast(otpData.error || 'Failed to send OTP.', 'error'); return false; }
+        return true;
+      }
+
+      // Step 1: Show Fee Modal
+      pendingFormData = buildFormData();
+      document.getElementById('feeModal').style.display = 'flex';
+
+      document.getElementById('btnCancelFee').onclick = () => {
+        document.getElementById('feeModal').style.display = 'none';
+      };
+      document.getElementById('closeFeeModal').onclick = () => {
+        document.getElementById('feeModal').style.display = 'none';
+      };
+
+      // Step 2: On Accept → send OTP and show OTP modal
+      document.getElementById('btnAcceptFee').onclick = async () => {
+        document.getElementById('feeModal').style.display = 'none';
+        const btn = document.getElementById('submitBtn');
+        if (btn) { btn.disabled = true; btn.querySelector('span').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>&nbsp;&nbsp;Sending Code…'; }
+
+        const sent = await sendOtp();
+        if (!sent) {
+          if (btn) { btn.disabled = false; btn.querySelector('span').innerHTML = '<i class="fas fa-paper-plane"></i>&nbsp;&nbsp;Submit Application'; }
+          return;
+        }
+
+        if (btn) { btn.disabled = false; btn.querySelector('span').innerHTML = '<i class="fas fa-paper-plane"></i>&nbsp;&nbsp;Submit Application'; }
+
+        // Show OTP modal
+        const otpEmailDisplay = document.getElementById('otpEmailDisplay');
+        if (otpEmailDisplay) otpEmailDisplay.textContent = email.toLowerCase().trim();
+        document.getElementById('otpInput').value = '';
+        document.getElementById('otpModal').style.display = 'flex';
+        startOtpTimer();
+      };
+
+      document.getElementById('closeOtpModal').onclick = () => {
+        document.getElementById('otpModal').style.display = 'none';
+        clearInterval(otpTimerInterval);
+      };
+
+      document.getElementById('btnResendOtp').onclick = async () => {
+        document.getElementById('btnResendOtp').disabled = true;
+        const sent = await sendOtp();
+        if (sent) { showToast('A new code has been sent!', 'success'); startOtpTimer(); }
+      };
+
+      // Step 3: Verify OTP and submit application
+      document.getElementById('btnVerifyOtp').onclick = async () => {
+        const enteredOtp = (document.getElementById('otpInput')?.value || '').trim();
+        if (enteredOtp.length !== 6) { showToast('Please enter the 6-digit code from your email.', 'error'); return; }
+
+        const verifyBtn = document.getElementById('btnVerifyOtp');
+        if (verifyBtn) { verifyBtn.disabled = true; verifyBtn.textContent = 'Verifying…'; }
+
+        try {
+          pendingFormData.append('otp', enteredOtp);
+          const base = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
+          const res  = await fetch(base + '/api/register', { method: 'POST', body: pendingFormData });
+          const data = await res.json();
+
+          if (!res.ok) {
+            showToast(data.error || 'Registration failed.', 'error');
+            pendingFormData.delete('otp'); // Allow retry with different OTP
+            return;
+          }
+
+          // Show success
+          document.getElementById('otpModal').style.display = 'none';
+          clearInterval(otpTimerInterval);
+          document.getElementById('successName').textContent  = first;
+          document.getElementById('successRef').textContent   = data.refNumber;
+          document.getElementById('successBatch').textContent = data.batchCode;
+          document.getElementById('successOverlay').style.display = 'flex';
+
+        } catch (err) {
+          showToast(err.message || 'An error occurred. Please try again.', 'error');
+        } finally {
+          if (verifyBtn) { verifyBtn.disabled = false; verifyBtn.textContent = 'Verify & Submit'; }
+        }
+      };
+    }); // end form submit
+  }); // end DOMContentLoaded
 
   // 8. Enter key on tracker inputs
   ['trackRef','trackEmail'].forEach(id => {

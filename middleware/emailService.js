@@ -138,4 +138,31 @@ async function sendStatusEmail({ firstName, email, refNumber, newStatus, adminNo
   });
 }
 
-module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail };
+// ── Send OTP email ─────────────────────────────────────────────────────────────
+async function sendOtpEmail({ email, otp }) {
+  const transporter = createTransporter();
+  await transporter.sendMail({
+    from: FROM(), to: email,
+    subject: 'Your Verification Code – Global Job Connect',
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0d2d6b;border-radius:12px;overflow:hidden;">
+        <div style="padding:30px;background:linear-gradient(135deg,#1565c0,#1976d2);text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:22px;">✈️ Global Job Connect</h1>
+        </div>
+        <div style="padding:30px;background:#fff;text-align:center;">
+          <h2 style="color:#1565c0;">Email Verification</h2>
+          <p style="color:#444;line-height:1.6;font-size:16px;">Use the following 6-digit code to complete your application. This code is valid for 10 minutes.</p>
+          <div style="margin:30px 0;background:#f3f4f6;padding:20px;border-radius:8px;display:inline-block;">
+            <span style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#1565c0;">${otp}</span>
+          </div>
+          <p style="color:#888;font-size:13px;">If you did not request this code, please ignore this email.</p>
+        </div>
+        <div style="padding:16px;text-align:center;background:#f5f5f5;">
+          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect.</p>
+        </div>
+      </div>
+    `,
+  });
+}
+
+module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail, sendOtpEmail };

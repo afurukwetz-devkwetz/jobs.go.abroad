@@ -1,6 +1,40 @@
 const express = require('express');
 const router = express.Router();
 const Applicant = require('../models/Applicant');
+const Otp = require('../models/Otp');
+const { sendOtpEmail } = require('../middleware/emailService');
+
+// POST /api/verify/send-otp
+router.post('/send-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    // Check if applicant already exists
+    const existing = await Applicant.findOne({ email: email.toLowerCase() });
+    if (existing) {
+      return res.status(400).json({ error: 'An application with this email already exists.' });
+    }
+
+    // Generate 6-digit OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Upsert OTP in database
+    await Otp.findOneAndUpdate(
+      { email: email.toLowerCase() },
+      { otp: otpCode, createdAt: Date.now() },
+      { upsert: true, new: true }
+    );
+
+    // Send email
+    await sendOtpEmail({ email: email.toLowerCase(), otp: otpCode });
+
+    res.json({ success: true, message: 'OTP sent successfully' });
+  } catch (err) {
+    console.error('❌ [OTP Error]:', err);
+    res.status(500).json({ error: 'Failed to send OTP. Please try again later.' });
+  }
+});
 
 // GET /api/verify/:token
 router.get('/:token', async (req, res) => {

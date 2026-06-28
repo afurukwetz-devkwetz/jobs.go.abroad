@@ -488,6 +488,54 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="config.js?v=6"></script>
 <script src="script.js?v=11"></script>
+<!-- Fee Alert Modal -->
+<div id="feeModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content" style="max-width:450px;">
+    <div class="modal-header">
+      <h2>Important Notice</h2>
+      <button class="close-modal" id="closeFeeModal">&times;</button>
+    </div>
+    <div class="modal-body" style="text-align:center;">
+      <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:#f59e0b;margin-bottom:1rem;"></i>
+      <h3 style="color:#1e293b;margin-bottom:1rem;">Application Processing Fee</h3>
+      <p style="color:#475569;line-height:1.6;margin-bottom:1.5rem;">
+        Please note that there is a mandatory application and processing fee required to complete your registration and visa processing. You will receive further payment instructions once your initial profile is approved.
+      </p>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button id="btnCancelFee" class="btn btn-secondary">Cancel</button>
+        <button id="btnAcceptFee" class="btn btn-primary" style="background:#1565c0;color:#fff;">I Understand & Proceed</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OTP Verification Modal -->
+<div id="otpModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content" style="max-width:450px;">
+    <div class="modal-header">
+      <h2>Verify Your Email</h2>
+      <button class="close-modal" id="closeOtpModal">&times;</button>
+    </div>
+    <div class="modal-body" style="text-align:center;">
+      <i class="fas fa-envelope-open-text" style="font-size:3rem;color:#1565c0;margin-bottom:1rem;"></i>
+      <p style="color:#475569;line-height:1.6;margin-bottom:1.5rem;">
+        We've sent a 6-digit verification code to <strong id="otpEmailDisplay"></strong>.<br>
+        Please enter the code below to submit your application.
+      </p>
+      <input type="text" id="otpInput" maxlength="6" placeholder="000000" style="font-size:2rem;text-align:center;letter-spacing:10px;padding:15px;width:100%;border:2px solid #cbd5e1;border-radius:8px;margin-bottom:1rem;" autocomplete="off" />
+      
+      <div style="display:flex;gap:10px;justify-content:center;margin-bottom:1rem;">
+        <button id="btnVerifyOtp" class="btn btn-primary" style="background:#1565c0;color:#fff;width:100%;font-size:1.1rem;padding:12px;">Verify & Submit</button>
+      </div>
+      
+      <p style="color:#64748b;font-size:0.9rem;">
+        Didn't receive the code? <br>
+        <button id="btnResendOtp" style="background:none;border:none;color:#1565c0;font-weight:bold;cursor:pointer;margin-top:5px;" disabled>Resend Code (<span id="otpTimer">60</span>s)</button>
+      </p>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container" class="toast-container"></div>
 </body>
 </html>
