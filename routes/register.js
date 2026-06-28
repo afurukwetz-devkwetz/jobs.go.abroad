@@ -145,12 +145,12 @@ router.post('/', upload.single('cvFile'), async (req, res) => {
         `${process.env.FRONTEND_URL || 'https://jobs-go-abroad-3pbi.onrender.com'}/api/verify/${verificationToken}`;
 
       await transporter.sendMail({
-        from:    `"CoSNurses Team" <${process.env.EMAIL_USER}>`,
+        from:    `"Global Job Connect Team" <${process.env.EMAIL_USER}>`,
         to:      email,
-        subject: 'Verify Your Email – CoSNurses Registration',
+        subject: 'Verify Your Email – Global Job Connect Registration',
         html: `
           <div style="font-family:sans-serif;max-width:600px;margin:0 auto;border:1px solid #eee;padding:20px;border-radius:10px;">
-            <h2 style="color:#1565c0;">Welcome to CoSNurses, ${firstName}!</h2>
+            <h2 style="color:#1565c0;">Welcome to Global Job Connect, ${firstName}!</h2>
             <p>Thank you for registering. Please verify your email address by clicking the button below:</p>
             <div style="text-align:center;margin:30px 0;">
               <a href="${verifyUrl}"
