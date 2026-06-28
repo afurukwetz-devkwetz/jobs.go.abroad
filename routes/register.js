@@ -76,7 +76,15 @@ function parseArray(val) {
 }
 
 // ── POST /api/register ────────────────────────────────────────────────────────
-router.post('/', upload.single('cvFile'), async (req, res) => {
+router.post('/', (req, res, next) => {
+  upload.single('cvFile')(req, res, function (err) {
+    if (err) {
+      console.error('❌ [Upload Error]:', err.message);
+      return res.status(400).json({ error: 'File upload failed: ' + err.message + '. Please check your file or try again later.' });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     const {
       firstName, lastName, email, phone, dob, gender,

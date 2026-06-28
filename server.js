@@ -95,7 +95,7 @@ app.use((req, res) => {
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err);
-  res.status(500).json({ error: 'Internal server error', details: err.message });
+  res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
 // Connect MongoDB then start server
