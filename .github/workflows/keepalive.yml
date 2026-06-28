@@ -1,0 +1,14 @@
+name: Keep Render Awake
+
+on:
+  schedule:
+    # Run every 10 minutes (GitHub Actions minimum is sometimes roughly 5-10 mins)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping API Health
+        run: curl -sSf https://jobs-go-abroad-3pbi.onrender.com/api/health || echo "Ping failed"
