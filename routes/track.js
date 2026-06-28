@@ -242,7 +242,7 @@ router.post('/batch/close', requireAdmin, async (req, res) => {
     const batch = await Batch.findOneAndUpdate(
       { batchCode: batchCode.trim().toUpperCase() },
       { isClosed: true, isFull: true, closedAt: new Date() },
-      { new: true }
+      { returnDocument: 'after' }
     );
     if (!batch) return res.status(404).json({ error: 'Batch not found.' });
 

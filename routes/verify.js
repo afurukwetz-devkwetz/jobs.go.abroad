@@ -23,7 +23,7 @@ router.post('/send-otp', async (req, res) => {
     await Otp.findOneAndUpdate(
       { email: email.toLowerCase() },
       { otp: otpCode, createdAt: Date.now() },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     );
 
     // Send email

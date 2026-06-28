@@ -12,17 +12,30 @@ function createTransporter() {
         user: process.env.SMTP_USER || 'apikey',
         pass: process.env.SENDGRID_API_KEY,
       },
+      connectionTimeout: 5000,
     });
   }
-  return nodemailer.createTransport({
-    host:   process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port:   process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 465,
-    secure: process.env.EMAIL_SECURE !== 'false',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    return nodemailer.createTransport({
+      host:   process.env.EMAIL_HOST || 'smtp.gmail.com',
+      port:   process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 465,
+      secure: process.env.EMAIL_SECURE !== 'false',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      connectionTimeout: 5000,
+    });
+  }
+  
+  // Fallback mock transporter if no email credentials are set (prevents hanging in dev)
+  return {
+    sendMail: async (opts) => {
+      console.log('⚠️ [EmailService] Mock sendMail called because no SMTP credentials exist in env.');
+      console.log('📩 To:', opts.to, 'Subject:', opts.subject);
+      return { messageId: 'mock-id' };
+    }
+  };
 }
 
 const FROM = () => `"Global Job Connect" <${process.env.EMAIL_USER}>`;
