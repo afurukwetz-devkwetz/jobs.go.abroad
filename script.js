@@ -239,9 +239,9 @@ document.addEventListener('DOMContentLoaded', function () {
       initialCountry: 'auto',
       dropdownContainer: document.body,
       geoIpLookup: cb => {
-        fetch('https://ipapi.co/json')
+        fetch('https://api.country.is')
           .then(r => r.json())
-          .then(d => cb(d.country_code))
+          .then(d => cb(d.country.toLowerCase()))
           .catch(() => cb('us'));
       },
       utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/utils.js',
