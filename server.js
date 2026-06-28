@@ -18,6 +18,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Trust proxy is required for rate limiters behind Render/Cloudflare
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(helmet({
   contentSecurityPolicy: false // Allow inline scripts/styles for UI simplicity

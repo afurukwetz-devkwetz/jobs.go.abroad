@@ -35,10 +35,13 @@ if (CLOUDINARY_CONFIGURED) {
     cloudinary,
     params: {
       folder:          'cosnurses_cvs',
-      resource_type:   'raw',
-      allowed_formats: ['pdf', 'doc', 'docx'],
+      resource_type:   'raw', // 'raw' allows any non-image file type. We use 'auto' to allow both docs and images
+      allowed_formats: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'],
     },
   });
+
+  // Switch resource_type to auto so images can be processed natively by Cloudinary
+  cloudStorage.params.resource_type = 'auto';
 
   upload = multer({ storage: cloudStorage, limits: { fileSize: 5 * 1024 * 1024 } });
 } else {
@@ -58,11 +61,11 @@ if (CLOUDINARY_CONFIGURED) {
     storage: diskStorage,
     limits:  { fileSize: 5 * 1024 * 1024 },
     fileFilter: (_req, file, cb) => {
-      const allowed = ['.pdf', '.doc', '.docx'];
+      const allowed = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
       if (allowed.includes(path.extname(file.originalname).toLowerCase())) {
         cb(null, true);
       } else {
-        cb(new Error('Only PDF, DOC, and DOCX files are allowed.'));
+        cb(new Error('Only PDF, DOC, DOCX, JPG, and PNG files are allowed.'));
       }
     },
   });
