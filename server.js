@@ -58,10 +58,11 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-app.use('/api/register', authLimiter, require('./routes/register'));
-app.use('/api/track',    require('./routes/track'));
-app.use('/api/admin',    authLimiter, require('./routes/admin'));
-app.use('/api/verify',   require('./routes/verify'));
+app.use('/api/register',   authLimiter, require('./routes/register'));
+app.use('/api/track',      require('./routes/track'));
+app.use('/api/admin',      authLimiter, require('./routes/admin'));
+app.use('/api/verify',     require('./routes/verify'));
+app.use('/api/applicant',  authLimiter, require('./routes/applicant'));
 
 // Serve uploaded CVs
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -76,6 +77,10 @@ app.get('/', (req, res) => {
 
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+app.get('/my-application', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'my-application.html'));
 });
 
 // 404 handler for unknown API routes

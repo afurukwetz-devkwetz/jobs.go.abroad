@@ -133,13 +133,64 @@ document.addEventListener('DOMContentLoaded', () => {
       allApplicants = await res.json();
       updateStats();
       renderTable();
-      renderCharts();
+      fetchAnalytics();
+      loadBatches();
     } catch (err) {
       console.error('Failed to fetch applicants', err);
     } finally {
       if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.innerHTML = '<i class="fas fa-sync"></i> Refresh'; }
     }
   }
+
+  // ─── Batches ──────────────────────────────────────────────────────────────────
+  window.loadBatches = async function() {
+    try {
+      const res = await fetch(API_BASE_URL + '/api/track/batches', { headers: getAuthHeaders() });
+      const batches = await res.json();
+      const tbody = document.getElementById('batchBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (!batches.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.4)">No batches found.</td></tr>';
+        return;
+      }
+      batches.forEach(b => {
+        const tr = document.createElement('tr');
+        const status = b.isClosed ? '<span style="color:#f87171">Closed</span>' : b.isFull ? '<span style="color:#fbbf24">Full</span>' : '<span style="color:#34d399">Open</span>';
+        const date = new Date(b.createdAt).toLocaleDateString();
+        tr.innerHTML = `
+          <td><strong>${b.batchCode}</strong></td>
+          <td style="text-transform:capitalize">${b.profession}</td>
+          <td>${b.count} / ${b.maxSize}</td>
+          <td>${status}</td>
+          <td>${date}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="exportBatch('${b.batchCode}')" style="margin-right:5px"><i class="fas fa-file-csv"></i> Export</button>
+            ${!b.isClosed ? `<button class="btn btn-warning btn-sm" onclick="closeBatch('${b.batchCode}')"><i class="fas fa-lock"></i> Close</button>` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    } catch (err) {
+      console.error('Failed to load batches', err);
+    }
+  };
+
+  window.closeBatch = async function(batchCode) {
+    if (!confirm(`Are you sure you want to manually close batch ${batchCode}? No new applicants will be able to join it.`)) return;
+    try {
+      const res = await fetch(API_BASE_URL + '/api/track/batch/close', {
+        method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ batchCode })
+      });
+      const data = await res.json();
+      if (data.success) { alert(data.message); loadBatches(); }
+      else alert(data.error || 'Failed to close batch');
+    } catch (err) { alert('Error closing batch'); }
+  };
+
+  window.exportBatch = function(batchCode) {
+    window.open(`${API_BASE_URL}/api/track/batch/export/${batchCode}?token=${localStorage.getItem('adminToken')}`, '_blank');
+  };
 
   // ─── Stats ────────────────────────────────────────────────────────────────────
   function updateStats() {
@@ -203,28 +254,26 @@ document.addEventListener('DOMContentLoaded', () => {
   let chartTimeline = null;
   let chartProfession = null;
 
-  function renderCharts() {
-    // Timeline: last 30 days
-    const dayMap = {};
-    const today  = new Date();
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      dayMap[d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })] = 0;
+  async function fetchAnalytics() {
+    try {
+      const res = await fetch(API_BASE_URL + '/api/track/analytics', { headers: getAuthHeaders() });
+      if (!res.ok) return;
+      const data = await res.json();
+      renderCharts(data);
+    } catch (err) {
+      console.error('Failed to fetch analytics', err);
     }
-    allApplicants.forEach(a => {
-      const label = new Date(a.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      if (dayMap[label] !== undefined) dayMap[label]++;
-    });
+  }
 
+  function renderCharts(data) {
     const tlCtx = document.getElementById('chartTimeline')?.getContext('2d');
     if (tlCtx) {
       if (chartTimeline) chartTimeline.destroy();
       chartTimeline = new Chart(tlCtx, {
         type: 'line',
         data: {
-          labels: Object.keys(dayMap),
-          datasets: [{ label: 'Applications', data: Object.values(dayMap), borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,.12)', tension: 0.4, fill: true, pointRadius: 3, pointBackgroundColor: '#60a5fa' }],
+          labels: data.daily.labels,
+          datasets: [{ label: 'Applications', data: data.daily.data, borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,.12)', tension: 0.4, fill: true, pointRadius: 3, pointBackgroundColor: '#60a5fa' }],
         },
         options: {
           plugins: { legend: { display: false } },
@@ -236,18 +285,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Profession pie
-    const profMap = {};
-    allApplicants.forEach(a => { profMap[a.profession || 'Unknown'] = (profMap[a.profession || 'Unknown'] || 0) + 1; });
-    const profColors = ['#60a5fa','#34d399','#fbbf24','#fb7185','#a78bfa','#f97316'];
     const pfCtx = document.getElementById('chartProfession')?.getContext('2d');
     if (pfCtx) {
       if (chartProfession) chartProfession.destroy();
+      const profColors = ['#60a5fa','#34d399','#fbbf24','#fb7185','#a78bfa','#f97316'];
       chartProfession = new Chart(pfCtx, {
         type: 'doughnut',
         data: {
-          labels: Object.keys(profMap),
-          datasets: [{ data: Object.values(profMap), backgroundColor: profColors, borderWidth: 2, borderColor: '#0d1a2d' }],
+          labels: data.professions.map(p => p.profession),
+          datasets: [{ data: data.professions.map(p => p.count), backgroundColor: profColors, borderWidth: 2, borderColor: '#0d1a2d' }],
         },
         options: {
           plugins: { legend: { labels: { color: 'rgba(255,255,255,.65)', font: { size: 12 }, boxWidth: 14 } } },
@@ -327,11 +373,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   window.switchTab = function (tab) {
-    ['info','quals','decision'].forEach(t => {
-      document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`).style.display = t === tab ? 'block' : 'none';
+    ['info','quals','decision','email','docRequest'].forEach(t => {
+      const el = document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`);
+      if (el) el.style.display = t === tab ? 'block' : 'none';
     });
     document.querySelectorAll('.modal-tab').forEach((btn, i) => {
-      btn.classList.toggle('modal-tab--active', ['info','quals','decision'][i] === tab);
+      btn.classList.toggle('modal-tab--active', ['info','quals','decision','email','docRequest'].includes(tab) && btn.textContent.toLowerCase().includes(tab.slice(0, 3)));
     });
   };
 
@@ -378,4 +425,64 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Error updating status');
     }
   }
+
+  // ─── Custom Email & Document Request ──────────────────────────────────────────
+  document.getElementById('btnSendEmail')?.addEventListener('click', async () => {
+    if (!currentApplicant) return;
+    const subject = document.getElementById('emailSubjectInput').value.trim();
+    const body    = document.getElementById('emailBodyInput').value.trim();
+    if (!subject || !body) return alert('Please enter both subject and message body.');
+
+    const btn = document.getElementById('btnSendEmail');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+
+    try {
+      const res = await fetch(API_BASE_URL + '/api/track/send-email', {
+        method: 'POST', headers: getAuthHeaders(),
+        body: JSON.stringify({ refNumber: currentApplicant.refNumber, subject, body })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Email sent successfully!');
+        document.getElementById('emailSubjectInput').value = '';
+        document.getElementById('emailBodyInput').value = '';
+        switchTab('info');
+      } else alert(data.error || 'Failed to send email');
+    } catch { alert('Network error while sending email.'); }
+    finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Email'; }
+  });
+
+  const docSelect = document.getElementById('docLabelSelect');
+  const docCustom = document.getElementById('docLabelCustom');
+  if (docSelect) docSelect.addEventListener('change', e => {
+    docCustom.style.display = e.target.value === 'Other' ? 'block' : 'none';
+  });
+
+  document.getElementById('btnRequestDoc')?.addEventListener('click', async () => {
+    if (!currentApplicant) return;
+    let docLabel = document.getElementById('docLabelSelect').value;
+    if (docLabel === 'Other') {
+      docLabel = document.getElementById('docLabelCustom').value.trim();
+      if (!docLabel) return alert('Please specify the custom document name.');
+    }
+
+    const btn = document.getElementById('btnRequestDoc');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Requesting…';
+
+    try {
+      const res = await fetch(API_BASE_URL + '/api/track/request-document', {
+        method: 'POST', headers: getAuthHeaders(),
+        body: JSON.stringify({ refNumber: currentApplicant.refNumber, docLabel })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(`Document request sent for: ${docLabel}`);
+        if (docCustom) { docCustom.value = ''; docCustom.style.display = 'none'; }
+        if (docSelect) docSelect.value = 'Passport Copy';
+        switchTab('info');
+      } else alert(data.error || 'Failed to request document');
+    } catch { alert('Network error while requesting document.'); }
+    finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-upload"></i> Request Document'; }
+  });
+
 });

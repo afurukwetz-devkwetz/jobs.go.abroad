@@ -165,4 +165,61 @@ async function sendOtpEmail({ email, otp }) {
   });
 }
 
-module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail, sendOtpEmail };
+
+// ── Send custom admin message to applicant ─────────────────────────────────────
+async function sendCustomEmail({ to, subject, body, firstName }) {
+  const transporter = createTransporter();
+  await transporter.sendMail({
+    from: FROM(), to,
+    subject: `${subject} — Global Job Connect`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
+        <div style="padding:24px 30px;background:linear-gradient(135deg,#1565c0,#1976d2);">
+          <h1 style="color:#fff;margin:0;font-size:20px;">✈️ Global Job Connect</h1>
+        </div>
+        <div style="padding:30px;">
+          <p style="color:#444;font-size:15px;">Hi <strong>${firstName || 'Applicant'}</strong>,</p>
+          <div style="color:#333;line-height:1.7;font-size:15px;white-space:pre-wrap;">${body}</div>
+        </div>
+        <div style="padding:16px;text-align:center;background:#f5f5f5;">
+          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect · Work Anywhere. Grow Everywhere.</p>
+        </div>
+      </div>
+    `,
+  });
+}
+
+// ── Send document request email to applicant ───────────────────────────────────
+async function sendDocumentRequestEmail({ firstName, email, docLabel, uploadUrl }) {
+  const transporter = createTransporter();
+  await transporter.sendMail({
+    from: FROM(), to: email,
+    subject: `Action Required: Please Upload Your ${docLabel} — Global Job Connect`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
+        <div style="padding:24px 30px;background:linear-gradient(135deg,#f59e0b,#d97706);">
+          <h1 style="color:#fff;margin:0;font-size:20px;">📎 Document Required</h1>
+        </div>
+        <div style="padding:30px;">
+          <h2 style="color:#d97706;">Action Required, ${firstName}!</h2>
+          <p style="color:#444;line-height:1.6;">Our team requires you to upload the following document to proceed with your application:</p>
+          <div style="background:#fffbeb;border:2px solid #f59e0b;border-radius:10px;padding:18px;text-align:center;margin:24px 0;">
+            <p style="color:#92400e;font-size:18px;font-weight:700;margin:0;">📄 ${docLabel}</p>
+          </div>
+          <p style="color:#444;line-height:1.6;">Please click the button below to upload your document. The link is valid for <strong>48 hours</strong>.</p>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${uploadUrl}" style="background:#f59e0b;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">
+              Upload ${docLabel}
+            </a>
+          </div>
+          <p style="color:#888;font-size:13px;">You can also log in to your applicant dashboard at <a href="${SITE}/my-application" style="color:#1565c0;">${SITE}/my-application</a> to upload your documents anytime.</p>
+        </div>
+        <div style="padding:16px;text-align:center;background:#f5f5f5;">
+          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect · Work Anywhere. Grow Everywhere.</p>
+        </div>
+      </div>
+    `,
+  });
+}
+
+module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail, sendOtpEmail, sendCustomEmail, sendDocumentRequestEmail };

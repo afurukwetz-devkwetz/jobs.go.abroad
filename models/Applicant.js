@@ -42,6 +42,13 @@ const ApplicantSchema = new mongoose.Schema({
   // Admin internal note
   adminNote:     { type: String, default: '' },
 
+  // Requested documents (admin asks applicant to upload specific files)
+  requestedDocuments: [{
+    label:       { type: String },
+    uploadedUrl: { type: String, default: null },
+    requestedAt: { type: Date, default: Date.now }
+  }],
+
   createdAt:     { type: Date, default: Date.now }
 });
 

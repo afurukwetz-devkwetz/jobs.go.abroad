@@ -25,6 +25,15 @@
 
 <link rel="canonical" href="https://jobs-go-abroad-3pbi.onrender.com/" />
 
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1565c0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Job Connect">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/css/intlTelInput.css">
@@ -537,5 +546,35 @@
 </div>
 
 <div id="toast-container" class="toast-container"></div>
+
+<!-- PWA Install Banner -->
+<div id="installBanner" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#1565c0,#0288d1);border-radius:14px;padding:14px 20px;align-items:center;gap:14px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:999;max-width:90%;">
+  <p style="font-size:0.9rem;color:#fff;margin:0;">📱 <strong>Install Global Job Connect</strong> on your phone!</p>
+  <div style="display:flex;gap:8px;margin-top:8px;">
+    <button id="installBtn" style="background:rgba(255,255,255,0.25);border:none;color:#fff;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:0.88rem;font-weight:600;">Install App</button>
+    <button id="dismissInstall" style="background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:0.88rem;">Not now</button>
+  </div>
+</div>
+
+<script>
+// PWA Install Prompt
+let deferredInstall;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredInstall = e;
+  const banner = document.getElementById('installBanner');
+  if (banner) banner.style.display = 'flex';
+});
+document.getElementById('installBtn')?.addEventListener('click', () => {
+  if (deferredInstall) { deferredInstall.prompt(); deferredInstall = null; }
+  document.getElementById('installBanner').style.display = 'none';
+});
+document.getElementById('dismissInstall')?.addEventListener('click', () => {
+  document.getElementById('installBanner').style.display = 'none';
+});
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+</script>
 </body>
 </html>

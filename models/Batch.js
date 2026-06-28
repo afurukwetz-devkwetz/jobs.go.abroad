@@ -9,6 +9,8 @@ const BatchSchema = new mongoose.Schema({
   count:       { type: Number, default: 0 },       // current members
   maxSize:     { type: Number, default: BATCH_SIZE },
   isFull:      { type: Boolean, default: false },
+  isClosed:    { type: Boolean, default: false },  // admin manually closed this batch
+  closedAt:    { type: Date },
   createdAt:   { type: Date, default: Date.now }
 });
 

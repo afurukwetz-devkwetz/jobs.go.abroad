@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Application — Global Job Connect</title>
+  <meta name="description" content="Check your application status, view your profile, and manage your documents on Global Job Connect.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1565c0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0d1a2d;
+      --blue: #1565c0;
+      --blue-light: #1976d2;
+      --teal: #0288d1;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --glass: rgba(255,255,255,0.05);
+      --border: rgba(255,255,255,0.1);
+      --text: rgba(255,255,255,0.9);
+      --muted: rgba(255,255,255,0.45);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--navy);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Login Page ── */
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at top, #1a2f50 0%, var(--navy) 70%);
+      padding: 20px;
+    }
+    .login-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      backdrop-filter: blur(12px);
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .login-logo .plane { font-size: 2.5rem; margin-bottom: 8px; }
+    .login-logo h1 { font-size: 1.4rem; font-weight: 700; color: #fff; }
+    .login-logo p { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+    .login-card h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 6px; }
+    .login-card .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    .form-group input {
+      width: 100%; padding: 12px 16px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #fff; font-size: 0.95rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--blue); }
+    .btn-login {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, var(--blue), var(--teal));
+      border: none; border-radius: 10px;
+      color: #fff; font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+    .btn-login:hover { opacity: 0.9; }
+    .btn-login:active { transform: scale(0.98); }
+    .login-error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px 14px; color: #fca5a5; font-size: 0.88rem; margin-bottom: 16px; display: none; }
+    .back-link { display: block; text-align: center; margin-top: 20px; color: var(--muted); font-size: 0.88rem; text-decoration: none; }
+    .back-link:hover { color: #fff; }
+
+    /* ── Dashboard ── */
+    #dashboardPage { display: none; }
+    .dash-nav {
+      background: rgba(13,26,45,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; position: sticky; top: 0; z-index: 100;
+    }
+    .dash-nav .logo { font-weight: 700; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
+    .dash-nav .logo span { font-size: 1.3rem; }
+    .btn-logout {
+      background: rgba(255,255,255,0.08); border: 1px solid var(--border);
+      color: var(--muted); padding: 7px 14px; border-radius: 8px;
+      font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .btn-logout:hover { background: rgba(239,68,68,0.2); color: #fca5a5; border-color: rgba(239,68,68,0.3); }
+
+    .dash-body { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* Profile Header */
+    .profile-header {
+      background: linear-gradient(135deg, rgba(21,101,192,0.2), rgba(2,136,209,0.1));
+      border: 1px solid rgba(21,101,192,0.3);
+      border-radius: 20px; padding: 28px 32px;
+      display: flex; align-items: center; gap: 24px;
+      margin-bottom: 28px; flex-wrap: wrap;
+    }
+    .avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--teal));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .profile-info h2 { font-size: 1.5rem; font-weight: 700; }
+    .profile-info .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .badge-profession { background: rgba(21,101,192,0.25); color: #90caf9; border: 1px solid rgba(21,101,192,0.4); }
+    .badge-pending  { background: rgba(245,158,11,0.2);  color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+    .badge-approved { background: rgba(16,185,129,0.2);  color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+    .badge-rejected { background: rgba(239,68,68,0.2);   color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+    .badge-review   { background: rgba(251,191,36,0.2);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .ref-chip { background: rgba(255,255,255,0.07); border: 1px solid var(--border); border-radius: 8px; padding: 4px 12px; font-size: 0.82rem; font-family: monospace; color: var(--muted); margin-top: 6px; display: inline-block; }
+
+    /* Progress Tracker */
+    .section-card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px 28px; margin-bottom: 20px;
+    }
+    .section-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 20px; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .section-card h3 i { color: var(--blue); }
+
+    .progress-track { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding-bottom: 4px; }
+    .progress-step {
+      display: flex; flex-direction: column; align-items: center;
+      flex: 1; min-width: 80px; position: relative;
+    }
+    .progress-step:not(:last-child)::after {
+      content: ''; position: absolute;
+      top: 18px; left: calc(50% + 18px);
+      width: calc(100% - 36px); height: 2px;
+      background: rgba(255,255,255,0.1);
+      z-index: 0;
+    }
+    .progress-step.done:not(:last-child)::after { background: var(--green); }
+    .progress-step.active:not(:last-child)::after { background: rgba(255,255,255,0.1); }
+
+    .step-circle {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; font-weight: 700; z-index: 1;
+      background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.15); color: var(--muted);
+      transition: all 0.3s;
+    }
+    .progress-step.done .step-circle { background: var(--green); border-color: var(--green); color: #fff; }
+    .progress-step.active .step-circle { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 0 0 4px rgba(21,101,192,0.25); }
+    .step-label { font-size: 0.72rem; text-align: center; color: var(--muted); margin-top: 8px; max-width: 80px; line-height: 1.3; }
+    .progress-step.done .step-label,
+    .progress-step.active .step-label { color: #fff; }
+
+    .stage-desc { margin-top: 16px; padding: 12px 16px; background: rgba(21,101,192,0.1); border-left: 3px solid var(--blue); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+    .admin-note { margin-top: 10px; padding: 12px 16px; background: rgba(245,158,11,0.08); border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0; font-size: 0.88rem; color: #fcd34d; display: none; }
+
+    /* Info Grid */
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .info-item label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); font-weight: 600; display: block; margin-bottom: 4px; }
+    .info-item span { font-size: 0.95rem; color: #fff; font-weight: 500; }
+
+    /* Documents */
+    .doc-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px;
+    }
+    .doc-item i { font-size: 1.4rem; color: var(--blue); }
+    .doc-item .doc-name { flex: 1; font-size: 0.9rem; }
+    .doc-item a {
+      background: rgba(21,101,192,0.2); border: 1px solid rgba(21,101,192,0.3);
+      color: #90caf9; padding: 5px 12px; border-radius: 6px; text-decoration: none; font-size: 0.82rem;
+      transition: all 0.2s;
+    }
+    .doc-item a:hover { background: rgba(21,101,192,0.4); }
+    .no-doc { color: var(--muted); font-size: 0.9rem; font-style: italic; }
+
+    /* Request banner */
+    .req-doc-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 12px 16px; background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.25); border-radius: 10px; margin-bottom: 10px;
+    }
+    .req-doc-item .doc-label { font-size: 0.9rem; color: #fcd34d; }
+    .req-doc-item .upload-form input[type="file"] { display: none; }
+    .req-doc-item .btn-upload {
+      background: rgba(245,158,11,0.2); border: 1px solid rgba(245,158,11,0.4);
+      color: #fcd34d; padding: 6px 14px; border-radius: 6px; font-size: 0.82rem;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .req-doc-item .btn-upload:hover { background: rgba(245,158,11,0.35); }
+
+    /* Install banner */
+    #installBanner {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--blue), var(--teal));
+      border-radius: 14px; padding: 14px 20px;
+      display: none; align-items: center; gap: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 999; max-width: 90%;
+    }
+    #installBanner p { font-size: 0.9rem; color: #fff; }
+    #installBanner button { background: rgba(255,255,255,0.25); border: none; color: #fff; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-family: inherit; }
+    #installBanner .close-banner { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 1.2rem; cursor: pointer; padding: 0; }
+
+    /* Toast */
+    .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+    .toast-msg { background: #f44336; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 10px; animation: slideInUp 0.3s forwards; }
+    .toast-msg.success { background: #4caf50; }
+    @keyframes slideInUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .toast-msg.fadeOut { animation: fadeOutDown 0.3s forwards; }
+    @keyframes fadeOutDown { to { transform: translateY(60px); opacity: 0; } }
+
+    @media (max-width: 600px) {
+      .profile-header { flex-direction: column; text-align: center; }
+      .profile-info .badges { justify-content: center; }
+      .login-card { padding: 32px 24px; }
+      .section-card { padding: 20px; }
+      .progress-step { min-width: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN PAGE ── -->
+<div id="loginPage" class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="plane">✈️</div>
+      <h1>Global Job Connect</h1>
+      <p>Applicant Portal</p>
+    </div>
+    <h2>My Application</h2>
+    <p class="sub">Log in to view your status, documents, and messages</p>
+    <div id="loginError" class="login-error"></div>
+    <div class="form-group">
+      <label for="loginEmail">Email Address</label>
+      <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" placeholder="Your application password" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="loginBtn">
+      <i class="fas fa-sign-in-alt"></i>&nbsp; Log In
+    </button>
+    <a href="/" class="back-link">← Back to Apply</a>
+  </div>
+</div>
+
+<!-- ── DASHBOARD PAGE ── -->
+<div id="dashboardPage">
+  <nav class="dash-nav">
+    <div class="logo"><span>✈️</span> Global Job Connect</div>
+    <button class="btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </nav>
+
+  <div class="dash-body">
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="avatar" id="dashAvatar">--</div>
+      <div class="profile-info">
+        <h2 id="dashName">Loading…</h2>
+        <div class="badges">
+          <span class="badge badge-profession" id="dashProfession"></span>
+          <span class="badge" id="dashStatusBadge"></span>
+        </div>
+        <div class="ref-chip" id="dashRef"></div>
+      </div>
+    </div>
+
+    <!-- Application Progress -->
+    <div class="section-card">
+      <h3><i class="fas fa-route"></i> Application Progress</h3>
+      <div class="progress-track" id="progressTrack"></div>
+      <div class="stage-desc" id="stageDesc"></div>
+      <div class="admin-note" id="adminNoteDisplay">
+        <i class="fas fa-comment-alt"></i> <span id="adminNoteText"></span>
+      </div>
+    </div>
+
+    <!-- Personal Info -->
+    <div class="section-card">
+      <h3><i class="fas fa-user-circle"></i> Your Information</h3>
+      <div class="info-grid">
+        <div class="info-item"><label>Email</label><span id="infoEmail"></span></div>
+        <div class="info-item"><label>Phone</label><span id="infoPhone"></span></div>
+        <div class="info-item"><label>Date of Birth</label><span id="infoDob"></span></div>
+        <div class="info-item"><label>Gender</label><span id="infoGender"></span></div>
+        <div class="info-item"><label>Country</label><span id="infoCountry"></span></div>
+        <div class="info-item"><label>Experience</label><span id="infoExperience"></span></div>
+        <div class="info-item"><label>Qualification</label><span id="infoQualification"></span></div>
+        <div class="info-item"><label>Batch</label><span id="infoBatch"></span></div>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;">About / Bio</label>
+        <p id="infoBio" style="margin-top:6px;font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.6;"></p>
+      </div>
+    </div>
+
+    <!-- Documents -->
+    <div class="section-card">
+      <h3><i class="fas fa-folder-open"></i> Documents</h3>
+      <div id="docsList"></div>
+      <div id="requestedDocs"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Install Banner -->
+<div id="installBanner">
+  <p>📱 Install this app on your phone!</p>
+  <button id="installBtn">Install</button>
+  <button class="close-banner" id="dismissInstall">&times;</button>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/config.js"></script>
+<script>
+'use strict';
+const BASE = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
+
+// ── Toast ──────────────────────────────────────────────────────
+function toast(msg, type = 'error') {
+  const c = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast-msg ${type}`;
+  el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${msg}`;
+  c.appendChild(el);
+  setTimeout(() => { el.classList.add('fadeOut'); setTimeout(() => el.remove(), 300); }, 5000);
+}
+
+// ── Auth ───────────────────────────────────────────────────────
+function getToken() { return localStorage.getItem('applicantToken'); }
+function setToken(t) { localStorage.setItem('applicantToken', t); }
+function clearToken() { localStorage.removeItem('applicantToken'); }
+
+// ── Login ──────────────────────────────────────────────────────
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl    = document.getElementById('loginError');
+  errEl.style.display = 'none';
+
+  if (!email || !password) { errEl.textContent = 'Please enter your email and password.'; errEl.style.display = 'block'; return; }
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Logging in…';
+
+  try {
+    const res  = await fetch(BASE + '/api/applicant/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) { errEl.textContent = data.error || 'Login failed.'; errEl.style.display = 'block'; return; }
+    setToken(data.token);
+    loadDashboard();
+  } catch { errEl.textContent = 'Network error. Please try again.'; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sign-in-alt"></i>&nbsp; Log In'; }
+});
+
+// Enter key on login
+['loginEmail','loginPassword'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
+});
+
+// ── Logout ─────────────────────────────────────────────────────
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  clearToken(); showLogin();
+});
+
+// ── Page toggling ──────────────────────────────────────────────
+function showLogin() {
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('dashboardPage').style.display = 'none';
+}
+function showDashboard() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('dashboardPage').style.display = 'block';
+}
+
+// ── Progress Steps ─────────────────────────────────────────────
+const STAGES = [
+  { label: 'Application Received',   icon: 'fa-inbox' },
+  { label: 'Document Verification',  icon: 'fa-file-circle-check' },
+  { label: 'Background Check',       icon: 'fa-shield-halved' },
+  { label: 'Interview / Assessment', icon: 'fa-comments' },
+  { label: 'Final Decision',         icon: 'fa-trophy' },
+];
+const STAGE_DESC = [
+  'Your application was submitted and received successfully.',
+  'Our team is verifying your uploaded documents.',
+  'A standard background screening is in progress.',
+  'You will be contacted to schedule an interview.',
+  'A placement decision will be communicated to you.',
+];
+
+function renderProgress(step) {
+  const track = document.getElementById('progressTrack');
+  track.innerHTML = '';
+  const clamped = Math.min(Math.max(step || 0, 0), STAGES.length - 1);
+  STAGES.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'progress-step' + (i < clamped ? ' done' : i === clamped ? ' active' : '');
+    div.innerHTML = `
+      <div class="step-circle"><i class="fas ${s.icon}"></i></div>
+      <span class="step-label">${s.label}</span>`;
+    track.appendChild(div);
+  });
+  document.getElementById('stageDesc').textContent = STAGE_DESC[clamped];
+}
+
+// ── Load Dashboard ─────────────────────────────────────────────
+async function loadDashboard() {
+  const token = getToken();
+  if (!token) { showLogin(); return; }
+
+  try {
+    const res  = await fetch(BASE + '/api/applicant/me', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (res.status === 401) { clearToken(); showLogin(); return; }
+    const a = await res.json();
+
+    showDashboard();
+
+    // Header
+    document.getElementById('dashAvatar').textContent = (a.firstName[0] + a.lastName[0]).toUpperCase();
+    document.getElementById('dashName').textContent   = `${a.firstName} ${a.lastName}`;
+    document.getElementById('dashRef').textContent    = `REF: ${a.refNumber || 'N/A'}`;
+
+    const profEl = document.getElementById('dashProfession');
+    profEl.textContent = a.profession;
+    profEl.className = 'badge badge-profession';
+
+    const statusEl = document.getElementById('dashStatusBadge');
+    statusEl.textContent = a.status || 'Pending';
+    const sClass = { Approved:'badge-approved', Rejected:'badge-rejected', Pending:'badge-pending', Review:'badge-review' };
+    statusEl.className = `badge ${sClass[a.status] || 'badge-pending'}`;
+
+    // Progress
+    renderProgress(a.progressStep);
+    if (a.progressNote) {
+      const noteEl = document.getElementById('adminNoteDisplay');
+      document.getElementById('adminNoteText').textContent = a.progressNote;
+      noteEl.style.display = 'block';
+    }
+
+    // Info
+    document.getElementById('infoEmail').textContent        = a.email || '—';
+    document.getElementById('infoPhone').textContent        = a.phone || '—';
+    document.getElementById('infoDob').textContent          = a.dob ? new Date(a.dob).toLocaleDateString() : '—';
+    document.getElementById('infoGender').textContent       = a.gender || '—';
+    document.getElementById('infoCountry').textContent      = a.country || '—';
+    document.getElementById('infoExperience').textContent   = a.experience ? `${a.experience} years` : '—';
+    document.getElementById('infoQualification').textContent = a.qualification || '—';
+    document.getElementById('infoBatch').textContent        = a.batchCode || '—';
+    document.getElementById('infoBio').textContent          = a.bio || 'No bio provided.';
+
+    // Documents
+    const docsList = document.getElementById('docsList');
+    if (a.cvFile) {
+      docsList.innerHTML = `
+        <div class="doc-item">
+          <i class="fas fa-file-alt"></i>
+          <span class="doc-name">CV / Resume</span>
+          <a href="${a.cvFile}" target="_blank" rel="noopener"><i class="fas fa-download"></i> View</a>
+        </div>`;
+    } else {
+      docsList.innerHTML = '<p class="no-doc">No CV uploaded yet.</p>';
+    }
+
+    // Requested Documents
+    const reqDocs = document.getElementById('requestedDocs');
+    if (a.requestedDocuments && a.requestedDocuments.length > 0) {
+      reqDocs.innerHTML = '<p style="font-size:0.85rem;color:var(--amber);margin:12px 0 8px;font-weight:600;"><i class="fas fa-bell"></i> Documents Requested by Admin</p>';
+      a.requestedDocuments.forEach(doc => {
+        if (doc.uploadedUrl) {
+          reqDocs.innerHTML += `
+            <div class="doc-item">
+              <i class="fas fa-check-circle" style="color:var(--green)"></i>
+              <span class="doc-name">${doc.label} <small style="color:var(--muted)">(Uploaded)</small></span>
+              <a href="${doc.uploadedUrl}" target="_blank"><i class="fas fa-eye"></i> View</a>
+            </div>`;
+        } else {
+          reqDocs.innerHTML += `
+            <div class="req-doc-item">
+              <span class="doc-label"><i class="fas fa-exclamation-circle"></i> ${doc.label}</span>
+              <form class="upload-form" onsubmit="uploadRequestedDoc(event, '${doc._id}')">
+                <label class="btn-upload"><i class="fas fa-upload"></i> Upload
+                  <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="this.form.dispatchEvent(new Event('submit'))">
+                </label>
+              </form>
+            </div>`;
+        }
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    toast('Failed to load your application. Please try again.', 'error');
+  }
+}
+
+// ── Upload a requested document ────────────────────────────────
+async function uploadRequestedDoc(e, docId) {
+  e.preventDefault();
+  const file = e.target.querySelector('input[type=file]').files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('docId', docId);
+  try {
+    const res = await fetch(BASE + '/api/applicant/upload-doc', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken() }, body: fd,
+    });
+    const d = await res.json();
+    if (!res.ok) { toast(d.error || 'Upload failed.', 'error'); return; }
+    toast('Document uploaded successfully!', 'success');
+    setTimeout(loadDashboard, 1200);
+  } catch { toast('Upload error. Please try again.', 'error'); }
+}
+
+// ── PWA Install Prompt ─────────────────────────────────────────
+let deferredInstall;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  document.getElementById('installBanner').style.display = 'flex';
+});
+document.getElementById('installBtn').addEventListener('click', () => {
+  if (deferredInstall) { deferredInstall.prompt(); deferredInstall = null; }
+  document.getElementById('installBanner').style.display = 'none';
+});
+document.getElementById('dismissInstall').addEventListener('click', () => {
+  document.getElementById('installBanner').style.display = 'none';
+});
+
+// ── Service Worker ─────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+
+// ── Init ───────────────────────────────────────────────────────
+if (getToken()) { loadDashboard(); } else { showLogin(); }
+</script>
+</body>
+</html>

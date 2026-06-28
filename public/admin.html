@@ -132,6 +132,22 @@
         </div>
         <p id="tableCount" class="table-count"></p>
       </section>
+
+      <!-- Batches Section -->
+      <section id="batchSection" class="table-section" style="margin-top:24px;">
+        <div class="table-header">
+          <h2><i class="fas fa-layer-group" style="color:#60a5fa"></i> Batch Management</h2>
+          <button class="btn btn-secondary" onclick="loadBatches()" style="font-size:0.85rem;"><i class="fas fa-sync"></i> Refresh</button>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr><th>Batch Code</th><th>Profession</th><th>Members</th><th>Status</th><th>Created</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="batchBody"><tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.4)">Loading batches…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -155,6 +171,8 @@
         <button class="modal-tab modal-tab--active" onclick="switchTab('info')">Profile</button>
         <button class="modal-tab" onclick="switchTab('quals')">Qualifications</button>
         <button class="modal-tab" onclick="switchTab('decision')">Decision</button>
+        <button class="modal-tab" onclick="switchTab('email')">Email</button>
+        <button class="modal-tab" onclick="switchTab('docRequest')">Doc Request</button>
       </div>
 
       <!-- Profile Tab -->
@@ -208,6 +226,47 @@
             <button id="btnReview"  class="btn btn-warning" style="background:#fbbf24;color:#000;"><i class="fas fa-search"></i> Under Review</button>
           </div>
           <p class="decision-note"><i class="fas fa-envelope"></i> The applicant will receive an automatic email notification when you update their status.</p>
+        </div>
+      </div>
+
+      <!-- Email Tab -->
+      <div id="tabEmail" class="modal-tab-content" style="display:none">
+        <div class="modal-section">
+          <h3>Send Direct Email</h3>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:5px;">Subject</label>
+            <input type="text" id="emailSubjectInput" placeholder="e.g. Interview Invitation" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;">
+          </div>
+          <div class="form-group">
+            <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:5px;">Message</label>
+            <textarea id="emailBodyInput" rows="5" placeholder="Type your message here…" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;resize:vertical;"></textarea>
+          </div>
+          <button id="btnSendEmail" class="btn btn-primary" style="background:#1565c0;color:#fff;"><i class="fas fa-paper-plane"></i> Send Email</button>
+        </div>
+      </div>
+
+      <!-- Document Request Tab -->
+      <div id="tabDocRequest" class="modal-tab-content" style="display:none">
+        <div class="modal-section">
+          <h3>Request a Document</h3>
+          <p style="color:rgba(255,255,255,.5);font-size:0.88rem;margin-bottom:16px;">Select a document to request from this applicant. They will receive an email with a link to upload it.</p>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:5px;">Document Type</label>
+            <select id="docLabelSelect" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;">
+              <option value="Passport Copy">Passport Copy</option>
+              <option value="IELTS Certificate">IELTS Certificate</option>
+              <option value="Nursing Registration Certificate">Nursing Registration Certificate</option>
+              <option value="Work Experience Letter">Work Experience Letter</option>
+              <option value="Academic Certificates">Academic Certificates</option>
+              <option value="Police Clearance Certificate">Police Clearance Certificate</option>
+              <option value="Medical Certificate">Medical Certificate</option>
+              <option value="Birth Certificate">Birth Certificate</option>
+              <option value="National ID">National ID</option>
+              <option value="Other">Other (specify below)</option>
+            </select>
+          </div>
+          <input type="text" id="docLabelCustom" placeholder="Custom document name (if Other)" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;margin-bottom:12px;display:none;">
+          <button id="btnRequestDoc" class="btn btn-warning" style="background:#f59e0b;color:#000;"><i class="fas fa-file-upload"></i> Request Document</button>
         </div>
       </div>
 
