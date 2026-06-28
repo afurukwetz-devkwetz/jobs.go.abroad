@@ -496,19 +496,61 @@ label:not(.radio-lbl){
 .qual-toggle{
   width:100%;
   display:flex;align-items:center;justify-content:space-between;
-  padding:13px 16px;
-  background:linear-gradient(135deg,rgba(21,101,192,.18),rgba(66,165,245,.08));
-  border:1px solid rgba(66,165,245,.3);
+  padding:15px 18px;
+  background:linear-gradient(135deg,rgba(21,101,192,.22),rgba(66,165,245,.12));
+  border:1.5px solid rgba(66,165,245,.45);
   border-radius:13px;
-  color:#64b5f6;
-  font-family:'Inter',sans-serif;font-size:.84rem;font-weight:700;
+  color:#90caf9;
+  font-family:'Inter',sans-serif;font-size:.88rem;font-weight:700;
   cursor:pointer;
   transition:all .25s;
+  animation:qual-pulse 2.5s ease-in-out 3; /* pulses 3 times on load to draw attention */
+  box-shadow:0 0 0 0 rgba(66,165,245,.4);
 }
-.qual-toggle:hover{background:linear-gradient(135deg,rgba(21,101,192,.28),rgba(66,165,245,.14));border-color:#42a5f5}
+.qual-toggle:hover{
+  background:linear-gradient(135deg,rgba(21,101,192,.35),rgba(66,165,245,.2));
+  border-color:#42a5f5;
+  color:#fff;
+  box-shadow:0 4px 20px rgba(66,165,245,.2);
+  transform:translateY(-1px);
+}
+@keyframes qual-pulse{
+  0%{box-shadow:0 0 0 0 rgba(66,165,245,.5)}
+  50%{box-shadow:0 0 0 8px rgba(66,165,245,0)}
+  100%{box-shadow:0 0 0 0 rgba(66,165,245,0)}
+}
 .qual-toggle span i{margin-right:6px}
 .qual-toggle .fa-chevron-down{transition:transform .3s;font-size:.75rem}
-.qual-toggle--open{border-radius:13px 13px 0 0}
+.qual-toggle--open{
+  border-radius:13px 13px 0 0;
+  background:linear-gradient(135deg,rgba(21,101,192,.3),rgba(66,165,245,.18));
+  border-color:#42a5f5;
+  color:#fff;
+}
+
+.qual-toggle-right{
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.qual-click-hint{
+  font-size:.72rem;font-weight:500;
+  color:rgba(255,255,255,.4);
+  letter-spacing:.3px;
+  transition:opacity .25s;
+}
+.qual-toggle--open .qual-click-hint{display:none}
+
+.qual-required-badge{
+  display:inline-flex;align-items:center;
+  margin-left:8px;
+  padding:2px 8px;
+  background:rgba(239,68,68,.15);
+  border:1px solid rgba(239,68,68,.35);
+  border-radius:20px;
+  color:#f87171;
+  font-size:.65rem;font-weight:800;
+  letter-spacing:.5px;text-transform:uppercase;
+  vertical-align:middle;
+}
 
 .qual-panel{
   border:1px solid rgba(66,165,245,.2);

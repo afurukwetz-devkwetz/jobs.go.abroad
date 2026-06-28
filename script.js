@@ -368,6 +368,25 @@ document.addEventListener('DOMContentLoaded', function () {
       if (pw !== cpw) { alert('Passwords do not match.'); shake('confirmPw'); return; }
       if (!terms) { alert('Please agree to the Terms & Conditions.'); return; }
 
+      // Nurse: qualification assessment is required
+      if (selectedProf === 'nurse') {
+        const qualPanel = document.getElementById('qualPanel');
+        const declBoxes = document.querySelectorAll('input[name="decl"]');
+        const allDeclChecked = Array.from(declBoxes).every(cb => cb.checked);
+        if (!allDeclChecked) {
+          // Open the panel so user can see what needs to be done
+          if (qualPanel && qualPanel.style.display === 'none') toggleQualPanel();
+          const qualSection = document.getElementById('nurseQualSection');
+          if (qualSection) {
+            qualSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            qualSection.style.outline = '2px solid #f43f5e';
+            setTimeout(() => { qualSection.style.outline = ''; }, 2000);
+          }
+          alert('Please complete the Professional Qualification Assessment and tick all declaration checkboxes.');
+          return;
+        }
+      }
+
       const btn = document.getElementById('submitBtn');
       if (btn) { btn.disabled = true; btn.querySelector('span').innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>&nbsp;&nbsp;Submitting…'; }
 
