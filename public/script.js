@@ -546,11 +546,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       };
     }); // end form submit
-  }); // end DOMContentLoaded
+  } // end if(regForm)
 
   // 8. Enter key on tracker inputs
   ['trackRef','trackEmail'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') trackApplication(); });
   });
-});
+
+}); // end DOMContentLoaded
