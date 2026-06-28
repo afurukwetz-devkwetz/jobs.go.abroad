@@ -1,161 +1,52 @@
 /**
  * emailService.js — Shared email helper for Global Job Connect
+ * Uses SendGrid SDK directly (not SMTP) to avoid port 587 blocks on Render.
  */
-const nodemailer = require('nodemailer');
 
-function createTransporter() {
-  if (process.env.SENDGRID_API_KEY) {
-    return nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.sendgrid.net',
-      port: process.env.SMTP_PORT || 587,
-      auth: {
-        user: process.env.SMTP_USER || 'apikey',
-        pass: process.env.SENDGRID_API_KEY,
-      },
-      connectionTimeout: 5000,
-    });
+const sgMail = require('@sendgrid/mail');
+
+const SENDGRID_CONFIGURED = !!process.env.SENDGRID_API_KEY;
+if (SENDGRID_CONFIGURED) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log('✅ [EmailService] SendGrid SDK initialised.');
+} else {
+  console.warn('⚠️ [EmailService] SENDGRID_API_KEY not set — emails will be mocked.');
+}
+
+const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_USER || 'noreply@globaljobconnect.com';
+const FROM_NAME  = 'Global Job Connect';
+const SITE       = process.env.FRONTEND_URL || 'https://jobs-go-abroad-3pbi.onrender.com';
+
+/**
+ * Core send helper — uses SendGrid SDK (HTTPS API, not SMTP).
+ * Returns true on success, false on failure (never throws).
+ */
+async function sendMail({ to, subject, html }) {
+  if (!SENDGRID_CONFIGURED) {
+    console.log(`📩 [Mock Email] To: ${to} | Subject: ${subject}`);
+    return true; // treat mock as success so flow continues
   }
-  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-    return nodemailer.createTransport({
-      host:   process.env.EMAIL_HOST || 'smtp.gmail.com',
-      port:   process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 465,
-      secure: process.env.EMAIL_SECURE !== 'false',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      connectionTimeout: 5000,
+
+  try {
+    await sgMail.send({
+      to,
+      from: { email: FROM_EMAIL, name: FROM_NAME },
+      subject,
+      html,
     });
+    console.log(`✅ [Email] Sent → ${to} | ${subject}`);
+    return true;
+  } catch (err) {
+    const details = err.response?.body?.errors || err.message;
+    console.error('❌ [SendGrid Error]:', JSON.stringify(details));
+    return false;
   }
-  
-  // Fallback mock transporter if no email credentials are set (prevents hanging in dev)
-  return {
-    sendMail: async (opts) => {
-      console.log('⚠️ [EmailService] Mock sendMail called because no SMTP credentials exist in env.');
-      console.log('📩 To:', opts.to, 'Subject:', opts.subject);
-      return { messageId: 'mock-id' };
-    }
-  };
-}
-
-const FROM = () => `"Global Job Connect" <${process.env.EMAIL_USER}>`;
-const SITE = process.env.FRONTEND_URL || 'https://jobs-go-abroad-3pbi.onrender.com';
-
-// ── Send verification email ──────────────────────────────────────────────────
-async function sendVerificationEmail({ firstName, email, verificationToken }) {
-  const transporter = createTransporter();
-  const verifyUrl   = `${SITE}/api/verify/${verificationToken}`;
-  await transporter.sendMail({
-    from: FROM(), to: email,
-    subject: 'Verify Your Email – Global Job Connect',
-    html: `
-      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0d2d6b;border-radius:12px;overflow:hidden;">
-        <div style="padding:30px;background:linear-gradient(135deg,#1565c0,#1976d2);text-align:center;">
-          <h1 style="color:#fff;margin:0;font-size:22px;">✈️ Global Job Connect</h1>
-        </div>
-        <div style="padding:30px;background:#fff;">
-          <h2 style="color:#1565c0;">Welcome, ${firstName}!</h2>
-          <p style="color:#444;line-height:1.6;">Thank you for applying. Please verify your email address to activate your account.</p>
-          <div style="text-align:center;margin:30px 0;">
-            <a href="${verifyUrl}" style="background:#1565c0;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">
-              Verify Email Address
-            </a>
-          </div>
-          <p style="color:#888;font-size:13px;">If the button doesn't work, paste this link in your browser:<br><a href="${verifyUrl}" style="color:#1565c0;">${verifyUrl}</a></p>
-        </div>
-        <div style="padding:16px;text-align:center;background:#f5f5f5;">
-          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect. If you didn't register, ignore this email.</p>
-        </div>
-      </div>
-    `,
-  });
-}
-
-// ── Send reference number email after registration ───────────────────────────
-async function sendRefNumberEmail({ firstName, email, refNumber, batchCode }) {
-  const transporter = createTransporter();
-  const trackUrl    = `${SITE}/#track`;
-  await transporter.sendMail({
-    from: FROM(), to: email,
-    subject: `Your Application Reference: ${refNumber} – Global Job Connect`,
-    html: `
-      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
-        <div style="padding:30px;background:linear-gradient(135deg,#1565c0,#1976d2);text-align:center;">
-          <h1 style="color:#fff;margin:0;font-size:22px;">✈️ Global Job Connect</h1>
-          <p style="color:rgba(255,255,255,.8);margin:8px 0 0;">Application Confirmation</p>
-        </div>
-        <div style="padding:30px;">
-          <h2 style="color:#1565c0;">Hi ${firstName}, your application is received! 🎉</h2>
-          <p style="color:#444;line-height:1.6;">We have received your application. Please save your reference number — you will need it to track your application status.</p>
-          <div style="background:#f0f7ff;border:2px solid #1565c0;border-radius:10px;padding:20px;text-align:center;margin:24px 0;">
-            <p style="color:#666;margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:1px;">Your Reference Number</p>
-            <p style="color:#1565c0;font-size:28px;font-weight:800;margin:0;letter-spacing:2px;">${refNumber}</p>
-            <p style="color:#888;font-size:13px;margin:8px 0 0;">Batch: <strong>${batchCode}</strong></p>
-          </div>
-          <div style="text-align:center;margin:24px 0;">
-            <a href="${trackUrl}" style="background:#1565c0;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">
-              Track My Application
-            </a>
-          </div>
-          <p style="color:#444;line-height:1.6;">Our team will review your application and be in touch. You can check your status at any time by visiting our website and entering your reference number.</p>
-        </div>
-        <div style="padding:16px;text-align:center;background:#f5f5f5;">
-          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect · Work Anywhere. Grow Everywhere.</p>
-        </div>
-      </div>
-    `,
-  });
-}
-
-// ── Send status change notification to applicant ─────────────────────────────
-async function sendStatusEmail({ firstName, email, refNumber, newStatus, adminNote }) {
-  const transporter = createTransporter();
-  const trackUrl    = `${SITE}/#track`;
-
-  const statusConfig = {
-    Approved: { color: '#10b981', icon: '✅', title: 'Congratulations! Your Application Has Been Approved', text: 'We are pleased to inform you that your application has been approved. Our team will be in contact with you shortly with the next steps.' },
-    Rejected: { color: '#ef4444', icon: '❌', title: 'Application Update', text: 'After careful review, we regret to inform you that your application was not successful at this time. We encourage you to reapply in the future.' },
-    Pending:  { color: '#f59e0b', icon: '⏳', title: 'Application Status Update', text: 'Your application status has been updated. Please log in or use your reference number to check the latest details.' },
-  };
-  const cfg = statusConfig[newStatus] || statusConfig.Pending;
-
-  await transporter.sendMail({
-    from: FROM(), to: email,
-    subject: `Application Update: ${newStatus} – Global Job Connect`,
-    html: `
-      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
-        <div style="padding:30px;background:${cfg.color};text-align:center;">
-          <p style="font-size:36px;margin:0;">${cfg.icon}</p>
-          <h1 style="color:#fff;margin:8px 0 0;font-size:20px;">Global Job Connect</h1>
-        </div>
-        <div style="padding:30px;">
-          <h2 style="color:#222;">${cfg.title}</h2>
-          <p style="color:#444;line-height:1.6;">Hi <strong>${firstName}</strong>,</p>
-          <p style="color:#444;line-height:1.6;">${cfg.text}</p>
-          <div style="background:#f9f9f9;border-left:4px solid ${cfg.color};padding:14px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
-            <p style="margin:0;color:#666;font-size:13px;">Reference Number: <strong style="color:#222;">${refNumber}</strong></p>
-            <p style="margin:6px 0 0;color:#666;font-size:13px;">Status: <strong style="color:${cfg.color};">${newStatus}</strong></p>
-            ${adminNote ? `<p style="margin:10px 0 0;color:#666;font-size:13px;"><em>Note from our team: ${adminNote}</em></p>` : ''}
-          </div>
-          <div style="text-align:center;margin:24px 0;">
-            <a href="${trackUrl}" style="background:#1565c0;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">
-              Track My Application
-            </a>
-          </div>
-        </div>
-        <div style="padding:16px;text-align:center;background:#f5f5f5;">
-          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect · Work Anywhere. Grow Everywhere.</p>
-        </div>
-      </div>
-    `,
-  });
 }
 
 // ── Send OTP email ─────────────────────────────────────────────────────────────
 async function sendOtpEmail({ email, otp }) {
-  const transporter = createTransporter();
-  await transporter.sendMail({
-    from: FROM(), to: email,
+  return sendMail({
+    to: email,
     subject: 'Your Verification Code – Global Job Connect',
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0d2d6b;border-radius:12px;overflow:hidden;">
@@ -178,12 +69,110 @@ async function sendOtpEmail({ email, otp }) {
   });
 }
 
+// ── Send reference number email after registration ───────────────────────────
+async function sendRefNumberEmail({ firstName, email, refNumber, batchCode }) {
+  const trackUrl = `${SITE}/#track`;
+  return sendMail({
+    to: email,
+    subject: `Your Application Reference: ${refNumber} – Global Job Connect`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
+        <div style="padding:30px;background:linear-gradient(135deg,#1565c0,#1976d2);text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:22px;">✈️ Global Job Connect</h1>
+          <p style="color:rgba(255,255,255,.8);margin:8px 0 0;">Application Confirmation</p>
+        </div>
+        <div style="padding:30px;">
+          <h2 style="color:#1565c0;">Hi ${firstName}, your application is received! 🎉</h2>
+          <p style="color:#444;line-height:1.6;">We have received your application. Please save your reference number — you will need it to track your application status.</p>
+          <div style="background:#f0f7ff;border:2px solid #1565c0;border-radius:10px;padding:20px;text-align:center;margin:24px 0;">
+            <p style="color:#666;margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:1px;">Your Reference Number</p>
+            <p style="color:#1565c0;font-size:28px;font-weight:800;margin:0;letter-spacing:2px;">${refNumber}</p>
+            <p style="color:#888;font-size:13px;margin:8px 0 0;">Batch: <strong>${batchCode}</strong></p>
+          </div>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${trackUrl}" style="background:#1565c0;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Track My Application</a>
+          </div>
+          <p style="color:#444;line-height:1.6;">Our team will review your application and be in touch. You can check your status at any time by visiting our website and entering your reference number.</p>
+        </div>
+        <div style="padding:16px;text-align:center;background:#f5f5f5;">
+          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect · Work Anywhere. Grow Everywhere.</p>
+        </div>
+      </div>
+    `,
+  });
+}
+
+// ── Send status change notification to applicant ─────────────────────────────
+async function sendStatusEmail({ firstName, email, refNumber, newStatus, adminNote }) {
+  const trackUrl = `${SITE}/#track`;
+  const statusConfig = {
+    Approved: { color: '#10b981', icon: '✅', title: 'Congratulations! Your Application Has Been Approved', text: 'We are pleased to inform you that your application has been approved. Our team will be in contact with you shortly with the next steps.' },
+    Rejected: { color: '#ef4444', icon: '❌', title: 'Application Update', text: 'After careful review, we regret to inform you that your application was not successful at this time. We encourage you to reapply in the future.' },
+    Pending:  { color: '#f59e0b', icon: '⏳', title: 'Application Status Update', text: 'Your application status has been updated. Please log in or use your reference number to check the latest details.' },
+  };
+  const cfg = statusConfig[newStatus] || statusConfig.Pending;
+
+  return sendMail({
+    to: email,
+    subject: `Application Update: ${newStatus} – Global Job Connect`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
+        <div style="padding:30px;background:${cfg.color};text-align:center;">
+          <p style="font-size:36px;margin:0;">${cfg.icon}</p>
+          <h1 style="color:#fff;margin:8px 0 0;font-size:20px;">Global Job Connect</h1>
+        </div>
+        <div style="padding:30px;">
+          <h2 style="color:#222;">${cfg.title}</h2>
+          <p style="color:#444;line-height:1.6;">Hi <strong>${firstName}</strong>,</p>
+          <p style="color:#444;line-height:1.6;">${cfg.text}</p>
+          <div style="background:#f9f9f9;border-left:4px solid ${cfg.color};padding:14px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
+            <p style="margin:0;color:#666;font-size:13px;">Reference Number: <strong style="color:#222;">${refNumber}</strong></p>
+            <p style="margin:6px 0 0;color:#666;font-size:13px;">Status: <strong style="color:${cfg.color};">${newStatus}</strong></p>
+            ${adminNote ? `<p style="margin:10px 0 0;color:#666;font-size:13px;"><em>Note from our team: ${adminNote}</em></p>` : ''}
+          </div>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${trackUrl}" style="background:#1565c0;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Track My Application</a>
+          </div>
+        </div>
+        <div style="padding:16px;text-align:center;background:#f5f5f5;">
+          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect · Work Anywhere. Grow Everywhere.</p>
+        </div>
+      </div>
+    `,
+  });
+}
+
+// ── Send verification email (legacy — kept for compatibility) ─────────────────
+async function sendVerificationEmail({ firstName, email, verificationToken }) {
+  const verifyUrl = `${SITE}/api/verify/${verificationToken}`;
+  return sendMail({
+    to: email,
+    subject: 'Verify Your Email – Global Job Connect',
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0d2d6b;border-radius:12px;overflow:hidden;">
+        <div style="padding:30px;background:linear-gradient(135deg,#1565c0,#1976d2);text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:22px;">✈️ Global Job Connect</h1>
+        </div>
+        <div style="padding:30px;background:#fff;">
+          <h2 style="color:#1565c0;">Welcome, ${firstName}!</h2>
+          <p style="color:#444;line-height:1.6;">Thank you for applying. Please verify your email address to activate your account.</p>
+          <div style="text-align:center;margin:30px 0;">
+            <a href="${verifyUrl}" style="background:#1565c0;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Verify Email Address</a>
+          </div>
+          <p style="color:#888;font-size:13px;">If the button doesn't work, paste this link in your browser:<br><a href="${verifyUrl}" style="color:#1565c0;">${verifyUrl}</a></p>
+        </div>
+        <div style="padding:16px;text-align:center;background:#f5f5f5;">
+          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect. If you didn't register, ignore this email.</p>
+        </div>
+      </div>
+    `,
+  });
+}
 
 // ── Send custom admin message to applicant ─────────────────────────────────────
 async function sendCustomEmail({ to, subject, body, firstName }) {
-  const transporter = createTransporter();
-  await transporter.sendMail({
-    from: FROM(), to,
+  return sendMail({
+    to,
     subject: `${subject} — Global Job Connect`,
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
@@ -204,9 +193,8 @@ async function sendCustomEmail({ to, subject, body, firstName }) {
 
 // ── Send document request email to applicant ───────────────────────────────────
 async function sendDocumentRequestEmail({ firstName, email, docLabel, uploadUrl }) {
-  const transporter = createTransporter();
-  await transporter.sendMail({
-    from: FROM(), to: email,
+  return sendMail({
+    to: email,
     subject: `Action Required: Please Upload Your ${docLabel} — Global Job Connect`,
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
@@ -221,9 +209,7 @@ async function sendDocumentRequestEmail({ firstName, email, docLabel, uploadUrl 
           </div>
           <p style="color:#444;line-height:1.6;">Please click the button below to upload your document. The link is valid for <strong>48 hours</strong>.</p>
           <div style="text-align:center;margin:24px 0;">
-            <a href="${uploadUrl}" style="background:#f59e0b;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">
-              Upload ${docLabel}
-            </a>
+            <a href="${uploadUrl}" style="background:#f59e0b;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Upload ${docLabel}</a>
           </div>
           <p style="color:#888;font-size:13px;">You can also log in to your applicant dashboard at <a href="${SITE}/my-application" style="color:#1565c0;">${SITE}/my-application</a> to upload your documents anytime.</p>
         </div>
