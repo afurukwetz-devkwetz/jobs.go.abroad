@@ -6,4 +6,4 @@ Disallow: /api/
 Disallow: /admin
 Disallow: /uploads/
 
-Sitemap: https://jobs-go-abroad-3pbi.onrender.com/sitemap.xml
+Sitemap: https://www.globaljobcoonect.top/sitemap.xml
