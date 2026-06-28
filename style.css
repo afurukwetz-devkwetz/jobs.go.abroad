@@ -2,8 +2,10 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:'Inter',sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height:100vh;
-  background:linear-gradient(145deg, rgba(6,13,31,0.5), rgba(10,30,74,0.5)), url('bg.png') center/cover no-repeat fixed;
+  background:linear-gradient(145deg, rgba(6,13,31,0.7), rgba(10,30,74,0.8)), url('bg.png') center/cover no-repeat fixed;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -58,13 +60,13 @@ body::after{
 
 /* ── Card ── */
 .card{
-  background:rgba(255,255,255,.055);
-  backdrop-filter:blur(22px);
-  -webkit-backdrop-filter:blur(22px);
-  border:1px solid rgba(255,255,255,.11);
-  border-radius:24px;
-  padding:36px 32px;
-  box-shadow:0 24px 64px rgba(0,0,0,.45);
+  background:rgba(255,255,255,.03);
+  backdrop-filter:blur(30px);
+  -webkit-backdrop-filter:blur(30px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:28px;
+  padding:40px 36px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);
   width:100%;
 }
 
@@ -143,9 +145,9 @@ label:not(.radio-lbl){
 .input-wrap input:focus,
 .input-wrap select:focus,
 .input-wrap textarea:focus{
-  border-color:#42a5f5;
-  background:rgba(255,255,255,.09);
-  box-shadow:0 0 0 3px rgba(66,165,245,.18);
+  border-color:#60a5fa;
+  background:rgba(255,255,255,.1);
+  box-shadow:0 0 0 4px rgba(96,165,250,.2);
 }
 .input-wrap:focus-within>i:first-child{color:#42a5f5}
 
@@ -279,10 +281,10 @@ label:not(.radio-lbl){
   background:linear-gradient(135deg,#42a5f5,#1565c0);
   opacity:0;transition:opacity .25s;
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(21,101,192,.6)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(21,101,192,.7)}
 .btn-primary:hover::after{opacity:1}
 .btn-primary span{position:relative;z-index:1}
-.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
 
 /* ── Switch link ── */
 .switch-link{text-align:center;margin-top:16px;font-size:.82rem;color:rgba(255,255,255,.4)}

@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const cors     = require('cors');
 const path     = require('path');
 const fs       = require('fs');
+const helmet   = require('helmet');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
 
 const app = express();
 
@@ -17,9 +20,28 @@ app.use((req, res, next) => {
 });
 
 // Middleware
+app.use(helmet({
+  contentSecurityPolicy: false // Allow inline scripts/styles for UI simplicity
+}));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(mongoSanitize()); // Prevent NoSQL Injection
+
+// Rate Limiting
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { error: 'Too many requests from this IP, please try again later.' }
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // strict limit for auth routes
+  message: { error: 'Too many attempts, please try again after 15 minutes.' }
+});
+
+app.use(globalLimiter);
 
 // API Routes
 app.get('/api/health', (req, res) => {
@@ -35,9 +57,9 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-app.use('/api/register', require('./routes/register'));
+app.use('/api/register', authLimiter, require('./routes/register'));
 app.use('/api/track',    require('./routes/track'));
-app.use('/api/admin',    require('./routes/admin'));
+app.use('/api/admin',    authLimiter, require('./routes/admin'));
 app.use('/api/verify',   require('./routes/verify'));
 
 // Serve uploaded CVs
