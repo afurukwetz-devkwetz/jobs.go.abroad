@@ -128,15 +128,27 @@ router.post('/', upload.single('cvFile'), async (req, res) => {
     try {
       console.log('📧 [Email] Sending verification email to:', email);
 
-      const transporter = nodemailer.createTransport({
-        host:   'smtp.gmail.com',
-        port:   465,
-        secure: true,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS,
-        },
-      });
+      let transporter;
+      if (process.env.SENDGRID_API_KEY) {
+        transporter = nodemailer.createTransport({
+          host:   process.env.SMTP_HOST || 'smtp.sendgrid.net',
+          port:   process.env.SMTP_PORT || 587,
+          auth: {
+            user: process.env.SMTP_USER || 'apikey',
+            pass: process.env.SENDGRID_API_KEY || process.env.SMTP_PASS || process.env.EMAIL_PASS,
+          },
+        });
+      } else {
+        transporter = nodemailer.createTransport({
+          host:   process.env.EMAIL_HOST || 'smtp.gmail.com',
+          port:   process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 465,
+          secure: process.env.EMAIL_SECURE !== 'false', // true by default for 465
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
+      }
 
       await transporter.verify();
       console.log('✅ [Email] SMTP connection verified');
