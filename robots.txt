@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Prevent crawling of API and admin routes
+Disallow: /api/
+Disallow: /admin
+Disallow: /uploads/
+
+Sitemap: https://jobs-go-abroad-3pbi.onrender.com/sitemap.xml
