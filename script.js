@@ -84,6 +84,18 @@ function closeSuccess() {
   if (ov) ov.style.display = 'none';
 }
 
+// ── Nurse Qualification Panel toggle ─────────────────────────
+function toggleQualPanel() {
+  const panel   = document.getElementById('qualPanel');
+  const chevron = document.getElementById('qualChevron');
+  const btn     = document.getElementById('qualToggleBtn');
+  if (!panel) return;
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display  = isOpen ? 'none' : 'block';
+  if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  if (btn) btn.classList.toggle('qual-toggle--open', !isOpen);
+}
+
 // ── Shake helper ─────────────────────────────────────────────
 function shake(id) {
   const el = document.getElementById(id);
@@ -288,15 +300,31 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // 5. Profession buttons
+  // 5. Profession buttons + nurse qual section toggle
   const profBtns = document.querySelectorAll('.prof-btn');
+  const nurseQualSection = document.getElementById('nurseQualSection');
   profBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       profBtns.forEach(b => b.classList.remove('prof-btn--active'));
       btn.classList.add('prof-btn--active');
       selectedProf = btn.dataset.prof || 'nurse';
+      // Show nurse qualification section only for nurses
+      if (nurseQualSection) {
+        if (selectedProf === 'nurse') {
+          nurseQualSection.style.display = 'block';
+        } else {
+          nurseQualSection.style.display = 'none';
+          // Collapse the panel if switching away from nurse
+          const panel = document.getElementById('qualPanel');
+          const chevron = document.getElementById('qualChevron');
+          if (panel) panel.style.display = 'none';
+          if (chevron) chevron.style.transform = '';
+        }
+      }
     });
   });
+  // Show by default since nurse is pre-selected
+  if (nurseQualSection) nurseQualSection.style.display = 'block';
 
   // 6. CV drop zone
   const cvDrop = document.getElementById('cvDrop');

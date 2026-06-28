@@ -152,6 +152,100 @@
           </div>
         </div>
 
+        <!-- ══ Nurse-only Qualification Assessment ══ -->
+        <div id="nurseQualSection" style="display:none; margin-bottom:16px;">
+          <button type="button" class="qual-toggle" id="qualToggleBtn" onclick="toggleQualPanel()">
+            <span><i class="fas fa-stethoscope"></i>&nbsp; Professional Qualification Assessment</span>
+            <i class="fas fa-chevron-down" id="qualChevron"></i>
+          </button>
+          <div id="qualPanel" style="display:none;">
+            <div class="qual-panel">
+
+              <!-- Destination -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-earth-americas"></i> Preferred Destination(s)</p>
+                <div class="qual-checks">
+                  <label class="qual-check"><input type="checkbox" name="dest" value="UK"> United Kingdom</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="US"> United States</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="Canada"> Canada</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="Australia"> Australia</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="New Zealand"> New Zealand</label>
+                  <label class="qual-check"><input type="checkbox" name="dest" value="Germany"> Germany</label>
+                  <label class="qual-check qual-other-row">
+                    <input type="checkbox" name="dest" value="Other" id="destOther"> Other:
+                    <input type="text" id="destOtherText" class="qual-other-input" placeholder="Specify…">
+                  </label>
+                </div>
+              </div>
+
+              <!-- English Language -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-language"></i> English Language Qualifications</p>
+                <div class="qual-checks">
+                  <label class="qual-check"><input type="checkbox" name="english" value="IELTS Academic"> IELTS Academic</label>
+                  <label class="qual-check"><input type="checkbox" name="english" value="OET"> Occupational English Test (OET)</label>
+                  <label class="qual-check"><input type="checkbox" name="english" value="Other"> Other English Language Qualification</label>
+                  <label class="qual-check"><input type="checkbox" name="english" value="None"> I have not completed an English language test</label>
+                </div>
+              </div>
+
+              <!-- Professional Registration -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-id-card-clip"></i> Professional Registration &amp; Licensing</p>
+                <div class="qual-checks">
+                  <label class="qual-check"><input type="checkbox" name="reg" value="CBT"> UK Computer Based Test (CBT)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="OSCE"> UK Objective Structured Clinical Examination (OSCE)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="NCLEX-RN"> NCLEX-RN (USA/Canada)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="CGFNS"> CGFNS Credential Evaluation</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="Nursing Council"> Nursing Council Competence Assessment</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="AHPRA"> Registration Assessment (Australia)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="Germany Recognition"> Recognition of Qualifications (Germany)</label>
+                  <label class="qual-check"><input type="checkbox" name="reg" value="None"> None of the above</label>
+                </div>
+              </div>
+
+              <!-- German Language -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-flag"></i> German Language Level <span style="font-size:.72rem;color:rgba(255,255,255,.35)">(For Germany applicants)</span></p>
+                <div class="qual-checks qual-checks--inline">
+                  <label class="qual-check"><input type="checkbox" name="german" value="A1"> A1</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="A2"> A2</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="B1"> B1</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="B2"> B2</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="C1"> C1</label>
+                  <label class="qual-check"><input type="checkbox" name="german" value="N/A"> Not applicable</label>
+                </div>
+              </div>
+
+              <!-- Supporting Documents -->
+              <div class="qual-group">
+                <p class="qual-label"><i class="fas fa-folder-open"></i> Supporting Documents Available</p>
+                <div class="qual-checks">
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Passport"> Valid Passport</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Registration Certificate"> Professional Registration Certificate</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Good Standing"> Certificate of Good Standing</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Degree"> Degree/Diploma Certificate</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Transcripts"> Academic Transcripts</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="CV"> Updated CV/Resume</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Police Clearance"> Police Clearance Certificate</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Medical"> Medical Examination Report</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="Vaccination"> Vaccination Records</label>
+                  <label class="qual-check"><input type="checkbox" name="docs" value="References"> Employment Reference Letters</label>
+                </div>
+              </div>
+
+              <!-- Declaration -->
+              <div class="qual-group qual-declaration">
+                <p class="qual-label"><i class="fas fa-pen-to-square"></i> Declaration</p>
+                <label class="qual-check"><input type="checkbox" name="decl" value="accurate"> I confirm that the information provided is true and accurate.</label>
+                <label class="qual-check"><input type="checkbox" name="decl" value="aware-requirements"> I understand that additional examinations, professional registration requirements, visa requirements, or supporting documents may be required depending on the destination country and employer.</label>
+                <label class="qual-check"><input type="checkbox" name="decl" value="aware-no-guarantee"> I understand that passing the recruitment process does not guarantee employment, professional registration, or visa approval, as these decisions are made by employers and the relevant licensing and immigration authorities.</label>
+              </div>
+
+            </div><!-- /qual-panel -->
+          </div>
+        </div><!-- /nurseQualSection -->
+
         <!-- Password -->
         <div class="row-2">
           <div class="field">

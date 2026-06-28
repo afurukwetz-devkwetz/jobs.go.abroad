@@ -492,6 +492,85 @@ label:not(.radio-lbl){
 }
 @media(max-width:560px){.services-grid{grid-template-columns:1fr 1fr}}
 
+/* ── Nurse Qualification Assessment ── */
+.qual-toggle{
+  width:100%;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;
+  background:linear-gradient(135deg,rgba(21,101,192,.18),rgba(66,165,245,.08));
+  border:1px solid rgba(66,165,245,.3);
+  border-radius:13px;
+  color:#64b5f6;
+  font-family:'Inter',sans-serif;font-size:.84rem;font-weight:700;
+  cursor:pointer;
+  transition:all .25s;
+}
+.qual-toggle:hover{background:linear-gradient(135deg,rgba(21,101,192,.28),rgba(66,165,245,.14));border-color:#42a5f5}
+.qual-toggle span i{margin-right:6px}
+.qual-toggle .fa-chevron-down{transition:transform .3s;font-size:.75rem}
+.qual-toggle--open{border-radius:13px 13px 0 0}
+
+.qual-panel{
+  border:1px solid rgba(66,165,245,.2);
+  border-top:none;
+  border-radius:0 0 13px 13px;
+  background:rgba(255,255,255,.03);
+  padding:18px 16px 12px;
+  display:flex;flex-direction:column;gap:18px;
+}
+
+.qual-group{}
+.qual-label{
+  font-size:.75rem;font-weight:700;
+  color:rgba(255,255,255,.55);
+  text-transform:uppercase;letter-spacing:.9px;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:7px;
+}
+.qual-label i{color:#42a5f5;font-size:.85rem}
+
+.qual-checks{
+  display:flex;flex-direction:column;gap:8px;
+}
+.qual-checks--inline{
+  flex-direction:row;flex-wrap:wrap;gap:10px;
+}
+
+.qual-check{
+  display:flex;align-items:flex-start;gap:9px;
+  font-size:.82rem;color:rgba(255,255,255,.65);
+  cursor:pointer;line-height:1.45;
+  transition:color .2s;
+}
+.qual-check:hover{color:rgba(255,255,255,.9)}
+.qual-check input[type=checkbox]{
+  accent-color:#42a5f5;
+  width:15px;height:15px;
+  flex-shrink:0;margin-top:2px;
+}
+
+.qual-other-row{align-items:center;}
+.qual-other-input{
+  flex:1;
+  padding:4px 9px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:6px;
+  color:#fff;font-family:'Inter',sans-serif;font-size:.8rem;
+  outline:none;
+  transition:border-color .2s;
+}
+.qual-other-input:focus{border-color:#42a5f5}
+
+.qual-declaration .qual-check{
+  padding:8px 10px;
+  background:rgba(255,255,255,.025);
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.07);
+}
+.qual-declaration .qual-check:hover{background:rgba(66,165,245,.07);border-color:rgba(66,165,245,.2)}
+
+
 .service-card{
   background:rgba(255,255,255,.04);
   border:1px solid rgba(255,255,255,.09);
