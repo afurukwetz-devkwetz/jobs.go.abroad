@@ -186,6 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
       tr.innerHTML = `
         <td><strong>${app.refNumber || 'N/A'}</strong></td>
         <td>${app.firstName} ${app.lastName}</td>
+        <td><a href="mailto:${app.email}" style="color:#60a5fa;text-decoration:none;">${app.email}</a></td>
+        <td>${app.phone || 'N/A'}</td>
         <td>${app.profession}</td>
         <td>${app.country || '—'}</td>
         <td style="text-align:center">${verifiedIcon}</td>
@@ -341,9 +343,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ─── Status Actions ───────────────────────────────────────────────────────────
-  document.getElementById('btnApprove').addEventListener('click', () => updateStatus('Approved', 4));
-  document.getElementById('btnReject').addEventListener('click',  () => updateStatus('Rejected', 4));
-  document.getElementById('btnPending').addEventListener('click', () => updateStatus('Pending', 0));
+  document.getElementById('btnApprove')?.addEventListener('click', () => updateStatus('Approved', 4));
+  document.getElementById('btnReject')?.addEventListener('click',  () => updateStatus('Rejected', 4));
+  document.getElementById('btnPending')?.addEventListener('click', () => updateStatus('Pending', 0));
+  document.getElementById('btnReview')?.addEventListener('click',  () => updateStatus('Review', 1));
 
   async function updateStatus(newStatus, step) {
     if (!currentApplicant) return;

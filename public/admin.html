@@ -113,14 +113,16 @@
           <table id="applicantsTable">
             <thead>
               <tr>
-                <th>Ref Number</th>
+                <th>Ref ID</th>
                 <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
                 <th>Profession</th>
                 <th>Country</th>
-                <th>Verified</th>
-                <th>Applied</th>
+                <th style="text-align:center">Verified</th>
+                <th>Date</th>
                 <th>Status</th>
-                <th>Action</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="applicantsBody">
@@ -203,6 +205,7 @@
             <button id="btnApprove" class="btn btn-success"><i class="fas fa-check"></i> Approve</button>
             <button id="btnReject"  class="btn btn-danger"><i class="fas fa-times"></i> Reject</button>
             <button id="btnPending" class="btn btn-secondary"><i class="fas fa-hourglass"></i> Set Pending</button>
+            <button id="btnReview"  class="btn btn-warning" style="background:#fbbf24;color:#000;"><i class="fas fa-search"></i> Under Review</button>
           </div>
           <p class="decision-note"><i class="fas fa-envelope"></i> The applicant will receive an automatic email notification when you update their status.</p>
         </div>

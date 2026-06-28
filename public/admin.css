@@ -413,3 +413,8 @@ tr:hover td {
 .decision-note {
   margin-top: 12px; font-size: 0.8rem; color: var(--warning); display: flex; align-items: center; gap: 6px;
 }
+.status-review {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+}
