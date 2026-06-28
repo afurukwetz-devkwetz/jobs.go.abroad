@@ -5,12 +5,11 @@ const path       = require('path');
 const fs         = require('fs');
 const bcrypt     = require('bcryptjs');
 const crypto     = require('crypto');
-const nodemailer = require('nodemailer');
 const Applicant  = require('../models/Applicant');
 const Batch      = require('../models/Batch');
+const { sendVerificationEmail, sendRefNumberEmail } = require('../middleware/emailService');
 
 // ── STORAGE STRATEGY ─────────────────────────────────────────────────────────
-// Use Cloudinary only when real credentials are provided; fall back to local disk.
 const CLOUDINARY_CONFIGURED =
   process.env.CLOUDINARY_CLOUD_NAME &&
   process.env.CLOUDINARY_CLOUD_NAME !== 'your_cloud_name' &&
@@ -23,7 +22,7 @@ let upload;
 
 if (CLOUDINARY_CONFIGURED) {
   console.log('☁️  [Storage] Cloudinary configured — CVs will be stored in the cloud.');
-  const cloudinary           = require('cloudinary').v2;
+  const cloudinary            = require('cloudinary').v2;
   const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
   cloudinary.config({
@@ -35,20 +34,15 @@ if (CLOUDINARY_CONFIGURED) {
   const cloudStorage = new CloudinaryStorage({
     cloudinary,
     params: {
-      folder:           'cosnurses_cvs',
-      resource_type:    'raw',          // required for PDF/DOC/DOCX
-      allowed_formats:  ['pdf', 'doc', 'docx'],
+      folder:          'cosnurses_cvs',
+      resource_type:   'raw',
+      allowed_formats: ['pdf', 'doc', 'docx'],
     },
   });
 
-  upload = multer({
-    storage: cloudStorage,
-    limits:  { fileSize: 5 * 1024 * 1024 },
-  });
+  upload = multer({ storage: cloudStorage, limits: { fileSize: 5 * 1024 * 1024 } });
 } else {
   console.warn('⚠️  [Storage] Cloudinary NOT configured — falling back to local disk (/uploads).');
-
-  // Ensure local uploads folder exists
   const uploadDir = path.join(__dirname, '..', 'uploads');
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -74,12 +68,21 @@ if (CLOUDINARY_CONFIGURED) {
   });
 }
 
+// Helper: parse multi-value fields from body (may be string or array)
+function parseArray(val) {
+  if (!val) return [];
+  return Array.isArray(val) ? val.map(s => String(s).trim()).filter(Boolean)
+                            : [String(val).trim()].filter(Boolean);
+}
+
 // ── POST /api/register ────────────────────────────────────────────────────────
 router.post('/', upload.single('cvFile'), async (req, res) => {
   try {
     const {
       firstName, lastName, email, phone, dob, gender,
       profession, experience, country, qualification, bio, password,
+      destinations, destOther, englishQuals, professionalRegs,
+      germanLevel, docsAvailable, qualDeclarations,
     } = req.body;
 
     // Basic validation
@@ -106,97 +109,54 @@ router.post('/', upload.single('cvFile'), async (req, res) => {
     // Resolve CV path/URL
     let cvFile = null;
     if (req.file) {
-      // Cloudinary returns .path as the secure URL; disk returns a local path
       cvFile = req.file.path || req.file.filename || null;
     }
 
-    // Save applicant
+    // Save applicant (including nurse qualification assessment data)
     const applicant = new Applicant({
-      firstName, lastName, email, phone, dob, gender,
+      firstName: firstName.trim(), lastName: lastName.trim(),
+      email, phone, dob, gender,
       profession, experience, country, qualification, bio,
-      password: hashed,
-      cvFile,
-      refNumber,
-      batchId:   batch._id,
-      batchCode: batch.batchCode,
+      password: hashed, cvFile, refNumber,
+      batchId: batch._id, batchCode: batch.batchCode,
       verificationToken,
+      destinations:     parseArray(destinations),
+      destOther:        (destOther || '').trim(),
+      englishQuals:     parseArray(englishQuals),
+      professionalRegs: parseArray(professionalRegs),
+      germanLevel:      parseArray(germanLevel),
+      docsAvailable:    parseArray(docsAvailable),
+      qualDeclarations: parseArray(qualDeclarations),
     });
 
     await applicant.save();
 
-    // ── SEND VERIFICATION EMAIL ──────────────────────────────────────────────
-    try {
-      console.log('📧 [Email] Sending verification email to:', email);
-
-      let transporter;
-      if (process.env.SENDGRID_API_KEY) {
-        transporter = nodemailer.createTransport({
-          host:   process.env.SMTP_HOST || 'smtp.sendgrid.net',
-          port:   process.env.SMTP_PORT || 587,
-          auth: {
-            user: process.env.SMTP_USER || 'apikey',
-            pass: process.env.SENDGRID_API_KEY || process.env.SMTP_PASS || process.env.EMAIL_PASS,
-          },
-        });
-      } else {
-        transporter = nodemailer.createTransport({
-          host:   process.env.EMAIL_HOST || 'smtp.gmail.com',
-          port:   process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT) : 465,
-          secure: process.env.EMAIL_SECURE !== 'false', // true by default for 465
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-          },
-        });
+    // ── SEND EMAILS (non-blocking — runs after response) ─────────────────────
+    setImmediate(async () => {
+      try {
+        await sendVerificationEmail({ firstName, email, verificationToken });
+        console.log('✅ [Email] Verification email sent to:', email);
+      } catch (e) {
+        console.error('❌ [Email] Verification email failed:', e.message);
       }
-
-      await transporter.verify();
-      console.log('✅ [Email] SMTP connection verified');
-
-      const verifyUrl =
-        `${process.env.FRONTEND_URL || 'https://jobs-go-abroad-3pbi.onrender.com'}/api/verify/${verificationToken}`;
-
-      await transporter.sendMail({
-        from:    `"Global Job Connect Team" <${process.env.EMAIL_USER}>`,
-        to:      email,
-        subject: 'Verify Your Email – Global Job Connect Registration',
-        html: `
-          <div style="font-family:sans-serif;max-width:600px;margin:0 auto;border:1px solid #eee;padding:20px;border-radius:10px;">
-            <h2 style="color:#1565c0;">Welcome to Global Job Connect, ${firstName}!</h2>
-            <p>Thank you for registering. Please verify your email address by clicking the button below:</p>
-            <div style="text-align:center;margin:30px 0;">
-              <a href="${verifyUrl}"
-                 style="background-color:#1565c0;color:white;padding:12px 25px;text-decoration:none;border-radius:5px;font-weight:bold;">
-                Verify Email Address
-              </a>
-            </div>
-            <p>If the button doesn't work, copy and paste this link:</p>
-            <p style="word-break:break-all;color:#666;">${verifyUrl}</p>
-            <hr style="border:none;border-top:1px solid #eee;margin:20px 0;">
-            <p style="font-size:12px;color:#999;">If you did not register, please ignore this email.</p>
-          </div>
-        `,
-      });
-
-      console.log('🚀 [Email] Verification email sent to:', email);
-    } catch (mailErr) {
-      // Email failure must NOT prevent successful registration
-      console.error('❌ [Email] Failed to send verification email:', mailErr.message);
-    }
+      try {
+        await sendRefNumberEmail({ firstName, email, refNumber, batchCode: batch.batchCode });
+        console.log('✅ [Email] Reference number email sent to:', email);
+      } catch (e) {
+        console.error('❌ [Email] Reference number email failed:', e.message);
+      }
+    });
 
     res.status(201).json({
       success:   true,
       refNumber,
       batchCode: batch.batchCode,
-      message:   'Registration successful! Please check your email to verify your account.',
+      message:   'Registration successful! Check your email for your reference number.',
     });
 
   } catch (err) {
     console.error('❌ [Register] Unexpected error:', err);
-    res.status(500).json({
-      error:   'Server error. Please try again.',
-      details: err.message,
-    });
+    res.status(500).json({ error: 'Server error. Please try again.', details: err.message });
   }
 });
 

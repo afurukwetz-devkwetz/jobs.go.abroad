@@ -30,6 +30,18 @@ const ApplicantSchema = new mongoose.Schema({
   isVerified:    { type: Boolean, default: false },
   verificationToken: { type: String },
 
+  // Nurse Qualification Assessment
+  destinations:      { type: [String], default: [] },
+  destOther:         { type: String, default: '' },
+  englishQuals:      { type: [String], default: [] },
+  professionalRegs:  { type: [String], default: [] },
+  germanLevel:       { type: [String], default: [] },
+  docsAvailable:     { type: [String], default: [] },
+  qualDeclarations:  { type: [String], default: [] },
+
+  // Admin internal note
+  adminNote:     { type: String, default: '' },
+
   createdAt:     { type: Date, default: Date.now }
 });
 

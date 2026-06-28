@@ -392,9 +392,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       try {
         const fd = new FormData();
-        fd.append('firstName',     first);
-        fd.append('lastName',      last);
-        fd.append('email',         email);
+        // Core fields
+        fd.append('firstName',     first.replace(/[<>]/g, '').slice(0, 60));
+        fd.append('lastName',      last.replace(/[<>]/g, '').slice(0, 60));
+        fd.append('email',         email.toLowerCase().trim());
         fd.append('phone',         iti ? iti.getNumber() : document.getElementById('phone')?.value || '');
         fd.append('dob',           document.getElementById('dob')?.value || '');
         fd.append('gender',        document.querySelector('[name=gender]:checked')?.value || '');
@@ -402,10 +403,23 @@ document.addEventListener('DOMContentLoaded', function () {
         fd.append('experience',    document.getElementById('experience')?.value || '');
         fd.append('country',       iti ? iti.getSelectedCountryData().name : '');
         fd.append('qualification', document.getElementById('qualification')?.value || '');
-        fd.append('bio',           document.getElementById('bio')?.value || '');
+        fd.append('bio',           (document.getElementById('bio')?.value || '').replace(/[<>]/g, '').slice(0, 1000));
         fd.append('password',      pw);
         const cvFile = document.getElementById('cvFile');
         if (cvFile?.files[0]) fd.append('cvFile', cvFile.files[0]);
+
+        // Nurse qualification assessment data
+        if (selectedProf === 'nurse') {
+          const getChecked = name => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+          getChecked('dest').forEach(v    => fd.append('destinations',     v));
+          getChecked('english').forEach(v => fd.append('englishQuals',     v));
+          getChecked('reg').forEach(v     => fd.append('professionalRegs', v));
+          getChecked('german').forEach(v  => fd.append('germanLevel',      v));
+          getChecked('docs').forEach(v    => fd.append('docsAvailable',    v));
+          getChecked('decl').forEach(v    => fd.append('qualDeclarations', v));
+          const destOther = (document.getElementById('destOtherText')?.value || '').trim().slice(0, 100);
+          if (destOther) fd.append('destOther', destOther);
+        }
 
         const base = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
         const res  = await fetch(base + '/api/register', { method: 'POST', body: fd });

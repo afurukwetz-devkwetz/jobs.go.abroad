@@ -3,6 +3,7 @@ const router    = express.Router();
 const Applicant = require('../models/Applicant');
 const Batch     = require('../models/Batch');
 const { requireAdmin } = require('../middleware/auth');
+const { sendStatusEmail } = require('../middleware/emailService');
 
 const STAGES = [
   { label: 'Application Received',   desc: 'Your application was submitted successfully.' },
@@ -50,17 +51,18 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/track/update — admin updates a single applicant's progress
-// Body: { refNumber, step (0-4), note, status }
+// Body: { refNumber, step (0-4), note, status, adminNote }
 router.put('/update', requireAdmin, async (req, res) => {
   try {
-    const { refNumber, step, note, status } = req.body;
-    
+    const { refNumber, step, note, status, adminNote } = req.body;
+
     let updateFields = {};
     if (step !== undefined && step >= 0 && step <= 4) {
         updateFields.progressStep = step;
     }
-    if (note !== undefined) updateFields.progressNote = note;
-    if (status) updateFields.status = status;
+    if (note     !== undefined) updateFields.progressNote = note;
+    if (status)                updateFields.status        = status;
+    if (adminNote !== undefined) updateFields.adminNote   = adminNote;
 
     const applicant = await Applicant.findOneAndUpdate(
       { refNumber: refNumber.trim().toUpperCase() },
@@ -68,6 +70,24 @@ router.put('/update', requireAdmin, async (req, res) => {
       { returnDocument: 'after' }
     );
     if (!applicant) return res.status(404).json({ error: 'Applicant not found.' });
+
+    // Send status notification email (non-blocking)
+    if (status && applicant.email) {
+      setImmediate(async () => {
+        try {
+          await sendStatusEmail({
+            firstName: applicant.firstName,
+            email:     applicant.email,
+            refNumber: applicant.refNumber,
+            newStatus: status,
+            adminNote: adminNote || '',
+          });
+          console.log(`✅ [Email] Status email (${status}) sent to:`, applicant.email);
+        } catch (e) {
+          console.error('❌ [Email] Status email failed:', e.message);
+        }
+      });
+    }
 
     res.json({
       success:   true,

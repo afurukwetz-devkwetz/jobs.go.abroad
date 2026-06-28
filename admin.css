@@ -319,3 +319,97 @@ tr:hover td {
   margin-top: 10px;
   font-size: 0.9rem;
 }
+
+/* ─── NEW DASHBOARD FEATURES ─── */
+
+/* Session Warning Banner */
+.session-warning {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(245, 158, 11, 0.15);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 12px 20px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  color: #fbbf24; font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+}
+.btn-renew {
+  background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fcd34d; padding: 4px 12px; border-radius: 4px; cursor: pointer;
+  font-size: 0.8rem; font-weight: 600; transition: all 0.2s;
+}
+.btn-renew:hover { background: rgba(245, 158, 11, 0.4); }
+
+/* Analytics Section */
+.analytics-section {
+  display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px;
+}
+@media(max-width: 900px) { .analytics-section { grid-template-columns: 1fr; } }
+.analytics-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+.analytics-card h3 {
+  font-size: 1rem; color: var(--text-main); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+}
+.chart-sub { font-size: 0.8rem; color: var(--text-muted); font-weight: normal; }
+
+/* Table Search & Filter Controls */
+.table-controls {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.search-wrap {
+  position: relative; display: flex; align-items: center;
+}
+.search-wrap i {
+  position: absolute; left: 12px; color: var(--text-muted); font-size: 0.9rem;
+}
+.search-wrap input {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  color: var(--text-main); padding: 8px 12px 8px 36px; border-radius: 6px;
+  font-size: 0.9rem; outline: none; width: 260px; transition: border-color 0.2s;
+}
+.search-wrap input:focus { border-color: var(--primary); }
+.table-controls select {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+  color: var(--text-main); padding: 8px 12px; border-radius: 6px;
+  font-size: 0.9rem; outline: none; cursor: pointer;
+}
+.table-controls select option { background: var(--bg-color); }
+.table-count { font-size: 0.8rem; color: var(--text-muted); margin-top: 12px; text-align: right; }
+
+/* Modal Tabs */
+.modal-tabs {
+  display: flex; gap: 10px; margin: 20px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px;
+}
+.modal-tab {
+  background: transparent; border: none; color: var(--text-muted);
+  font-size: 0.9rem; font-weight: 600; cursor: pointer; padding: 6px 12px;
+  border-radius: 6px; transition: all 0.2s;
+}
+.modal-tab:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+.modal-tab--active { color: var(--primary); background: rgba(59,130,246,0.1); }
+.modal-tab-content { animation: fadeIn 0.3s ease; }
+
+/* Quals Tab Content */
+.qual-row {
+  margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed rgba(255,255,255,0.05);
+}
+.qual-row strong { display: block; margin-bottom: 8px; color: var(--text-main); font-size: 0.85rem; }
+.qual-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.qual-chip {
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+  padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; color: var(--text-main);
+}
+
+/* Admin Note */
+.admin-note-input {
+  width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px; color: var(--text-main); font-family: inherit;
+  font-size: 0.9rem; resize: vertical; outline: none; transition: border-color 0.2s;
+}
+.admin-note-input:focus { border-color: var(--primary); }
+.decision-note {
+  margin-top: 12px; font-size: 0.8rem; color: var(--warning); display: flex; align-items: center; gap: 6px;
+}
