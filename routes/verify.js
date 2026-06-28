@@ -19,15 +19,19 @@ router.post('/send-otp', async (req, res) => {
     // Generate 6-digit OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Upsert OTP in database
+    // Upsert OTP in database (save BEFORE sending email)
     await Otp.findOneAndUpdate(
       { email: email.toLowerCase() },
       { otp: otpCode, createdAt: Date.now() },
       { upsert: true, returnDocument: 'after' }
     );
 
-    // Send email
-    await sendOtpEmail({ email: email.toLowerCase(), otp: otpCode });
+    // Send email via SendGrid SDK (returns true/false, never throws)
+    const sent = await sendOtpEmail({ email: email.toLowerCase(), otp: otpCode });
+    if (!sent) {
+      console.error('❌ [OTP Error]: SendGrid failed to deliver email to:', email);
+      return res.status(500).json({ error: 'Could not send verification email. Please check your email address or try again later.' });
+    }
 
     res.json({ success: true, message: 'OTP sent successfully' });
   } catch (err) {
@@ -35,6 +39,7 @@ router.post('/send-otp', async (req, res) => {
     res.status(500).json({ error: 'Failed to send OTP. Please try again later.' });
   }
 });
+
 
 // GET /api/verify/:token
 router.get('/:token', async (req, res) => {

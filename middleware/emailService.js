@@ -17,6 +17,9 @@ const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_USER || 
 const FROM_NAME  = 'Global Job Connect';
 const SITE       = process.env.FRONTEND_URL || 'https://jobs-go-abroad-3pbi.onrender.com';
 
+console.log(`📧 [EmailService] Sending from: ${FROM_EMAIL} | SendGrid configured: ${SENDGRID_CONFIGURED}`);
+
+
 /**
  * Core send helper — uses SendGrid SDK (HTTPS API, not SMTP).
  * Returns true on success, false on failure (never throws).
