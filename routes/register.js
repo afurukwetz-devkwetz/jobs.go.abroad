@@ -81,7 +81,16 @@ function parseArray(val) {
 
 // ── POST /api/register ────────────────────────────────────────────────────────
 router.post('/', (req, res, next) => {
+  const uploadTimeout = setTimeout(() => {
+    if (!res.headersSent) {
+      console.error('❌ [Upload Error]: Request timed out. Cloudinary or network is hanging.');
+      res.status(408).json({ error: 'File upload took too long. Please check your Cloudinary settings or try a smaller file.' });
+    }
+  }, 25000); // 25 second timeout
+
   upload.single('cvFile')(req, res, function (err) {
+    clearTimeout(uploadTimeout);
+    if (res.headersSent) return; // already handled by timeout
     if (err) {
       console.error('❌ [Upload Error]:', err.message);
       return res.status(400).json({ error: 'File upload failed: ' + err.message + '. Please check your file or try again later.' });

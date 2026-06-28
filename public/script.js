@@ -457,14 +457,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
       async function sendOtp() {
         const base = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
-        const otpRes = await fetch(base + '/api/verify/send-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email.toLowerCase().trim() })
-        });
-        const otpData = await otpRes.json();
-        if (!otpRes.ok) { showToast(otpData.error || 'Failed to send OTP.', 'error'); return false; }
-        return true;
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds
+        
+        try {
+          const otpRes = await fetch(base + '/api/verify/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email.toLowerCase().trim() }),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          const otpData = await otpRes.json();
+          if (!otpRes.ok) { showToast(otpData.error || 'Failed to send OTP.', 'error'); return false; }
+          return true;
+        } catch (err) {
+          clearTimeout(timeoutId);
+          showToast(err.name === 'AbortError' ? 'Request timed out. Please check your internet connection.' : 'Failed to send OTP. Please try again.', 'error');
+          return false;
+        }
       }
 
       // Step 1: Show Fee Modal
@@ -522,7 +533,16 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
           pendingFormData.append('otp', enteredOtp);
           const base = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
-          const res  = await fetch(base + '/api/register', { method: 'POST', body: pendingFormData });
+          
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 seconds
+          
+          const res  = await fetch(base + '/api/register', { 
+            method: 'POST', 
+            body: pendingFormData,
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
           const data = await res.json();
 
           if (!res.ok) {
@@ -540,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('successOverlay').style.display = 'flex';
 
         } catch (err) {
-          showToast(err.message || 'An error occurred. Please try again.', 'error');
+          showToast(err.name === 'AbortError' ? 'The server took too long to respond. Please check your connection.' : (err.message || 'An error occurred. Please try again.'), 'error');
         } finally {
           if (verifyBtn) { verifyBtn.disabled = false; verifyBtn.textContent = 'Verify & Submit'; }
         }
