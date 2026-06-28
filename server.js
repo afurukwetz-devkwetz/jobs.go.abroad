@@ -6,7 +6,6 @@ const path     = require('path');
 const fs       = require('fs');
 const helmet   = require('helmet');
 const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
 
 const app = express();
 
@@ -26,7 +25,6 @@ app.use(helmet({
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(mongoSanitize()); // Prevent NoSQL Injection
 
 // Rate Limiting
 const globalLimiter = rateLimit({
