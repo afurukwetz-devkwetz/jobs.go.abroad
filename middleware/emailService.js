@@ -30,20 +30,20 @@ async function sendMail({ to, subject, html }) {
     return true; // treat mock as success so flow continues
   }
 
-  try {
-    await sgMail.send({
-      to,
-      from: { email: FROM_EMAIL, name: FROM_NAME },
-      subject,
-      html,
-    });
+  // Fire and forget (Background sending to avoid blocking HTTP response)
+  sgMail.send({
+    to,
+    from: { email: FROM_EMAIL, name: FROM_NAME },
+    subject,
+    html,
+  }).then(() => {
     console.log(`✅ [Email] Sent → ${to} | ${subject}`);
-    return true;
-  } catch (err) {
+  }).catch(err => {
     const details = err.response?.body?.errors || err.message;
     console.error('❌ [SendGrid Error]:', JSON.stringify(details));
-    return false;
-  }
+  });
+
+  return true; // Return immediately to speed up UI
 }
 
 // ── Send OTP email ─────────────────────────────────────────────────────────────

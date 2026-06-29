@@ -6,6 +6,7 @@ const path     = require('path');
 const fs       = require('fs');
 const helmet   = require('helmet');
 const rateLimit = require('express-rate-limit');
+const compression = require('compression');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 app.set('trust proxy', 1);
 
 // Middleware
+app.use(compression()); // Compress responses for better performance
 app.use(helmet({
   contentSecurityPolicy: false // Allow inline scripts/styles for UI simplicity
 }));
@@ -67,8 +69,8 @@ app.use('/api/applicant',  authLimiter, require('./routes/applicant'));
 // Serve uploaded CVs
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Serve frontend static files robustly from 'public' folder
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve frontend static files robustly from 'public' folder (with caching)
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d' }));
 
 // Serve main frontend pages explicitly for cleaner URLs
 app.get('/', (req, res) => {
