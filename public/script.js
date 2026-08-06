@@ -56,6 +56,34 @@ function validateStep(step) {
     }
   }
   
+  // Step 3 (Details): nurse must complete & tick all declaration checkboxes
+  if (step === 3 && selectedProf === 'nurse') {
+    const qualPanel = document.getElementById('qualPanel');
+    const isOpen = qualPanel && qualPanel.style.display !== 'none';
+    if (isOpen) {
+      const declBoxes = Array.from(document.querySelectorAll('input[name="decl"]'));
+      const allChecked = declBoxes.length > 0 && declBoxes.every(cb => cb.checked);
+      if (!allChecked) {
+        showToast('Please tick all three declaration checkboxes before proceeding.');
+        const qualSection = document.getElementById('nurseQualSection');
+        if (qualSection) {
+          qualSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          qualSection.style.outline = '2px solid #f43f5e';
+          setTimeout(() => { qualSection.style.outline = ''; }, 2000);
+        }
+        return false;
+      }
+    } else {
+      // Panel is collapsed — require them to open and complete it
+      showToast('Please expand and complete the Professional Qualification Assessment.');
+      const qualToggleBtn = document.getElementById('qualToggleBtn');
+      if (qualToggleBtn) { toggleQualPanel(); }
+      const qualSection = document.getElementById('nurseQualSection');
+      if (qualSection) qualSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+  }
+
   if (step === 4) {
     const pw = document.getElementById('password').value;
     const cpw = document.getElementById('confirmPw').value;
