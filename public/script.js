@@ -486,6 +486,11 @@ document.addEventListener('DOMContentLoaded', function () {
           if (chevron) chevron.style.transform = '';
         }
       }
+      
+      // Auto-advance to Step 2
+      setTimeout(() => {
+        nextStep(1);
+      }, 250);
     });
   });
   // Show by default since nurse is pre-selected
@@ -707,6 +712,15 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('successRef').textContent   = data.refNumber;
           document.getElementById('successBatch').textContent = data.batchCode;
           document.getElementById('successOverlay').style.display = 'flex';
+          
+          if (typeof confetti === 'function') {
+            confetti({
+              particleCount: 150,
+              spread: 80,
+              origin: { y: 0.6 },
+              colors: ['#42a5f5', '#4ade80', '#fbbf24']
+            });
+          }
 
         } catch (err) {
           showToast(err.name === 'AbortError' ? 'The server took too long to respond. Please check your connection.' : (err.message || 'An error occurred. Please try again.'), 'error');

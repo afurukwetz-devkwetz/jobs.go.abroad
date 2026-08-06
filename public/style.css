@@ -935,3 +935,14 @@ label:not(.radio-lbl){
   color: rgba(255,255,255,0.7);
   line-height: 1.6;
 }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
