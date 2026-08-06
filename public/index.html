@@ -57,7 +57,7 @@
 
   <!-- Main Card -->
   <div class="card">
-
+    
     <!-- Tab Nav -->
     <div class="tabs" role="tablist">
       <button id="tabReg" class="tab tab--active" role="tab" aria-selected="true"
@@ -72,6 +72,17 @@
 
     <!-- ══════════════ REGISTRATION PANEL ══════════════ -->
     <section id="panelReg" role="tabpanel">
+
+      <!-- Batch Urgency Counter -->
+      <div class="batch-urgency" style="background:rgba(239,83,80,0.15); border:1px solid #ef5350; border-radius:12px; padding:12px 16px; margin-bottom:20px; display:flex; align-items:center; gap:12px;">
+        <div style="background:#ef5350; color:#fff; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem; box-shadow:0 0 10px rgba(239,83,80,0.4); animation: pulse 2s infinite;">
+          <i class="fas fa-fire"></i>
+        </div>
+        <div>
+          <h4 style="margin:0; font-size:0.9rem; color:#fff; font-weight:700;">High Demand: Batch Closing Soon</h4>
+          <p style="margin:4px 0 0 0; font-size:0.8rem; color:rgba(255,255,255,0.8);">Only <strong style="color:#ef5350;">4 spots left</strong> in the current placement batch.</p>
+        </div>
+      </div>
 
       <!-- Step Tracker -->
       <div class="step-wrapper">
@@ -506,7 +517,14 @@
       <h3 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:16px;text-align:center;"><i class="fas fa-trophy" style="color:#fbbf24;"></i>&nbsp; Success Stories</h3>
       <div style="text-align: center; margin-bottom: 20px;">
         <div style="font-size: 1.8rem; font-weight: 800; color: #42a5f5;">500+</div>
-        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px;">Professionals Placed Globally Since 2020</div>
+        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Professionals Placed Globally Since 2020</div>
+        
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+          <span class="placement-badge">🇬🇧 180+ UK</span>
+          <span class="placement-badge">🇺🇸 120+ USA</span>
+          <span class="placement-badge">🇩🇪 95+ Germany</span>
+          <span class="placement-badge">🇨🇦 80+ Canada</span>
+        </div>
       </div>
       <div class="testimonial-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
         <div class="testim-card" style="background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:16px;">
@@ -546,6 +564,39 @@
     </div>
 
   </div><!-- /services-section -->
+
+  <!-- FAQ Section -->
+  <div class="faq-section" style="max-width:800px; margin:40px auto 0 auto; padding:0 20px;">
+    <h3 style="font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:20px; text-align:center;"><i class="fas fa-circle-question" style="color:#42a5f5;"></i>&nbsp; Frequently Asked Questions</h3>
+    
+    <div class="faq-item">
+      <button class="faq-toggle" onclick="toggleFaq(this)">Is this a legitimate agency? <i class="fas fa-chevron-down"></i></button>
+      <div class="faq-content">
+        <p>Yes. Global Job Connect is a fully licensed international recruitment agency (License NEA-2025-0192). We have successfully placed over 500 professionals across the UK, USA, Canada, Germany, and Australia since 2020.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-toggle" onclick="toggleFaq(this)">Do I have to pay before being placed? <i class="fas fa-chevron-down"></i></button>
+      <div class="faq-content">
+        <p>We charge a one-time non-refundable administrative processing fee to cover background checks, document verification, and file preparation. This ensures only serious candidates enter our pool. The primary placement fees are covered by your future employer.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-toggle" onclick="toggleFaq(this)">How long does the process take? <i class="fas fa-chevron-down"></i></button>
+      <div class="faq-content">
+        <p>While timelines vary based on your profession and destination country, our average processing time from application to interview stage is 4-6 weeks.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-toggle" onclick="toggleFaq(this)">What happens if my application is rejected? <i class="fas fa-chevron-down"></i></button>
+      <div class="faq-content">
+        <p>If you do not meet the initial criteria, our team will provide feedback on what you need to improve (e.g., language scores, missing certifications). You can reapply once you meet the requirements.</p>
+      </div>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer class="site-footer" style="text-align:center; margin-top:40px; padding-bottom:90px; font-size:0.75rem; color:rgba(255,255,255,0.7);">
@@ -594,7 +645,7 @@
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="config.js?v=6"></script>
-<script src="script.js?v=14"></script>
+<script src="script.js?v=15"></script>
 <!-- Fee Alert Modal -->
 <div id="feeModal" class="modal-overlay" style="display:none;">
   <div class="modal-content" style="max-width:450px;">

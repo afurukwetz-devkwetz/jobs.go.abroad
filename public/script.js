@@ -44,6 +44,32 @@ function prevStep(step) {
   document.getElementById('step' + currentStep).style.display = 'block';
 }
 
+function toggleFaq(btn) {
+  const content = btn.nextElementSibling;
+  const icon = btn.querySelector('i');
+  
+  if (content.style.maxHeight) {
+    content.style.maxHeight = null;
+    content.style.paddingTop = "0";
+    content.style.paddingBottom = "0";
+    icon.style.transform = 'rotate(0deg)';
+  } else {
+    // Close others
+    document.querySelectorAll('.faq-content').forEach(c => {
+      c.style.maxHeight = null;
+      c.style.paddingTop = "0";
+      c.style.paddingBottom = "0";
+    });
+    document.querySelectorAll('.faq-toggle i').forEach(i => i.style.transform = 'rotate(0deg)');
+    
+    // Open this
+    content.style.maxHeight = content.scrollHeight + 30 + "px"; // padding offset
+    content.style.paddingTop = "15px";
+    content.style.paddingBottom = "15px";
+    icon.style.transform = 'rotate(180deg)';
+  }
+}
+
 function validateStep(step) {
   const stepDiv = document.getElementById('step' + step);
   const inputs = Array.from(stepDiv.querySelectorAll('input[required], select[required]'));
@@ -696,5 +722,51 @@ document.addEventListener('DOMContentLoaded', function () {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') trackApplication(); });
   });
+
+  // 9. Draft Save / Restore Progress
+  function initDraftSave() {
+    const form = document.getElementById('regForm');
+    if (!form) return;
+    const inputs = form.querySelectorAll('input, select, textarea');
+    const DRAFT_KEY = 'cosnurses_draft';
+    
+    // Restore
+    const saved = localStorage.getItem(DRAFT_KEY);
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        inputs.forEach(input => {
+          if (['password', 'file'].includes(input.type) || input.id === 'confirmPw' || input.id === 'terms') return;
+          if (input.type === 'checkbox' || input.type === 'radio') {
+            if (data[input.name] && Array.isArray(data[input.name])) {
+              input.checked = data[input.name].includes(input.value);
+            } else if (data[input.name] === input.value) {
+              input.checked = true;
+            }
+          } else {
+            if (data[input.id || input.name]) input.value = data[input.id || input.name];
+          }
+        });
+      } catch (e) { console.error('Failed to parse draft', e); }
+    }
+
+    // Save on change
+    form.addEventListener('change', () => {
+      const data = {};
+      inputs.forEach(input => {
+        if (['password', 'file'].includes(input.type) || input.id === 'confirmPw' || input.id === 'terms') return;
+        if (input.type === 'checkbox' || input.type === 'radio') {
+          if (input.checked) {
+            if (!data[input.name]) data[input.name] = [];
+            data[input.name].push(input.value);
+          }
+        } else {
+          data[input.id || input.name] = input.value;
+        }
+      });
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+    });
+  }
+  initDraftSave();
 
 }); // end DOMContentLoaded
