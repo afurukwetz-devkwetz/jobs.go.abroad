@@ -182,11 +182,15 @@
           </div>
         </div>
 
-        <!-- ══ Nurse-only Qualification Assessment ══ -->
         <div id="nurseQualSection" style="display:none; margin-bottom:16px;">
-          <button type="button" class="qual-toggle" id="qualToggleBtn" onclick="toggleQualPanel()">
-            <span><i class="fas fa-stethoscope"></i>&nbsp; Professional Qualification Assessment <span class="qual-required-badge">Required</span></span>
-            <span class="qual-toggle-right"><span class="qual-click-hint" id="qualClickHint">Click to expand</span><i class="fas fa-chevron-down" id="qualChevron"></i></span>
+          <button type="button" class="qual-toggle" id="qualToggleBtn" onclick="toggleQualPanel()" style="flex-direction: column; align-items: stretch;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+              <span><i class="fas fa-stethoscope"></i>&nbsp; Professional Qualification Assessment <span class="qual-required-badge">Required</span></span>
+              <span class="qual-toggle-right"><span class="qual-click-hint" id="qualClickHint">Click to expand</span><i class="fas fa-chevron-down" id="qualChevron"></i></span>
+            </div>
+            <div style="text-align: left; font-size: 0.75rem; color: rgba(255,255,255,0.75); margin-top: 8px; font-weight: 500;">
+              Includes 6 sections (Destinations, English, Licensing, etc.). Takes ~2 mins.
+            </div>
           </button>
           <div id="qualPanel" style="display:none;">
             <div class="qual-panel">
@@ -385,7 +389,7 @@
   </div><!-- /card -->
 
   <!-- ══════════════ SERVICES INFO SECTION ══════════════ -->
-  <div class="services-section">
+  <div id="servicesSection" class="services-section">
 
     <div class="services-header">
       <div class="services-icon-ring"><i class="fas fa-globe"></i></div>
@@ -452,12 +456,12 @@
   </div><!-- /services-section -->
 
   <!-- Footer -->
-  <footer class="site-footer" style="text-align:center; margin-top:40px; padding-bottom:20px; font-size:0.75rem; color:rgba(255,255,255,0.4);">
+  <footer class="site-footer" style="text-align:center; margin-top:40px; padding-bottom:90px; font-size:0.75rem; color:rgba(255,255,255,0.7);">
     <p>&copy; 2026 Global Job Connect. All rights reserved.</p>
     <div style="margin-top:8px; display:flex; justify-content:center; gap:15px;">
-      <a href="#" style="color:rgba(255,255,255,0.5); text-decoration:none;">Privacy Policy</a>
-      <a href="#" style="color:rgba(255,255,255,0.5); text-decoration:none;">Terms of Service</a>
-      <a href="#" style="color:rgba(255,255,255,0.5); text-decoration:none;">Contact Support</a>
+      <a href="#" style="color:rgba(255,255,255,0.8); text-decoration:none;">Privacy Policy</a>
+      <a href="#" style="color:rgba(255,255,255,0.8); text-decoration:none;">Terms of Service</a>
+      <a href="#" style="color:rgba(255,255,255,0.8); text-decoration:none;">Contact Support</a>
     </div>
   </footer>
 

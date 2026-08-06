@@ -23,6 +23,7 @@ function showPanel(name) {
   const panelTrack = document.getElementById('panelTrack');
   const tabReg     = document.getElementById('tabReg');
   const tabTrack   = document.getElementById('tabTrack');
+  const servicesSec = document.getElementById('servicesSection');
 
   if (name === 'track') {
     panelReg.hidden   = true;
@@ -31,6 +32,7 @@ function showPanel(name) {
     tabTrack.classList.add('tab--active');
     tabReg.setAttribute('aria-selected', 'false');
     tabTrack.setAttribute('aria-selected', 'true');
+    if (servicesSec) servicesSec.style.display = 'none';
   } else {
     panelTrack.hidden = true;
     panelReg.hidden   = false;
@@ -38,6 +40,7 @@ function showPanel(name) {
     tabReg.classList.add('tab--active');
     tabTrack.setAttribute('aria-selected', 'false');
     tabReg.setAttribute('aria-selected', 'true');
+    if (servicesSec) servicesSec.style.display = 'block';
     // Reset tracker when going back to reg
     resetTracker();
   }
