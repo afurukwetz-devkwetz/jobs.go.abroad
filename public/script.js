@@ -50,8 +50,11 @@ function validateStep(step) {
   
   for (const input of inputs) {
     if (!input.value.trim() && input.type !== 'checkbox' && input.type !== 'radio') {
-      showToast('Please fill out all required fields in this step.');
+      showToast('Please fill out all required fields before proceeding.');
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      input.style.borderColor = '#ef5350';
       input.focus();
+      setTimeout(() => { input.style.borderColor = ''; }, 2000);
       return false;
     }
   }
@@ -399,6 +402,9 @@ document.addEventListener('DOMContentLoaded', function () {
       meterEl.style.width   = (s + 1) * 20 + '%';
       meterEl.style.background = colors[s];
       textEl.textContent = 'Strength: ' + labels[s];
+      // Hide hint once strength is Good (3) or Strong (4)
+      const pwHint = document.getElementById('pwHint');
+      if (pwHint) pwHint.style.display = s >= 3 ? 'none' : 'block';
     });
   }
 
@@ -408,6 +414,28 @@ document.addEventListener('DOMContentLoaded', function () {
     cpwEl.addEventListener('input', () => {
       if (!cpwEl.value) { cpwEl.style.borderColor = ''; return; }
       cpwEl.style.borderColor = cpwEl.value === pwEl.value ? '#4caf50' : '#ef5350';
+    });
+  }
+
+  // 4b. Inline email validation on blur / input
+  const emailEl = document.getElementById('email');
+  const emailErrEl = document.getElementById('emailError');
+  if (emailEl && emailErrEl) {
+    const isValidEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+    emailEl.addEventListener('blur', () => {
+      if (emailEl.value && !isValidEmail(emailEl.value)) {
+        emailErrEl.style.display = 'block';
+        emailEl.style.borderColor = '#ef5350';
+      }
+    });
+    emailEl.addEventListener('input', () => {
+      if (isValidEmail(emailEl.value)) {
+        emailErrEl.style.display = 'none';
+        emailEl.style.borderColor = '#4caf50';
+      } else {
+        emailErrEl.style.display = 'none'; // only show on blur
+        emailEl.style.borderColor = '';
+      }
     });
   }
 

@@ -44,7 +44,23 @@ if (CLOUDINARY_CONFIGURED) {
   // Switch resource_type to auto so images can be processed natively by Cloudinary
   cloudStorage.params.resource_type = 'auto';
 
-  upload = multer({ storage: cloudStorage, limits: { fileSize: 5 * 1024 * 1024 } });
+  const ALLOWED_MIMES = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+
+  upload = multer({
+    storage: cloudStorage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+      if (ALLOWED_MIMES.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error('Invalid file type. Only PDF, DOC, and DOCX files are accepted.'));
+      }
+    },
+  });
 } else {
   console.warn('⚠️  [Storage] Cloudinary NOT configured — falling back to local disk (/uploads).');
   const uploadDir = path.join(__dirname, '..', 'uploads');

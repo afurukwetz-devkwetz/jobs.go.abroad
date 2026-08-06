@@ -147,6 +147,7 @@
             <i class="fas fa-envelope"></i>
             <input type="email" id="email" placeholder="john@example.com" required>
           </div>
+          <span id="emailError" style="font-size:0.72rem; color:#f87171; display:none; margin-top:4px;"><i class="fas fa-circle-exclamation"></i> Please enter a valid email address.</span>
         </div>
 
         <!-- Phone -->
@@ -338,6 +339,9 @@
             </div>
             <div class="pw-bar"><div id="pwMeter"></div></div>
             <span id="pwText" class="pw-text"></span>
+            <span id="pwHint" style="font-size:0.7rem; color:rgba(255,255,255,0.45); display:block; margin-top:5px; line-height:1.4;">
+              Min 8 chars &middot; 1 uppercase &middot; 1 number &middot; 1 symbol
+            </span>
           </div>
           <div class="field">
             <label for="confirmPw">Confirm Password</label>
@@ -590,7 +594,7 @@
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.0.10/build/js/intlTelInput.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="config.js?v=6"></script>
-<script src="script.js?v=13"></script>
+<script src="script.js?v=14"></script>
 <!-- Fee Alert Modal -->
 <div id="feeModal" class="modal-overlay" style="display:none;">
   <div class="modal-content" style="max-width:450px;">
