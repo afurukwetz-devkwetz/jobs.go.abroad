@@ -93,9 +93,11 @@ body::after{
 .tab--active{
   background:linear-gradient(135deg,#1565c0,#42a5f5);
   color:#fff;
-  box-shadow:0 4px 18px rgba(21,101,192,.45);
+  box-shadow:0 4px 18px rgba(21,101,192,.6);
+  transform: translateY(-2px);
+  border: 1px solid rgba(66,165,245,.4);
 }
-.tab:not(.tab--active):hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.06)}
+.tab:not(.tab--active):hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.1)}
 
 /* ── Sections — controlled ONLY by the HTML hidden attribute ── */
 section[role="tabpanel"]{}
@@ -285,6 +287,56 @@ label:not(.radio-lbl){
 .btn-primary:hover::after{opacity:1}
 .btn-primary span{position:relative;z-index:1}
 .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+
+.btn-secondary{
+  width:100%;padding:15px;
+  border-radius:13px;border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.05);
+  color:#fff;
+  font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+}
+.btn-secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4)}
+
+/* ── Step Tracker ── */
+.step-wrapper { margin-bottom: 24px; }
+.step-tracker {
+  display: flex; align-items: center; justify-content: space-between;
+  max-width: 400px; margin: 0 auto;
+}
+.step-indicator {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,.1); border: 2px solid rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.5);
+  transition: all .3s; z-index: 2;
+}
+.step-indicator.active {
+  background: #1565c0; border-color: #42a5f5; color: #fff;
+  box-shadow: 0 0 12px rgba(66,165,245,.5);
+}
+.step-indicator.completed {
+  background: #4ade80; border-color: #22c55e; color: #fff;
+}
+.step-line {
+  flex: 1; height: 2px; background: rgba(255,255,255,.1); margin: 0 8px;
+  transition: all .3s;
+}
+.step-line.active { background: #42a5f5; }
+.step-labels {
+  display: flex; justify-content: space-between; max-width: 420px; margin: 8px auto 0;
+}
+.step-labels span {
+  font-size: .65rem; font-weight: 600; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: 0.5px;
+  flex: 1; text-align: center; transition: color .3s;
+}
+.step-labels span.active { color: #42a5f5; }
+
+.form-step {
+  animation: fadeInStep .3s ease-in-out;
+}
+@keyframes fadeInStep { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ── Switch link ── */
 .switch-link{text-align:center;margin-top:16px;font-size:.82rem;color:rgba(255,255,255,.4)}
@@ -711,6 +763,20 @@ label:not(.radio-lbl){
   0% { box-shadow: 0 0 0 0 rgba(37,211,102, 0.5); }
   70% { box-shadow: 0 0 0 15px rgba(37,211,102, 0); }
   100% { box-shadow: 0 0 0 0 rgba(37,211,102, 0); }
+}
+
+/* ── Mobile Polish ── */
+@media (max-width: 600px) {
+  body {
+    background:linear-gradient(145deg, rgba(6,13,31,0.92), rgba(10,30,74,0.96)), url('bg.png') center/cover no-repeat fixed;
+  }
+  .page-wrap{padding:20px 15px;}
+  .card{padding:30px 20px;}
+  .prof-grid{grid-template-columns:1fr 1fr;}
+  .row-2{grid-template-columns:1fr;}
+  .timeline{padding-left:16px;}
+  .tl-step::before{left:15px;}
+  .tl-dot{left:-16px;}
 }
 
 /* ── Extra Mobile Polish (under 400px) ── */

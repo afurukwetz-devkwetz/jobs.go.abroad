@@ -8,6 +8,69 @@
 // ── Globals ─────────────────────────────────────────────────
 let iti;            // intl-tel-input instance
 let selectedProf = 'nurse';
+let currentStep = 1;
+const totalSteps = 4;
+
+function nextStep(step) {
+  if (!validateStep(step)) return;
+  
+  document.getElementById('step' + step).style.display = 'none';
+  document.getElementById('stepIndicator' + step).classList.add('completed');
+  document.getElementById('stepIndicator' + step).classList.remove('active');
+  document.getElementById('stepLabel' + step).classList.remove('active');
+  
+  if (step < totalSteps) {
+    document.getElementById('stepLine' + step).classList.add('active');
+  }
+
+  currentStep = step + 1;
+  document.getElementById('step' + currentStep).style.display = 'block';
+  document.getElementById('stepIndicator' + currentStep).classList.add('active');
+  document.getElementById('stepLabel' + currentStep).classList.add('active');
+}
+
+function prevStep(step) {
+  document.getElementById('step' + step).style.display = 'none';
+  document.getElementById('stepIndicator' + step).classList.remove('active');
+  document.getElementById('stepLabel' + step).classList.remove('active');
+  
+  currentStep = step - 1;
+  document.getElementById('stepIndicator' + currentStep).classList.remove('completed');
+  document.getElementById('stepIndicator' + currentStep).classList.add('active');
+  document.getElementById('stepLabel' + currentStep).classList.add('active');
+  if (currentStep < totalSteps) {
+    document.getElementById('stepLine' + currentStep).classList.remove('active');
+  }
+  document.getElementById('step' + currentStep).style.display = 'block';
+}
+
+function validateStep(step) {
+  const stepDiv = document.getElementById('step' + step);
+  const inputs = Array.from(stepDiv.querySelectorAll('input[required], select[required]'));
+  
+  for (const input of inputs) {
+    if (!input.value.trim() && input.type !== 'checkbox' && input.type !== 'radio') {
+      showToast('Please fill out all required fields in this step.');
+      input.focus();
+      return false;
+    }
+  }
+  
+  if (step === 4) {
+    const pw = document.getElementById('password').value;
+    const cpw = document.getElementById('confirmPw').value;
+    if (pw !== cpw) {
+      showToast('Passwords do not match.');
+      return false;
+    }
+    const terms = document.getElementById('terms');
+    if (terms && !terms.checked) {
+      showToast('You must agree to the Terms & Conditions.');
+      return false;
+    }
+  }
+  return true;
+}
 
 const STAGES = [
   { label: 'Application Received',   desc: 'Your application was submitted successfully.',       icon: 'fa-inbox' },
@@ -372,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const cpw   = document.getElementById('confirmPw')?.value        || '';
       const terms = document.getElementById('terms')?.checked;
 
+      if (!validateStep(4)) { return; }
       if (!first || !last) { showToast('Please enter your first and last name.', 'error'); shake('firstName'); return; }
       if (!email.includes('@')) { showToast('Please enter a valid email.', 'error'); shake('email'); return; }
 
