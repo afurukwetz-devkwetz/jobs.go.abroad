@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginSection.style.display = 'none';
     adminSection.style.display = 'block';
     fetchApplicants();
+    loadSettings();
     setupSessionTimer(tok || localStorage.getItem('adminToken'));
   }
 
@@ -493,7 +494,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(API_BASE_URL + '/api/admin/settings', {
         headers: { Authorization: `Bearer ${tok}` }
       });
-      if (!res.ok) return;
+      if (!res.ok) {
+        console.warn('[Settings] Could not load — status:', res.status);
+        return;
+      }
       const cfg = await res.json();
       const input = document.getElementById('settingWaNumber');
       if (input && cfg.whatsappNumber) input.value = cfg.whatsappNumber;
@@ -502,8 +506,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.saveSettings = async function () {
     const tok = localStorage.getItem('adminToken');
+    if (!tok) return alert('Not logged in. Please refresh and log in again.');
     const num = (document.getElementById('settingWaNumber')?.value || '').trim();
     if (!num) return alert('Please enter a WhatsApp number.');
+    const btn = document.querySelector('#settingsSection button');
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; }
     try {
       const res = await fetch(API_BASE_URL + '/api/admin/settings', {
         method: 'PUT',
@@ -511,14 +518,17 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ whatsappNumber: num })
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         const msg = document.getElementById('settingsSaveMsg');
         if (msg) { msg.style.display = 'inline'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
-      } else alert(data.error || 'Failed to save settings.');
-    } catch { alert('Network error saving settings.'); }
+      } else {
+        alert('Error: ' + (data.error || data.message || 'Failed to save settings. Status: ' + res.status));
+      }
+    } catch (err) {
+      alert('Network error saving settings: ' + err.message);
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save Settings'; }
+    }
   };
-
-  // Load settings when dashboard becomes visible
-  if (token) loadSettings();
 
 });
