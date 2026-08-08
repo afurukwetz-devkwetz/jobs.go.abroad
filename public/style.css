@@ -5,7 +5,7 @@ body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height:100vh;
-  background:linear-gradient(145deg, rgba(6,13,31,0.65), rgba(10,30,74,0.72)), url('bg.png') center/cover no-repeat fixed;
+  background:linear-gradient(to bottom, rgba(4,10,24,0.40) 0%, rgba(6,18,55,0.48) 100%), url('bg.png') center/cover no-repeat fixed;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -768,9 +768,10 @@ label:not(.radio-lbl){
 /* ── Mobile Polish ── */
 @media (max-width: 600px) {
   body {
-    background:linear-gradient(145deg, rgba(6,13,31,0.60), rgba(10,30,74,0.68)), url('bg.png') center/cover no-repeat scroll;
+    background: linear-gradient(to bottom, rgba(4,10,24,0.38) 0%, rgba(6,18,55,0.45) 100%), url('bg.png') no-repeat scroll;
     background-size: cover;
     background-position: center top;
+    -webkit-background-size: cover;
   }
   .page-wrap{padding:20px 15px;}
   .card{padding:30px 20px;}
