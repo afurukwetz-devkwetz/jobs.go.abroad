@@ -5,7 +5,7 @@ body{
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height:100vh;
-  background:linear-gradient(to bottom, rgba(4,10,24,0.40) 0%, rgba(6,18,55,0.48) 100%), url('bg.png') center/cover no-repeat fixed;
+  background: linear-gradient(to bottom, rgba(2,8,20,0.22) 0%, rgba(4,14,45,0.30) 100%), url('bg.png') center/cover no-repeat fixed;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -19,7 +19,7 @@ body::before{
   content:'';
   position:fixed;
   width:600px;height:600px;
-  background:radial-gradient(circle,rgba(21,101,192,.25),transparent 70%);
+  background:radial-gradient(circle,rgba(21,101,192,.10),transparent 70%);
   top:-150px;left:-150px;
   border-radius:50%;
   pointer-events:none;
@@ -29,7 +29,7 @@ body::after{
   content:'';
   position:fixed;
   width:450px;height:450px;
-  background:radial-gradient(circle,rgba(66,165,245,.18),transparent 70%);
+  background:radial-gradient(circle,rgba(66,165,245,.08),transparent 70%);
   bottom:-100px;right:-100px;
   border-radius:50%;
   pointer-events:none;
@@ -60,13 +60,13 @@ body::after{
 
 /* ── Card ── */
 .card{
-  background:rgba(255,255,255,.03);
-  backdrop-filter:blur(30px);
-  -webkit-backdrop-filter:blur(30px);
-  border:1px solid rgba(255,255,255,.1);
+  background:rgba(4,12,35,0.52);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.12);
   border-radius:28px;
   padding:40px 36px;
-  box-shadow:0 30px 80px rgba(0,0,0,.5);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
   width:100%;
 }
 
@@ -768,10 +768,11 @@ label:not(.radio-lbl){
 /* ── Mobile Polish ── */
 @media (max-width: 600px) {
   body {
-    background: linear-gradient(to bottom, rgba(4,10,24,0.38) 0%, rgba(6,18,55,0.45) 100%), url('bg.png') no-repeat scroll;
+    background: linear-gradient(to bottom, rgba(2,8,20,0.20) 0%, rgba(4,14,45,0.28) 100%), url('bg.png') no-repeat scroll;
     background-size: cover;
     background-position: center top;
     -webkit-background-size: cover;
+    background-attachment: scroll;
   }
   .page-wrap{padding:20px 15px;}
   .card{padding:30px 20px;}
