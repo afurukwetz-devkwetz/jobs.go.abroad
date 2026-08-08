@@ -485,4 +485,40 @@ document.addEventListener('DOMContentLoaded', () => {
     finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-file-upload"></i> Request Document'; }
   });
 
+  // ─── Settings ──────────────────────────────────────────────────────────────
+  async function loadSettings() {
+    const tok = localStorage.getItem('adminToken');
+    if (!tok) return;
+    try {
+      const res = await fetch(API_BASE_URL + '/api/admin/settings', {
+        headers: { Authorization: `Bearer ${tok}` }
+      });
+      if (!res.ok) return;
+      const cfg = await res.json();
+      const input = document.getElementById('settingWaNumber');
+      if (input && cfg.whatsappNumber) input.value = cfg.whatsappNumber;
+    } catch (e) { console.warn('Could not load settings', e); }
+  }
+
+  window.saveSettings = async function () {
+    const tok = localStorage.getItem('adminToken');
+    const num = (document.getElementById('settingWaNumber')?.value || '').trim();
+    if (!num) return alert('Please enter a WhatsApp number.');
+    try {
+      const res = await fetch(API_BASE_URL + '/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok}` },
+        body: JSON.stringify({ whatsappNumber: num })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const msg = document.getElementById('settingsSaveMsg');
+        if (msg) { msg.style.display = 'inline'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
+      } else alert(data.error || 'Failed to save settings.');
+    } catch { alert('Network error saving settings.'); }
+  };
+
+  // Load settings when dashboard becomes visible
+  if (token) loadSettings();
+
 });

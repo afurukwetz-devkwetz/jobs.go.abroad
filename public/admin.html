@@ -149,6 +149,27 @@
           </table>
         </div>
       </section>
+
+      <!-- ══ Settings Section ══ -->
+      <section class="table-section" style="margin-top:24px;" id="settingsSection">
+        <div class="table-header">
+          <h2><i class="fas fa-cog" style="color:#60a5fa"></i> Platform Settings</h2>
+        </div>
+        <div style="padding:24px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,255,255,.08);max-width:500px;">
+          <div style="margin-bottom:16px;">
+            <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:6px;">
+              <i class="fab fa-whatsapp" style="color:#25D366;margin-right:6px;"></i>
+              WhatsApp Support Number <span style="color:rgba(255,255,255,.3);font-size:0.75rem;">(include country code, e.g. 254712345678)</span>
+            </label>
+            <input type="text" id="settingWaNumber" placeholder="254700000000"
+              style="width:100%;padding:10px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;font-size:0.95rem;">
+          </div>
+          <button class="btn btn-primary" onclick="saveSettings()" style="background:#25D366;border:none;">
+            <i class="fas fa-save"></i> Save Settings
+          </button>
+          <span id="settingsSaveMsg" style="margin-left:12px;font-size:0.85rem;color:#34d399;display:none;">✅ Saved!</span>
+        </div>
+      </section>
     </main>
   </div>
 

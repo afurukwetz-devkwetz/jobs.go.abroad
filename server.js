@@ -66,6 +66,19 @@ app.use('/api/admin',      authLimiter, require('./routes/admin'));
 app.use('/api/verify',     require('./routes/verify'));
 app.use('/api/applicant',  authLimiter, require('./routes/applicant'));
 
+// Public: fetch platform settings (e.g. WhatsApp number)
+const Setting = require('./models/Setting');
+app.get('/api/settings', async (req, res) => {
+  try {
+    const settings = await Setting.find();
+    const config = {};
+    settings.forEach(s => { config[s.key] = s.value; });
+    res.json(config);
+  } catch {
+    res.status(500).json({ error: 'Failed to load settings' });
+  }
+});
+
 // Serve uploaded CVs
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

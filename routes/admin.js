@@ -1,6 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const Setting = require('../models/Setting');
+
+// Middleware: verify admin JWT
+function requireAdmin(req, res, next) {
+  const auth = req.headers.authorization || '';
+  const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+  if (!token) return res.status(401).json({ error: 'No token provided' });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+    next();
+  } catch {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+}
 
 // POST /api/admin/login
 router.post('/login', (req, res) => {
@@ -35,6 +50,32 @@ router.post('/login', (req, res) => {
   } catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ error: 'Internal server error during login', details: err.message });
+  }
+});
+
+// GET /api/admin/settings — fetch current settings (admin only)
+router.get('/settings', requireAdmin, async (req, res) => {
+  try {
+    const settings = await Setting.find();
+    const config = {};
+    settings.forEach(s => { config[s.key] = s.value; });
+    res.json(config);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch settings' });
+  }
+});
+
+// PUT /api/admin/settings — update one or more settings (admin only)
+router.put('/settings', requireAdmin, async (req, res) => {
+  try {
+    const updates = req.body;
+    for (const [key, value] of Object.entries(updates)) {
+      await Setting.findOneAndUpdate({ key }, { value }, { upsert: true, new: true });
+    }
+    res.json({ success: true, message: 'Settings updated' });
+  } catch (err) {
+    console.error('[Admin Settings]', err);
+    res.status(500).json({ error: 'Failed to update settings' });
   }
 });
 
