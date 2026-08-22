@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Application — Global Job Connect</title>
   <meta name="description" content="Check your application status, view your profile, and manage your documents on Global Job Connect.">
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#1565c0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -206,17 +204,6 @@
     }
     .req-doc-item .btn-upload:hover { background: rgba(245,158,11,0.35); }
 
-    /* Install banner */
-    #installBanner {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: linear-gradient(135deg, var(--blue), var(--teal));
-      border-radius: 14px; padding: 14px 20px;
-      display: none; align-items: center; gap: 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 999; max-width: 90%;
-    }
-    #installBanner p { font-size: 0.9rem; color: #fff; }
-    #installBanner button { background: rgba(255,255,255,0.25); border: none; color: #fff; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.88rem; font-family: inherit; }
-    #installBanner .close-banner { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 1.2rem; cursor: pointer; padding: 0; }
 
     /* Toast */
     .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -324,12 +311,6 @@
   </div>
 </div>
 
-<!-- Install Banner -->
-<div id="installBanner">
-  <p>📱 Install this app on your phone!</p>
-  <button id="installBtn">Install</button>
-  <button class="close-banner" id="dismissInstall">&times;</button>
-</div>
 
 <div class="toast-container" id="toastContainer"></div>
 
@@ -540,24 +521,15 @@ async function uploadRequestedDoc(e, docId) {
   } catch { toast('Upload error. Please try again.', 'error'); }
 }
 
-// ── PWA Install Prompt ─────────────────────────────────────────
-let deferredInstall;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredInstall = e;
-  document.getElementById('installBanner').style.display = 'flex';
-});
-document.getElementById('installBtn').addEventListener('click', () => {
-  if (deferredInstall) { deferredInstall.prompt(); deferredInstall = null; }
-  document.getElementById('installBanner').style.display = 'none';
-});
-document.getElementById('dismissInstall').addEventListener('click', () => {
-  document.getElementById('installBanner').style.display = 'none';
-});
-
-// ── Service Worker ─────────────────────────────────────────────
+// ── Service Worker Unregistration (Remove PWA) ────────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for (let registration of registrations) {
+      registration.unregister();
+    }
+  }).catch(function(err) {
+    console.error('Service worker unregistration failed: ', err);
+  });
 }
 
 // ── Init ───────────────────────────────────────────────────────
