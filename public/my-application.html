@@ -522,7 +522,7 @@ async function uploadRequestedDoc(e, docId) {
 }
 
 // ── Service Worker Unregistration (Remove PWA) ────────────────
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
   navigator.serviceWorker.getRegistrations().then(function(registrations) {
     for (let registration of registrations) {
       registration.unregister();
