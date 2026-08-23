@@ -2,14 +2,20 @@ const express = require('express');
 const router = express.Router();
 const Template = require('../models/Template');
 
-// ─── GET all templates (grouped by category) ─────────────────────────────
+// ─── GET all templates (auto-seeds if empty) ─────────────────────────────
 router.get('/', async (req, res) => {
   try {
-    const templates = await Template.find({ isActive: true }).sort({ category: 1, name: 1 });
-    // Group by category
-    const grouped = templates.reduce((acc, template) => {
-      if (!acc[template.category]) acc[template.category] = [];
-      acc[template.category].push(template);
+    let templates = await Template.find({ isActive: true }).sort({ category: 1, name: 1 });
+
+    // Auto-seed on first load if collection is empty
+    if (templates.length === 0) {
+      const seeded = await seedDefaultTemplates();
+      if (seeded) templates = await Template.find({ isActive: true }).sort({ category: 1, name: 1 });
+    }
+
+    const grouped = templates.reduce((acc, t) => {
+      if (!acc[t.category]) acc[t.category] = [];
+      acc[t.category].push(t);
       return acc;
     }, {});
     res.json({ success: true, templates, grouped });
@@ -86,11 +92,11 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// ─── SEED the initial 40+ templates ──────────────────────────────────────
-router.post('/seed', async (req, res) => {
+// ─── SEED the initial 50 templates ──────────────────────────────────────
+async function seedDefaultTemplates() {
   try {
     const count = await Template.countDocuments();
-    if (count > 0) return res.json({ success: true, message: 'Templates already seeded' });
+    if (count > 0) return false;
 
     const initialTemplates = [
       // ─── Application ────────────────────────────────────────────────────────────
@@ -362,9 +368,26 @@ router.post('/seed', async (req, res) => {
     ];
 
     await Template.insertMany(initialTemplates);
-    res.json({ success: true, message: initialTemplates.length + ' templates seeded successfully' });
+    return true;
   } catch (err) {
     console.error('Error seeding templates:', err);
+    return false;
+  }
+}
+
+// ─── POST /seed  (manual trigger from admin UI) ───────────────────────────
+router.post('/seed', async (req, res) => {
+  try {
+    const count = await Template.countDocuments();
+    if (count > 0) {
+      // Force re-seed: drop existing and re-insert
+      await Template.deleteMany({});
+    }
+    const seeded = await seedDefaultTemplates();
+    const total  = await Template.countDocuments();
+    res.json({ success: true, message: total + ' templates seeded successfully' });
+  } catch (err) {
+    console.error('Error in seed route:', err);
     res.status(500).json({ success: false, error: 'Server error seeding templates' });
   }
 });
