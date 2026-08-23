@@ -8,10 +8,123 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="admin.css">
   <style>
-    select option {
+    select option, select optgroup {
       background: #1e293b;
       color: #fff;
     }
+
+    /* ── Templates Dashboard ─────────────────────────────── */
+    #templates-section { display: none; }
+
+    .tpl-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+    .tpl-header h2 { font-size: 1.3rem; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .tpl-header h2 i { color: #60a5fa; }
+
+    .tpl-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .tpl-search-wrap { position: relative; }
+    .tpl-search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,.35); font-size: 0.85rem; }
+    .tpl-search-wrap input { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; color: #fff; padding: 9px 14px 9px 36px; font-family: inherit; font-size: 0.9rem; width: 220px; outline: none; }
+    .tpl-search-wrap input::placeholder { color: rgba(255,255,255,.3); }
+    .tpl-search-wrap input:focus { border-color: #60a5fa; }
+
+    #tplCategoryFilter { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; color: #fff; padding: 9px 14px; font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer; }
+    #tplCategoryFilter:focus { border-color: #60a5fa; }
+
+    /* Category tabs */
+    .cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .cat-tab { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 20px; color: rgba(255,255,255,.55); padding: 6px 14px; font-size: 0.8rem; cursor: pointer; transition: all .2s; white-space: nowrap; }
+    .cat-tab:hover { border-color: rgba(255,255,255,.25); color: rgba(255,255,255,.85); }
+    .cat-tab.active { background: rgba(96,165,250,.15); border-color: rgba(96,165,250,.5); color: #60a5fa; font-weight: 600; }
+
+    /* Template grid */
+    .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .tpl-card { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09); border-radius: 12px; padding: 18px; transition: all .2s; }
+    .tpl-card:hover { border-color: rgba(96,165,250,.3); background: rgba(96,165,250,.04); }
+    .tpl-card-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    .tpl-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .tpl-card-meta { flex: 1; min-width: 0; }
+    .tpl-card-name { font-weight: 600; color: #e2e8f0; font-size: 0.92rem; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tpl-card-cat { font-size: 0.75rem; color: rgba(255,255,255,.4); }
+    .tpl-subject { font-size: 0.8rem; color: rgba(255,255,255,.45); margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tpl-actions { display: flex; gap: 8px; }
+    .tpl-btn { padding: 5px 12px; border: none; border-radius: 6px; font-size: 0.78rem; cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: inherit; font-weight: 500; transition: all .15s; }
+    .tpl-btn-edit { background: rgba(96,165,250,.15); color: #60a5fa; }
+    .tpl-btn-edit:hover { background: rgba(96,165,250,.25); }
+    .tpl-btn-dupe { background: rgba(52,211,153,.12); color: #34d399; }
+    .tpl-btn-dupe:hover { background: rgba(52,211,153,.22); }
+    .tpl-btn-del { background: rgba(251,113,133,.12); color: #fb7185; }
+    .tpl-btn-del:hover { background: rgba(251,113,133,.22); }
+
+    .tpl-empty { text-align: center; padding: 60px 20px; color: rgba(255,255,255,.35); grid-column: 1/-1; }
+    .tpl-empty i { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+
+    /* Category icon map */
+    .cat-color-application { background: rgba(96,165,250,.15); color: #60a5fa; }
+    .cat-color-documents { background: rgba(251,191,36,.15); color: #fbbf24; }
+    .cat-color-payments { background: rgba(52,211,153,.15); color: #34d399; }
+    .cat-color-assessment { background: rgba(167,139,250,.15); color: #a78bfa; }
+    .cat-color-interview { background: rgba(251,113,133,.15); color: #fb7185; }
+    .cat-color-selection { background: rgba(34,197,94,.15); color: #22c55e; }
+    .cat-color-offer { background: rgba(6,182,212,.15); color: #06b6d4; }
+    .cat-color-preemployment { background: rgba(249,115,22,.15); color: #f97316; }
+    .cat-color-onboarding { background: rgba(236,72,153,.15); color: #ec4899; }
+    .cat-color-visa { background: rgba(59,130,246,.15); color: #3b82f6; }
+    .cat-color-travel { background: rgba(16,185,129,.15); color: #10b981; }
+    .cat-color-followup { background: rgba(245,158,11,.15); color: #f59e0b; }
+    .cat-color-hold { background: rgba(99,102,241,.15); color: #6366f1; }
+    .cat-color-closure { background: rgba(239,68,68,.15); color: #ef4444; }
+    .cat-color-placement { background: rgba(234,179,8,.15); color: #eab308; }
+
+    /* ── Template Editor Modal ───────────────────────────── */
+    #tplEditorModal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(6px); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+    #tplEditorModal.open { display: flex; }
+    .tpl-editor-box { background: #0f172a; border: 1px solid rgba(255,255,255,.12); border-radius: 16px; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; }
+    .tpl-editor-box h3 { font-size: 1.1rem; font-weight: 600; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .tpl-editor-box h3 i { color: #60a5fa; }
+    .tpl-editor-close { position: absolute; top: 18px; right: 18px; background: rgba(255,255,255,.07); border: none; border-radius: 50%; width: 32px; height: 32px; color: rgba(255,255,255,.5); cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+    .tpl-editor-close:hover { background: rgba(255,255,255,.15); color: #fff; }
+    .tpl-field { margin-bottom: 16px; }
+    .tpl-field label { display: block; font-size: 0.82rem; color: rgba(255,255,255,.5); margin-bottom: 6px; font-weight: 500; }
+    .tpl-field input, .tpl-field select, .tpl-field textarea { width: 100%; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; color: #fff; padding: 10px 14px; font-family: inherit; font-size: 0.92rem; outline: none; resize: vertical; box-sizing: border-box; }
+    .tpl-field input:focus, .tpl-field select:focus, .tpl-field textarea:focus { border-color: #60a5fa; }
+    .tpl-field textarea { min-height: 220px; line-height: 1.6; }
+    .tpl-placeholder-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .ph-chip { background: rgba(96,165,250,.1); border: 1px solid rgba(96,165,250,.25); border-radius: 5px; color: #93c5fd; font-size: 0.74rem; padding: 3px 8px; cursor: pointer; font-family: monospace; transition: all .15s; }
+    .ph-chip:hover { background: rgba(96,165,250,.2); }
+    .tpl-editor-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+    /* ── Email Tab (in Applicant Modal) ──────────────────── */
+    .email-subtabs { display: flex; gap: 2px; margin-bottom: 20px; background: rgba(255,255,255,.04); border-radius: 8px; padding: 3px; }
+    .email-subtab { flex: 1; padding: 8px; text-align: center; border: none; border-radius: 6px; background: transparent; color: rgba(255,255,255,.45); font-size: 0.82rem; cursor: pointer; font-family: inherit; font-weight: 500; transition: all .15s; }
+    .email-subtab.active { background: rgba(96,165,250,.15); color: #60a5fa; }
+    .email-subpanel { display: none; }
+    .email-subpanel.active { display: block; }
+
+    /* Email preview panel */
+    .email-preview-box { background: #fff; border-radius: 12px; padding: 28px; color: #1a1a2e; font-family: Georgia, serif; margin-top: 16px; font-size: 0.9rem; line-height: 1.8; }
+    .email-preview-header { border-bottom: 2px solid #eee; padding-bottom: 12px; margin-bottom: 16px; }
+    .email-preview-subject { font-weight: 700; font-size: 1rem; color: #0d1b2a; margin-bottom: 4px; }
+    .email-preview-to { color: #666; font-size: 0.82rem; font-family: Arial, sans-serif; }
+    .email-preview-body { white-space: pre-line; }
+    .email-preview-footer { border-top: 1px solid #eee; margin-top: 16px; padding-top: 12px; font-size: 0.82rem; color: #666; font-family: Arial, sans-serif; }
+
+    /* Email history log */
+    .email-log-item { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
+    .email-log-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+    .email-log-template { font-weight: 600; font-size: 0.88rem; color: #93c5fd; }
+    .email-log-date { font-size: 0.75rem; color: rgba(255,255,255,.35); white-space: nowrap; }
+    .email-log-subject { font-size: 0.82rem; color: rgba(255,255,255,.6); margin-bottom: 4px; }
+    .email-log-by { font-size: 0.75rem; color: rgba(255,255,255,.3); }
+    .email-log-expand { background: none; border: none; color: rgba(255,255,255,.3); cursor: pointer; font-size: 0.75rem; margin-top: 8px; padding: 0; font-family: inherit; }
+    .email-log-expand:hover { color: #60a5fa; }
+    .email-log-body-preview { font-size: 0.8rem; color: rgba(255,255,255,.4); margin-top: 8px; display: none; white-space: pre-line; border-left: 2px solid rgba(255,255,255,.1); padding-left: 10px; }
+    .email-log-empty { text-align: center; padding: 30px; color: rgba(255,255,255,.3); }
+    .email-log-empty i { display: block; font-size: 1.8rem; margin-bottom: 8px; }
+
+    /* Nav tab active */
+    .admin-nav-tab { background: none; border: none; color: rgba(255,255,255,.5); cursor: pointer; font-size: 0.85rem; padding: 8px 14px; border-radius: 8px; font-family: inherit; font-weight: 500; transition: all .15s; display: flex; align-items: center; gap: 6px; }
+    .admin-nav-tab:hover { background: rgba(255,255,255,.07); color: #fff; }
+    .admin-nav-tab.active { background: rgba(96,165,250,.15); color: #60a5fa; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -50,13 +163,16 @@
 
     <header class="admin-header">
       <div class="logo"><i class="fas fa-plane-departure"></i> Global Job Connect Admin</div>
-      <nav class="admin-nav">
-        <button id="refreshBtn" class="btn btn-secondary"><i class="fas fa-sync"></i> Refresh</button>
+      <nav class="admin-nav" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        <button class="admin-nav-tab active" id="navDashboard" onclick="switchMainView('dashboard')"><i class="fas fa-home"></i> Dashboard</button>
+        <button class="admin-nav-tab" id="navTemplates" onclick="switchMainView('templates')"><i class="fas fa-envelope-open-text"></i> Templates</button>
+        <button id="refreshBtn" class="btn btn-secondary" style="margin-left:8px;"><i class="fas fa-sync"></i> Refresh</button>
         <button id="logoutBtn" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
       </nav>
     </header>
 
-    <main class="admin-main">
+    <!-- ══ Dashboard View ══ -->
+    <main class="admin-main" id="dashboard-view">
       <!-- Stat Cards -->
       <section class="stats-section">
         <div class="stat-card">
@@ -156,7 +272,7 @@
         </div>
       </section>
 
-      <!-- ══ Settings Section ══ -->
+      <!-- Settings Section -->
       <section class="table-section" style="margin-top:24px;" id="settingsSection">
         <div class="table-header">
           <h2><i class="fas fa-cog" style="color:#60a5fa"></i> Platform Settings</h2>
@@ -176,6 +292,67 @@
           <span id="settingsSaveMsg" style="margin-left:12px;font-size:0.85rem;color:#34d399;display:none;">✅ Saved!</span>
         </div>
       </section>
+    </main>
+
+    <!-- ══ Templates View ══ -->
+    <main class="admin-main" id="templates-section">
+      <div class="tpl-header">
+        <h2><i class="fas fa-envelope-open-text"></i> Email Template Library</h2>
+        <div class="tpl-controls">
+          <div class="tpl-search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" id="tplSearchInput" placeholder="Search templates…" oninput="renderTemplates()">
+          </div>
+          <select id="tplCategoryFilter" onchange="renderTemplates()">
+            <option value="all">All Categories</option>
+            <option value="Application">Application</option>
+            <option value="Documents">Documents</option>
+            <option value="Payments">Payments</option>
+            <option value="Assessment">Assessment</option>
+            <option value="Interview">Interview</option>
+            <option value="Selection">Selection</option>
+            <option value="Offer & Acceptance">Offer &amp; Acceptance</option>
+            <option value="Pre-Employment">Pre-Employment</option>
+            <option value="Onboarding">Onboarding</option>
+            <option value="Visa & Work Permit">Visa &amp; Work Permit</option>
+            <option value="Travel & Relocation">Travel &amp; Relocation</option>
+            <option value="Follow-Up">Follow-Up</option>
+            <option value="Application Hold">Application Hold</option>
+            <option value="Application Closure">Application Closure</option>
+            <option value="Final Placement">Final Placement</option>
+          </select>
+          <button class="btn btn-primary" onclick="openTemplateEditor(null)" style="font-size:0.85rem;">
+            <i class="fas fa-plus"></i> New Template
+          </button>
+          <button class="btn btn-secondary" onclick="seedTemplates()" style="font-size:0.85rem;" id="seedBtn" title="Load default templates into the database">
+            <i class="fas fa-database"></i> Seed Defaults
+          </button>
+        </div>
+      </div>
+
+      <!-- Category quick-filter tabs -->
+      <div class="cat-tabs" id="catTabs">
+        <button class="cat-tab active" onclick="filterByCategory('all', this)">All</button>
+        <button class="cat-tab" onclick="filterByCategory('Application', this)">Application</button>
+        <button class="cat-tab" onclick="filterByCategory('Documents', this)">Documents</button>
+        <button class="cat-tab" onclick="filterByCategory('Payments', this)">Payments</button>
+        <button class="cat-tab" onclick="filterByCategory('Assessment', this)">Assessment</button>
+        <button class="cat-tab" onclick="filterByCategory('Interview', this)">Interview</button>
+        <button class="cat-tab" onclick="filterByCategory('Selection', this)">Selection</button>
+        <button class="cat-tab" onclick="filterByCategory('Offer & Acceptance', this)">Offer</button>
+        <button class="cat-tab" onclick="filterByCategory('Pre-Employment', this)">Pre-Employment</button>
+        <button class="cat-tab" onclick="filterByCategory('Onboarding', this)">Onboarding</button>
+        <button class="cat-tab" onclick="filterByCategory('Visa & Work Permit', this)">Visa</button>
+        <button class="cat-tab" onclick="filterByCategory('Travel & Relocation', this)">Travel</button>
+        <button class="cat-tab" onclick="filterByCategory('Follow-Up', this)">Follow-Up</button>
+        <button class="cat-tab" onclick="filterByCategory('Application Hold', this)">On Hold</button>
+        <button class="cat-tab" onclick="filterByCategory('Application Closure', this)">Closure</button>
+        <button class="cat-tab" onclick="filterByCategory('Final Placement', this)">Placement</button>
+      </div>
+
+      <div class="tpl-grid" id="templatesGrid">
+        <div class="tpl-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading templates…</p></div>
+      </div>
     </main>
   </div>
 
@@ -199,7 +376,7 @@
         <button class="modal-tab modal-tab--active" onclick="switchTab('info')">Profile</button>
         <button class="modal-tab" onclick="switchTab('quals')">Qualifications</button>
         <button class="modal-tab" onclick="switchTab('decision')">Decision</button>
-        <button class="modal-tab" onclick="switchTab('email')">Email</button>
+        <button class="modal-tab" onclick="switchTab('email')"><i class="fas fa-envelope" style="margin-right:4px;"></i>Email</button>
         <button class="modal-tab" onclick="switchTab('docRequest')">Doc Request</button>
       </div>
 
@@ -232,7 +409,7 @@
         </div>
       </div>
 
-      <!-- Qualifications Tab (nurse only) -->
+      <!-- Qualifications Tab -->
       <div id="tabQuals" class="modal-tab-content" style="display:none">
         <div id="qualsContent">
           <p style="color:rgba(255,255,255,.4);font-style:italic;">No qualification assessment data available.</p>
@@ -257,78 +434,56 @@
         </div>
       </div>
 
-      <!-- Email Tab -->
+      <!-- ══ Email Tab (redesigned) ══ -->
       <div id="tabEmail" class="modal-tab-content" style="display:none">
-        <div class="modal-section">
-          <h3>Send Direct Email</h3>
-          <div class="form-group" style="margin-bottom:12px;">
-            <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:5px;">Template</label>
-            <select id="emailTemplateSelect" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;">
+        <div class="email-subtabs">
+          <button class="email-subtab active" onclick="switchEmailSubtab('compose', this)"><i class="fas fa-edit" style="margin-right:4px;"></i>Compose</button>
+          <button class="email-subtab" onclick="switchEmailSubtab('preview', this)"><i class="fas fa-eye" style="margin-right:4px;"></i>Preview</button>
+          <button class="email-subtab" onclick="switchEmailSubtab('history', this)"><i class="fas fa-history" style="margin-right:4px;"></i>History</button>
+        </div>
+
+        <!-- Compose Sub-panel -->
+        <div id="emailComposePanel" class="email-subpanel active">
+          <div class="tpl-field" style="margin-bottom:12px;">
+            <label>Template</label>
+            <select id="emailTemplateSelect">
               <option value="">-- Custom Email (No Template) --</option>
-              <optgroup label="A. Application & Initial Communication">
-                <option value="app_received">1. Application Received</option>
-                <option value="app_under_review">2. Application Under Review</option>
-                <option value="app_shortlisted">3. Application Shortlisted</option>
-                <option value="app_not_successful">4. Application Not Successful</option>
-              </optgroup>
-              <optgroup label="B. Documents & Verification">
-                <option value="req_documents">5. Request for Documents</option>
-                <option value="missing_documents">6. Missing Documents</option>
-                <option value="doc_quality_issue">7. Document Quality Issue</option>
-                <option value="passport_id_req">8. Passport/ID Request</option>
-                <option value="cred_verification">9. Credential Verification</option>
-                <option value="verification_completed">10. Verification Completed</option>
-              </optgroup>
-              <optgroup label="C. Fees & Payments">
-                <option value="fee_request">11. Payment/Processing Fee Request</option>
-                <option value="fee_reminder">12. Payment Reminder</option>
-                <option value="fee_received">13. Payment Received</option>
-                <option value="fee_conf_req">14. Payment Confirmation Required</option>
-                <option value="fee_issue">15. Payment Issue</option>
-              </optgroup>
-              <optgroup label="D. Assessment & Interview">
-                <option value="assessment_invite">16. Assessment Invitation</option>
-                <option value="interview_invite">17. Interview Invitation</option>
-                <option value="interview_reminder">18. Interview Reminder</option>
-                <option value="interview_reschedule">19. Interview Rescheduling</option>
-                <option value="interview_followup">20. Interview Follow-Up</option>
-              </optgroup>
-              <optgroup label="E. Offer & Selection">
-                <option value="selected_position">21. Selected for Position</option>
-                <option value="emp_offer">22. Employment Offer</option>
-                <option value="offer_acceptance">23. Offer Acceptance Confirmation</option>
-              </optgroup>
-              <optgroup label="F. Pre-Employment & Onboarding">
-                <option value="pre_emp_req">24. Pre-Employment Requirements</option>
-                <option value="med_background">25. Medical/Background Check</option>
-                <option value="onboarding_info">26. Onboarding Information</option>
-              </optgroup>
-              <optgroup label="G. International Recruitment / Visa / Relocation">
-                <option value="visa_docs">27. Visa/Work Permit Documents</option>
-                <option value="visa_update">28. Visa Process Update</option>
-                <option value="travel_info">29. Travel/Relocation Information</option>
-              </optgroup>
-              <optgroup label="H. Delays & Status Updates">
-                <option value="processing_delay">30. Processing Delay</option>
-                <option value="no_response">31. Applicant Has Not Responded</option>
-                <option value="app_on_hold">32. Application Put on Hold</option>
-              </optgroup>
-              <optgroup label="I. Final / Closure">
-                <option value="app_withdrawn">33. Application Withdrawn</option>
-                <option value="app_closed">34. Application Closed</option>
-                <option value="welcome_final">35. Welcome / Final Confirmation</option>
-              </optgroup>
+              <option value="loading" disabled>Loading templates…</option>
             </select>
           </div>
-          <div class="form-group" style="margin-bottom:12px;">
-            <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:5px;">Subject</label>
-            <input type="text" id="emailSubjectInput" placeholder="e.g. Interview Invitation" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;">
+          <div class="tpl-field" style="margin-bottom:12px;">
+            <label>Subject</label>
+            <input type="text" id="emailSubjectInput" placeholder="e.g. Interview Invitation – [Position] | [Application ID]" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#fff;">
           </div>
-          <div class="form-group">
-            <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:5px;">Message</label>
-            <textarea id="emailBodyInput" rows="5" placeholder="Type your message here…" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;resize:vertical;"></textarea>
+          <div class="tpl-field">
+            <label>Message</label>
+            <textarea id="emailBodyInput" rows="8" placeholder="Type your message here…" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#fff;min-height:160px;"></textarea>
           </div>
-          <button id="btnSendEmail" class="btn btn-primary" style="background:#1565c0;color:#fff;"><i class="fas fa-paper-plane"></i> Send Email</button>
+          <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap;">
+            <button id="btnSendEmail" class="btn btn-primary" style="background:#1565c0;"><i class="fas fa-paper-plane"></i> Send Email</button>
+            <button class="btn btn-secondary" onclick="switchEmailSubtab('preview', document.querySelector('.email-subtab:nth-child(2)'))"><i class="fas fa-eye"></i> Preview</button>
+            <span id="emailSendMsg" style="font-size:0.85rem;display:none;"></span>
+          </div>
+        </div>
+
+        <!-- Preview Sub-panel -->
+        <div id="emailPreviewPanel" class="email-subpanel">
+          <div class="email-preview-box" id="emailPreviewContent">
+            <div class="email-preview-header">
+              <div class="email-preview-subject" id="previewSubject">—</div>
+              <div class="email-preview-to" id="previewTo">To: —</div>
+            </div>
+            <div class="email-preview-body" id="previewBody">Select a template and fill in the details to see a preview.</div>
+            <div class="email-preview-footer">This preview shows how the email will appear to the recipient.</div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:12px;background:#1565c0;" onclick="switchEmailSubtab('compose', document.querySelector('.email-subtab:nth-child(1)'))"><i class="fas fa-edit"></i> Back to Compose</button>
+        </div>
+
+        <!-- History Sub-panel -->
+        <div id="emailHistoryPanel" class="email-subpanel">
+          <div id="emailHistoryList">
+            <div class="email-log-empty"><i class="fas fa-inbox"></i><p>Loading email history…</p></div>
+          </div>
         </div>
       </div>
 
@@ -357,6 +512,73 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ══ Template Editor Modal ══ -->
+  <div id="tplEditorModal">
+    <div class="tpl-editor-box">
+      <button class="tpl-editor-close" onclick="closeTemplateEditor()"><i class="fas fa-times"></i></button>
+      <h3 id="tplEditorTitle"><i class="fas fa-pen"></i> New Template</h3>
+
+      <input type="hidden" id="tplEditId">
+      <div class="tpl-field">
+        <label>Template Name *</label>
+        <input type="text" id="tplEditName" placeholder="e.g. Application Received">
+      </div>
+      <div class="tpl-field">
+        <label>Category *</label>
+        <select id="tplEditCategory">
+          <option value="Application">Application</option>
+          <option value="Documents">Documents</option>
+          <option value="Payments">Payments</option>
+          <option value="Assessment">Assessment</option>
+          <option value="Interview">Interview</option>
+          <option value="Selection">Selection</option>
+          <option value="Offer & Acceptance">Offer &amp; Acceptance</option>
+          <option value="Pre-Employment">Pre-Employment</option>
+          <option value="Onboarding">Onboarding</option>
+          <option value="Visa & Work Permit">Visa &amp; Work Permit</option>
+          <option value="Travel & Relocation">Travel &amp; Relocation</option>
+          <option value="Follow-Up">Follow-Up</option>
+          <option value="Application Hold">Application Hold</option>
+          <option value="Application Closure">Application Closure</option>
+          <option value="Final Placement">Final Placement</option>
+        </select>
+      </div>
+      <div class="tpl-field">
+        <label>Subject Line *</label>
+        <input type="text" id="tplEditSubject" placeholder="e.g. Application Received – [Position] | [Application ID]">
+      </div>
+      <div class="tpl-field">
+        <label>Email Body * <span style="color:rgba(255,255,255,.3);font-weight:400;font-size:0.75rem;">— use placeholders below to insert dynamic fields</span></label>
+        <textarea id="tplEditBody" placeholder="Dear [Applicant Name],&#10;&#10;Your message here…"></textarea>
+        <div class="tpl-placeholder-chips" style="margin-top:10px;">
+          <span style="font-size:0.74rem;color:rgba(255,255,255,.35);align-self:center;">Insert:</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Applicant Name]')">[Applicant Name]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Application ID]')">[Application ID]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Position]')">[Position]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Country]')">[Country]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Employer]')">[Employer]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Department]')">[Department]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[HR Officer]')">[HR Officer]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Company Name]')">[Company Name]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Amount]')">[Amount]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Currency]')">[Currency]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Payment Deadline]')">[Payment Deadline]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Document Deadline]')">[Document Deadline]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Interview Date]')">[Interview Date]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Interview Time]')">[Interview Time]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Interview Location]')">[Interview Location]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Start Date]')">[Start Date]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Visa Status]')">[Visa Status]</span>
+          <span class="ph-chip" onclick="insertPlaceholder('[Contact Information]')">[Contact Information]</span>
+        </div>
+      </div>
+      <div class="tpl-editor-actions">
+        <button class="btn btn-secondary" onclick="closeTemplateEditor()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveTemplate()"><i class="fas fa-save"></i> Save Template</button>
+      </div>
     </div>
   </div>
 

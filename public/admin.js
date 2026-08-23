@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     adminSection.style.display = 'block';
     fetchApplicants();
     loadSettings();
+    fetchTemplates();
     setupSessionTimer(tok || localStorage.getItem('adminToken'));
   }
 
@@ -375,12 +376,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.switchTab = function (tab) {
     ['info','quals','decision','email','docRequest'].forEach(t => {
-      const el = document.getElementById(`tab${t.charAt(0).toUpperCase()+t.slice(1)}`);
-      if (el) el.style.display = t === tab ? 'block' : 'none';
+      const id = 'tab' + t.charAt(0).toUpperCase() + t.slice(1);
+      const el = document.getElementById(id);
+      if (el) el.style.display = (t === tab) ? 'block' : 'none';
     });
-    document.querySelectorAll('.modal-tab').forEach((btn, i) => {
-      btn.classList.toggle('modal-tab--active', ['info','quals','decision','email','docRequest'].includes(tab) && btn.textContent.toLowerCase().includes(tab.slice(0, 3)));
+    document.querySelectorAll('.modal-tab').forEach(btn => {
+      btn.classList.remove('modal-tab--active');
     });
+    const tabIndex = ['info','quals','decision','email','docRequest'].indexOf(tab);
+    const tabBtns = document.querySelectorAll('.modal-tab');
+    if (tabBtns[tabIndex]) tabBtns[tabIndex].classList.add('modal-tab--active');
+    // If switching to email, load history
+    if (tab === 'email' && currentApplicant) {
+      loadEmailHistory(currentApplicant._id);
+      updateEmailPreview();
+    }
   };
 
   window.closeModal = function () {
@@ -427,172 +437,149 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ─── Custom Email & Document Request ──────────────────────────────────────────
-  const emailTemplates = {
-    // A. Application & Initial Communication
-    app_received: {
-      subject: "Application Received",
-      body: "Thank you for applying for the position of [Position] with [Company Name].\n\nWe confirm that your application has been received and is currently under review.\n\nIf your application meets the requirements for the next stage, we will contact you with further instructions.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    app_under_review: {
-      subject: "Application Under Review",
-      body: "We would like to inform you that your application for [Position] is currently under review.\n\nOur recruitment team is assessing your qualifications and supporting documents. We will contact you once the review has been completed.\n\nThank you for your patience.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    app_shortlisted: {
-      subject: "Application Shortlisted",
-      body: "We are pleased to inform you that your application for [Position] has been shortlisted.\n\nYou have successfully met the initial requirements, and your application will now proceed to the next stage of the recruitment process.\n\nFurther instructions will be provided shortly.\n\nCongratulations, and we look forward to working with you.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    app_not_successful: {
-      subject: "Application Not Successful",
-      body: "Thank you for your interest in [Position] and for taking the time to submit your application.\n\nAfter careful consideration, we regret to inform you that your application will not proceed to the next stage at this time.\n\nWe appreciate your interest in [Company Name] and wish you every success in your future career.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    // B. Documents & Verification
-    req_documents: {
-      subject: "Request for Documents",
-      body: "To proceed with your application, please provide the following documents:\n\n[Document 1]\n[Document 2]\n[Document 3]\n[Document 4]\n\nPlease submit clear and valid copies by [Date].\n\nKindly reply to this email with the required documents attached.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    missing_documents: {
-      subject: "Missing Documents",
-      body: "Following our review of your application, we note that the following documents are still outstanding:\n\n[Document 1]\n[Document 2]\n\nPlease provide the outstanding documents by [Date] to avoid delays in processing your application.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    doc_quality_issue: {
-      subject: "Document Quality Issue",
-      body: "We have received the documents submitted with your application. However, [document name] could not be properly verified because [reason – unclear/expired/incomplete/etc.].\n\nPlease provide a clear and valid copy of the document by [Date].\n\nThank you for your cooperation.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    passport_id_req: {
-      subject: "Passport/ID Request",
-      body: "As part of the verification process, please provide a clear copy of your valid [Passport/National ID].\n\nPlease ensure that all relevant information is clearly visible and that the document is valid.\n\nKindly submit it by [Date].\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    cred_verification: {
-      subject: "Credential Verification",
-      body: "As part of our verification process, we are currently reviewing your academic and/or professional qualifications.\n\nPlease provide the following information/documents:\n\n[Certificate/Diploma/Degree]\n[Transcript]\n[Professional Registration/License]\n[Other]\n\nPlease ensure that the information provided is accurate and complete.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    verification_completed: {
-      subject: "Verification Completed",
-      body: "We are pleased to confirm that the initial verification of your submitted documents has been completed successfully.\n\nYour application will now proceed to the next stage of the recruitment process.\n\nWe will contact you if any additional information is required.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    // C. Fees & Payments
-    fee_request: {
-      subject: "Payment/Processing Fee Request",
-      body: "Your application has progressed to the next stage.\n\nThe following fee is applicable:\n\nFee: [Description]\nAmount: [Amount]\nCurrency: [Currency]\nDue Date: [Date]\n\nPayment instructions are provided below:\n\n[Payment Instructions]\n\nAfter completing the payment, please send the official payment confirmation/receipt to our team.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    fee_reminder: {
-      subject: "Payment Reminder",
-      body: "This is a reminder that the payment of [Amount] for [purpose] remains outstanding.\n\nPlease complete the payment by [Date] to prevent delays in the processing of your application.\n\nIf you have already made the payment, kindly forward the official receipt or payment confirmation.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    fee_received: {
-      subject: "Payment Received",
-      body: "We confirm receipt of your payment of [Amount] for [purpose].\n\nYour payment has been recorded against application reference [Application ID].\n\nWe will now proceed with the relevant stage of your application.\n\nThank you.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    fee_conf_req: {
-      subject: "Payment Confirmation Required",
-      body: "Our records indicate that a payment for [purpose] may have been initiated, but we have not yet received the payment confirmation.\n\nIf payment has been completed, please forward the official receipt or transaction confirmation for verification.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    fee_issue: {
-      subject: "Payment Issue",
-      body: "We are currently unable to verify the payment submitted for [purpose].\n\nPlease provide the official payment receipt/confirmation showing:\n\nTransaction/reference number\nAmount paid\nDate of payment\nPayment method\n\nOnce received, our team will review and update your application.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    // D. Assessment & Interview
-    assessment_invite: {
-      subject: "Assessment Invitation",
-      body: "You have been invited to complete the [Assessment Name] as part of the recruitment process for [Position].\n\nDate: [Date]\nTime: [Time]\nDuration: [Duration]\nLocation/Platform: [Details]\n\nPlease complete the assessment within the specified timeframe.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    interview_invite: {
-      subject: "Interview Invitation",
-      body: "We are pleased to invite you for an interview for the position of [Position].\n\nDate: [Date]\nTime: [Time]\nLocation/Platform: [Details]\nInterview Type: [Online/In-person]\n\nPlease confirm your availability by [Date].\n\nWe look forward to speaking with you.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    interview_reminder: {
-      subject: "Interview Reminder",
-      body: "This is a reminder that your interview for [Position] is scheduled as follows:\n\nDate: [Date]\nTime: [Time]\nLocation/Platform: [Details]\n\nPlease ensure that you are available and ready at the scheduled time.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    interview_reschedule: {
-      subject: "Interview Rescheduling",
-      body: "Please note that your interview for [Position] has been rescheduled.\n\nNew Date: [Date]\nNew Time: [Time]\nLocation/Platform: [Details]\n\nWe apologize for any inconvenience and appreciate your understanding.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    interview_followup: {
-      subject: "Interview Follow-Up",
-      body: "Thank you for attending the interview for [Position].\n\nWe appreciate the time you took to discuss your qualifications and experience with our team.\n\nYour application remains under consideration, and we will contact you once a decision has been made.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    // E. Offer & Selection
-    selected_position: {
-      subject: "Selected for Position",
-      body: "We are pleased to inform you that you have been selected for the position of [Position] with [Employer/Company].\n\nCongratulations on successfully progressing through the recruitment process.\n\nFurther information regarding your offer, employment conditions, and next steps will be provided separately.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    emp_offer: {
-      subject: "Employment Offer",
-      body: "We are pleased to offer you the position of [Position] with [Employer].\n\nThe key details of the offer are:\n\nPosition: [Position]\nEmployer: [Employer]\nLocation: [Location]\nSalary: [Salary]\nStart Date: [Date]\n\nPlease review the attached offer letter and return the signed copy by [Date].\n\nCongratulations.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    offer_acceptance: {
-      subject: "Offer Acceptance Confirmation",
-      body: "Thank you for returning your signed offer letter.\n\nWe confirm that your acceptance has been received and recorded.\n\nWe will now proceed with the remaining pre-employment and onboarding requirements.\n\nFurther instructions will follow.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    // F. Pre-Employment & Onboarding
-    pre_emp_req: {
-      subject: "Pre-Employment Requirements",
-      body: "As you prepare to join [Employer/Company], please complete the following requirements:\n\n[Requirement 1]\n[Requirement 2]\n[Requirement 3]\n[Requirement 4]\n\nPlease complete these requirements by [Date].\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    med_background: {
-      subject: "Medical/Background Check",
-      body: "As part of the pre-employment process, you are required to complete [background verification/medical examination/other applicable requirement].\n\nPlease follow the instructions provided below:\n\n[Instructions]\n\nKindly complete this requirement by [Date].\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    onboarding_info: {
-      subject: "Onboarding Information",
-      body: "We are pleased to welcome you to [Company/Employer].\n\nYour onboarding details are as follows:\n\nPosition: [Position]\nStart Date: [Date]\nReporting Time: [Time]\nLocation: [Location]\nReporting To: [Name/Department]\n\nPlease bring [required documents/items] on your first day.\n\nWe look forward to welcoming you.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    // G. International Recruitment / Visa / Relocation
-    visa_docs: {
-      subject: "Visa/Work Permit Documents",
-      body: "Your application has progressed to the visa/work permit stage.\n\nTo begin the relevant process, please provide the following documents:\n\nValid passport\n[Employment/Offer Letter]\n[Qualification documents]\n[Professional registration]\n[Other required documents]\n\nPlease submit the documents by [Date].\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    visa_update: {
-      subject: "Visa Process Update",
-      body: "We would like to provide you with an update regarding your visa/work permit process.\n\nCurrent Status: [Status]\n\nThe next expected step is [Next Step].\n\nWe will provide further updates as they become available.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    travel_info: {
-      subject: "Travel/Relocation Information",
-      body: "As you prepare for your relocation to [Country/Location], please review the following information:\n\nExpected Travel Date: [Date]\nDestination: [Location]\nReporting Date: [Date]\nAccommodation: [Details, if applicable]\nContact Person: [Name]\n\nPlease ensure that all required travel and employment documents are available before departure.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    // H. Delays & Status Updates
-    processing_delay: {
-      subject: "Processing Delay",
-      body: "We would like to inform you that there is currently a delay in processing your application due to [general reason, if appropriate].\n\nYour application remains active, and our team is continuing to work on the next stage.\n\nWe appreciate your patience and will provide an update as soon as possible.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    no_response: {
-      subject: "Applicant Has Not Responded",
-      body: "We previously contacted you regarding [documents/payment/interview/requirement], but we have not yet received a response.\n\nPlease provide the requested information by [Date].\n\nIf we do not hear from you by the stated deadline, your application may be placed on hold.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    app_on_hold: {
-      subject: "Application Put on Hold",
-      body: "Please be advised that your application for [Position] has been placed on hold pending [outstanding requirement/review/availability].\n\nYour application may resume once the outstanding matter has been resolved.\n\nWe will contact you when there is a further update.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    // I. Final / Closure
-    app_withdrawn: {
-      subject: "Application Withdrawn",
-      body: "We confirm receipt of your request to withdraw your application for [Position].\n\nYour application has now been closed in our recruitment system.\n\nWe appreciate your interest in [Company Name] and wish you all the best.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    app_closed: {
-      subject: "Application Closed",
-      body: "We are writing to inform you that your application for [Position] has now been closed due to [reason, if appropriate].\n\nThank you for your interest in [Company Name] and for participating in our recruitment process.\n\nWe wish you success in your future career.\n\nKind regards,\n[HR/Recruitment Team]"
-    },
-    welcome_final: {
-      subject: "Welcome / Final Confirmation",
-      body: "Congratulations once again on successfully completing the recruitment process.\n\nWe are pleased to welcome you to [Company/Employer] as [Position].\n\nYour joining details and any remaining instructions will be communicated to you separately.\n\nWe look forward to having you join the team.\n\nKind regards,\n[HR/Recruitment Team]"
-    }
+  // ─── Main View Navigation ─────────────────────────────────────────────────────
+  window.switchMainView = function(view) {
+    document.getElementById('dashboard-view').style.display  = (view === 'dashboard') ? 'block' : 'none';
+    document.getElementById('templates-section').style.display = (view === 'templates') ? 'block' : 'none';
+    document.getElementById('navDashboard').classList.toggle('active', view === 'dashboard');
+    document.getElementById('navTemplates').classList.toggle('active', view === 'templates');
+    if (view === 'templates') renderTemplates();
   };
+
+  // ─── Placeholder Replacement ─────────────────────────────────────────────────
+  function applyPlaceholders(text) {
+    if (!currentApplicant || !text) return text;
+    const a = currentApplicant;
+    const fullName = `${a.firstName || ''} ${a.lastName || ''}`.trim();
+    return text
+      .replace(/\[Applicant Name\]/g, fullName || '[Applicant Name]')
+      .replace(/\[Application ID\]/g, a.refNumber || '[Application ID]')
+      .replace(/\[Position\]/g, a.profession || '[Position]')
+      .replace(/\[Country\]/g, a.country || '[Country]')
+      .replace(/\[Company Name\]/g, 'Global Job Connect')
+      .replace(/\[HR Officer\]/g, 'HR Team')
+      .replace(/\[Contact Information\]/g, 'hr@globaljobconnect.com');
+  }
+
+  // ─── Email Preview ────────────────────────────────────────────────────────────
+  function updateEmailPreview() {
+    const subject = document.getElementById('emailSubjectInput')?.value || '';
+    const body    = document.getElementById('emailBodyInput')?.value || '';
+    const to      = currentApplicant ? `${currentApplicant.firstName} ${currentApplicant.lastName} <${currentApplicant.email}>` : '—';
+    document.getElementById('previewSubject').textContent = applyPlaceholders(subject) || '—';
+    document.getElementById('previewTo').textContent      = 'To: ' + to;
+    document.getElementById('previewBody').textContent    = applyPlaceholders(body) || 'No message body.';
+  }
+
+  window.switchEmailSubtab = function(panel, btn) {
+    ['emailComposePanel','emailPreviewPanel','emailHistoryPanel'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('active');
+    });
+    document.querySelectorAll('.email-subtab').forEach(b => b.classList.remove('active'));
+    const target = document.getElementById('email' + panel.charAt(0).toUpperCase() + panel.slice(1) + 'Panel');
+    if (target) target.classList.add('active');
+    if (btn) btn.classList.add('active');
+    if (panel === 'preview') updateEmailPreview();
+    if (panel === 'history' && currentApplicant) loadEmailHistory(currentApplicant._id);
+  };
+
+  // ─── Email History ────────────────────────────────────────────────────────────
+  async function loadEmailHistory(applicantId) {
+    const container = document.getElementById('emailHistoryList');
+    if (!container) return;
+    container.innerHTML = '<div class="email-log-empty"><i class="fas fa-circle-notch fa-spin"></i><p>Loading…</p></div>';
+    try {
+      const res  = await fetch(`${API_BASE_URL}/api/track/email-logs/${applicantId}`, { headers: getAuthHeaders() });
+      const data = await res.json();
+      if (!data.success || !data.logs.length) {
+        container.innerHTML = '<div class="email-log-empty"><i class="fas fa-inbox"></i><p>No emails have been sent to this applicant yet.</p></div>';
+        return;
+      }
+      container.innerHTML = '';
+      data.logs.forEach((log, idx) => {
+        const date = new Date(log.createdAt).toLocaleString();
+        const div  = document.createElement('div');
+        div.className = 'email-log-item';
+        div.innerHTML = `
+          <div class="email-log-header">
+            <span class="email-log-template"><i class="fas fa-envelope"></i> ${log.templateName}</span>
+            <span class="email-log-date">${date}</span>
+          </div>
+          <div class="email-log-subject">Subject: ${log.subject}</div>
+          <div class="email-log-by">Sent by: ${log.sentBy || 'Admin'}</div>
+          <button class="email-log-expand" onclick="toggleLogBody(this)"><i class="fas fa-chevron-down"></i> View message</button>
+          <div class="email-log-body-preview">${log.body}</div>
+        `;
+        container.appendChild(div);
+      });
+    } catch (err) {
+      container.innerHTML = '<div class="email-log-empty"><i class="fas fa-exclamation-triangle"></i><p>Failed to load email history.</p></div>';
+    }
+  }
+
+  window.toggleLogBody = function(btn) {
+    const preview = btn.nextElementSibling;
+    if (!preview) return;
+    const isVisible = preview.style.display === 'block';
+    preview.style.display = isVisible ? 'none' : 'block';
+    btn.innerHTML = isVisible ? '<i class="fas fa-chevron-down"></i> View message' : '<i class="fas fa-chevron-up"></i> Hide message';
+  };
+
+  // ─── Database-driven Templates ────────────────────────────────────────────────
+  let allTemplates = [];
+  let currentTemplateCategory = 'all';
+
+  async function fetchTemplates() {
+    try {
+      const res  = await fetch(API_BASE_URL + '/api/templates', { headers: getAuthHeaders() });
+      const data = await res.json();
+      if (data.success) {
+        allTemplates = data.templates;
+        populateEmailDropdown();
+        renderTemplates();
+      }
+    } catch (err) {
+      console.error('Failed to fetch templates', err);
+    }
+  }
+
+  function populateEmailDropdown() {
+    const select = document.getElementById('emailTemplateSelect');
+    if (!select) return;
+    select.innerHTML = '<option value="">-- Custom Email (No Template) --</option>';
+    const categories = [...new Set(allTemplates.map(t => t.category))];
+    categories.forEach(cat => {
+      const group = document.createElement('optgroup');
+      group.label = cat;
+      allTemplates.filter(t => t.category === cat).forEach(tpl => {
+        const opt = document.createElement('option');
+        opt.value = tpl._id;
+        opt.textContent = tpl.name;
+        group.appendChild(opt);
+      });
+      select.appendChild(group);
+    });
+  }
 
   const templateSelect = document.getElementById('emailTemplateSelect');
   if (templateSelect) {
     templateSelect.addEventListener('change', (e) => {
-      const val = e.target.value;
-      if (val && emailTemplates[val]) {
-        document.getElementById('emailSubjectInput').value = emailTemplates[val].subject;
-        document.getElementById('emailBodyInput').value = emailTemplates[val].body;
+      const tpl = allTemplates.find(t => t._id === e.target.value);
+      if (tpl) {
+        document.getElementById('emailSubjectInput').value = applyPlaceholders(tpl.subject);
+        document.getElementById('emailBodyInput').value    = applyPlaceholders(tpl.body);
       } else {
         document.getElementById('emailSubjectInput').value = '';
-        document.getElementById('emailBodyInput').value = '';
+        document.getElementById('emailBodyInput').value    = '';
       }
+      updateEmailPreview();
     });
   }
+
+  // Auto-update preview when composing
+  document.getElementById('emailSubjectInput')?.addEventListener('input', updateEmailPreview);
+  document.getElementById('emailBodyInput')?.addEventListener('input', updateEmailPreview);
 
   document.getElementById('btnSendEmail')?.addEventListener('click', async () => {
     if (!currentApplicant) return;
@@ -600,25 +587,203 @@ document.addEventListener('DOMContentLoaded', () => {
     const body    = document.getElementById('emailBodyInput').value.trim();
     if (!subject || !body) return alert('Please enter both subject and message body.');
 
+    const selectedId  = templateSelect?.value;
+    const selectedTpl = allTemplates.find(t => t._id === selectedId);
+    const templateName = selectedTpl ? selectedTpl.name : 'Custom Email';
+
     const btn = document.getElementById('btnSendEmail');
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+    const msgEl = document.getElementById('emailSendMsg');
 
     try {
       const res = await fetch(API_BASE_URL + '/api/track/send-email', {
         method: 'POST', headers: getAuthHeaders(),
-        body: JSON.stringify({ refNumber: currentApplicant.refNumber, subject, body })
+        body: JSON.stringify({ refNumber: currentApplicant.refNumber, subject, body, templateName })
       });
       const data = await res.json();
       if (data.success) {
-        alert('Email sent successfully!');
+        if (msgEl) { msgEl.style.display = 'inline'; msgEl.style.color = '#34d399'; msgEl.textContent = '✅ Email sent!'; setTimeout(() => msgEl.style.display = 'none', 3000); }
         if (templateSelect) templateSelect.value = '';
         document.getElementById('emailSubjectInput').value = '';
-        document.getElementById('emailBodyInput').value = '';
-        switchTab('info');
-      } else alert(data.error || 'Failed to send email');
-    } catch { alert('Network error while sending email.'); }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Email'; }
+        document.getElementById('emailBodyInput').value    = '';
+        updateEmailPreview();
+        loadEmailHistory(currentApplicant._id);
+      } else {
+        if (msgEl) { msgEl.style.display = 'inline'; msgEl.style.color = '#fb7185'; msgEl.textContent = '❌ ' + (data.error || 'Failed'); setTimeout(() => msgEl.style.display = 'none', 4000); }
+      }
+    } catch {
+      if (msgEl) { msgEl.style.display = 'inline'; msgEl.style.color = '#fb7185'; msgEl.textContent = '❌ Network error'; setTimeout(() => msgEl.style.display = 'none', 4000); }
+    } finally {
+      btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Email';
+    }
   });
+
+  // ─── Templates Dashboard ──────────────────────────────────────────────────────
+  const CATEGORY_ICON_MAP = {
+    'Application': { icon: 'fa-file-alt',         cls: 'cat-color-application' },
+    'Documents':   { icon: 'fa-folder-open',       cls: 'cat-color-documents' },
+    'Payments':    { icon: 'fa-credit-card',        cls: 'cat-color-payments' },
+    'Assessment':  { icon: 'fa-tasks',              cls: 'cat-color-assessment' },
+    'Interview':   { icon: 'fa-comments',           cls: 'cat-color-interview' },
+    'Selection':   { icon: 'fa-user-check',         cls: 'cat-color-selection' },
+    'Offer & Acceptance': { icon: 'fa-handshake',   cls: 'cat-color-offer' },
+    'Pre-Employment':     { icon: 'fa-clipboard-list', cls: 'cat-color-preemployment' },
+    'Onboarding':  { icon: 'fa-door-open',          cls: 'cat-color-onboarding' },
+    'Visa & Work Permit': { icon: 'fa-passport',    cls: 'cat-color-visa' },
+    'Travel & Relocation':{ icon: 'fa-plane',        cls: 'cat-color-travel' },
+    'Follow-Up':   { icon: 'fa-reply',              cls: 'cat-color-followup' },
+    'Application Hold':   { icon: 'fa-pause-circle', cls: 'cat-color-hold' },
+    'Application Closure':{ icon: 'fa-times-circle', cls: 'cat-color-closure' },
+    'Final Placement':    { icon: 'fa-trophy',       cls: 'cat-color-placement' },
+  };
+
+  window.filterByCategory = function(cat, btn) {
+    currentTemplateCategory = cat;
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.getElementById('tplCategoryFilter').value = cat;
+    renderTemplates();
+  };
+
+  window.renderTemplates = function() {
+    const search    = (document.getElementById('tplSearchInput')?.value || '').toLowerCase().trim();
+    const catFilter = document.getElementById('tplCategoryFilter')?.value || 'all';
+    const grid      = document.getElementById('templatesGrid');
+    if (!grid) return;
+
+    let filtered = allTemplates;
+    if (catFilter !== 'all') filtered = filtered.filter(t => t.category === catFilter);
+    if (search)             filtered = filtered.filter(t => t.name.toLowerCase().includes(search) || t.subject.toLowerCase().includes(search));
+
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="tpl-empty"><i class="fas fa-search"></i><p>No templates match your search.</p></div>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    filtered.forEach(tpl => {
+      const meta = CATEGORY_ICON_MAP[tpl.category] || { icon: 'fa-envelope', cls: 'cat-color-application' };
+      const card = document.createElement('div');
+      card.className = 'tpl-card';
+      card.innerHTML = `
+        <div class="tpl-card-head">
+          <div class="tpl-icon ${meta.cls}"><i class="fas ${meta.icon}"></i></div>
+          <div class="tpl-card-meta">
+            <div class="tpl-card-name" title="${tpl.name}">${tpl.name}</div>
+            <div class="tpl-card-cat">${tpl.category}</div>
+          </div>
+        </div>
+        <div class="tpl-subject" title="${tpl.subject}">Subject: ${tpl.subject}</div>
+        <div class="tpl-actions">
+          <button class="tpl-btn tpl-btn-edit" onclick="openTemplateEditor('${tpl._id}')"><i class="fas fa-pen"></i> Edit</button>
+          <button class="tpl-btn tpl-btn-dupe" onclick="duplicateTemplate('${tpl._id}')"><i class="fas fa-copy"></i> Duplicate</button>
+          <button class="tpl-btn tpl-btn-del"  onclick="deleteTemplate('${tpl._id}')"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  };
+
+  window.openTemplateEditor = function(id) {
+    document.getElementById('tplEditId').value      = id || '';
+    document.getElementById('tplEditorTitle').innerHTML = id
+      ? '<i class="fas fa-pen"></i> Edit Template'
+      : '<i class="fas fa-plus"></i> New Template';
+    if (id) {
+      const tpl = allTemplates.find(t => t._id === id);
+      if (tpl) {
+        document.getElementById('tplEditName').value     = tpl.name;
+        document.getElementById('tplEditCategory').value = tpl.category;
+        document.getElementById('tplEditSubject').value  = tpl.subject;
+        document.getElementById('tplEditBody').value     = tpl.body;
+      }
+    } else {
+      document.getElementById('tplEditName').value     = '';
+      document.getElementById('tplEditCategory').value = 'Application';
+      document.getElementById('tplEditSubject').value  = '';
+      document.getElementById('tplEditBody').value     = '';
+    }
+    document.getElementById('tplEditorModal').classList.add('open');
+  };
+
+  window.closeTemplateEditor = function() {
+    document.getElementById('tplEditorModal').classList.remove('open');
+  };
+
+  window.insertPlaceholder = function(ph) {
+    const ta = document.getElementById('tplEditBody');
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end   = ta.selectionEnd;
+    ta.value = ta.value.substring(0, start) + ph + ta.value.substring(end);
+    ta.selectionStart = ta.selectionEnd = start + ph.length;
+    ta.focus();
+  };
+
+  window.saveTemplate = async function() {
+    const id       = document.getElementById('tplEditId').value.trim();
+    const name     = document.getElementById('tplEditName').value.trim();
+    const category = document.getElementById('tplEditCategory').value;
+    const subject  = document.getElementById('tplEditSubject').value.trim();
+    const body     = document.getElementById('tplEditBody').value.trim();
+    if (!name || !subject || !body) return alert('Please fill in all required fields.');
+
+    const url    = id ? `${API_BASE_URL}/api/templates/${id}` : `${API_BASE_URL}/api/templates`;
+    const method = id ? 'PUT' : 'POST';
+    try {
+      const res  = await fetch(url, { method, headers: getAuthHeaders(), body: JSON.stringify({ name, category, subject, body }) });
+      const data = await res.json();
+      if (data.success) {
+        closeTemplateEditor();
+        await fetchTemplates();
+        renderTemplates();
+      } else { alert(data.error || 'Failed to save template'); }
+    } catch { alert('Network error saving template'); }
+  };
+
+  window.duplicateTemplate = async function(id) {
+    const tpl = allTemplates.find(t => t._id === id);
+    if (!tpl) return;
+    const newName = tpl.name + ' (Copy)';
+    try {
+      const res  = await fetch(`${API_BASE_URL}/api/templates`, {
+        method: 'POST', headers: getAuthHeaders(),
+        body: JSON.stringify({ name: newName, category: tpl.category, subject: tpl.subject, body: tpl.body })
+      });
+      const data = await res.json();
+      if (data.success) { await fetchTemplates(); renderTemplates(); }
+      else alert(data.error || 'Could not duplicate');
+    } catch { alert('Network error'); }
+  };
+
+  window.deleteTemplate = async function(id) {
+    const tpl = allTemplates.find(t => t._id === id);
+    if (!tpl || !confirm(`Archive template "${tpl.name}"? It will no longer appear in the list.`)) return;
+    try {
+      const res  = await fetch(`${API_BASE_URL}/api/templates/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+      const data = await res.json();
+      if (data.success) { await fetchTemplates(); renderTemplates(); }
+      else alert(data.error || 'Failed to delete');
+    } catch { alert('Network error'); }
+  };
+
+  window.seedTemplates = async function() {
+    const btn = document.getElementById('seedBtn');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Seeding…'; }
+    try {
+      const res  = await fetch(`${API_BASE_URL}/api/templates/seed`, { method: 'POST', headers: getAuthHeaders() });
+      const data = await res.json();
+      alert(data.message || (data.success ? 'Seeded!' : 'Failed'));
+      if (data.success) { await fetchTemplates(); renderTemplates(); }
+    } catch { alert('Network error during seeding'); }
+    finally { if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-database"></i> Seed Defaults'; } }
+  };
+
+  // Close editor on backdrop click
+  document.getElementById('tplEditorModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeTemplateEditor();
+  });
+
 
   const docSelect = document.getElementById('docLabelSelect');
   const docCustom = document.getElementById('docLabelCustom');

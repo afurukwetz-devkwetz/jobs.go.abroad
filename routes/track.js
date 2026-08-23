@@ -6,6 +6,7 @@ const Batch     = require('../models/Batch');
 const { requireAdmin } = require('../middleware/auth');
 const { sendStatusEmail, sendCustomEmail, sendDocumentRequestEmail } = require('../middleware/emailService');
 const { sendWhatsAppMessage } = require('../middleware/whatsappService');
+const EmailLog  = require('../models/EmailLog');
 
 const STAGES = [
   { label: 'Application Received',   desc: 'Your application was submitted successfully.' },
@@ -176,7 +177,7 @@ router.get('/batches', requireAdmin, async (req, res) => {
 // POST /api/track/send-email — admin sends custom email to applicant
 router.post('/send-email', requireAdmin, async (req, res) => {
   try {
-    const { refNumber, subject, body } = req.body;
+    const { refNumber, subject, body, templateName } = req.body;
     if (!refNumber || !subject || !body)
       return res.status(400).json({ error: 'refNumber, subject, and body are required.' });
 
@@ -190,10 +191,30 @@ router.post('/send-email', requireAdmin, async (req, res) => {
       firstName: applicant.firstName,
     });
 
+    // Log the email
+    await EmailLog.create({
+      applicantId: applicant._id,
+      templateName: templateName || 'Custom Email',
+      subject,
+      body,
+      sentBy: req.user ? req.user.email : 'Admin' // Assuming req.user is set by requireAdmin
+    });
+
     res.json({ success: true, message: `Email sent to ${applicant.email}` });
   } catch (err) {
     console.error('❌ [Send Email]:', err);
     res.status(500).json({ error: 'Failed to send email.', details: err.message });
+  }
+});
+
+// GET /api/track/email-logs/:applicantId — admin views email history
+router.get('/email-logs/:applicantId', requireAdmin, async (req, res) => {
+  try {
+    const logs = await EmailLog.find({ applicantId: req.params.applicantId }).sort({ sentAt: -1, createdAt: -1 });
+    res.json({ success: true, logs });
+  } catch (err) {
+    console.error('❌ [Email Logs]:', err);
+    res.status(500).json({ error: 'Failed to fetch email logs.', details: err.message });
   }
 });
 
