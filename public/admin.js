@@ -429,21 +429,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ─── Custom Email & Document Request ──────────────────────────────────────────
   const emailTemplates = {
-    positive_feedback: {
-      subject: "Great News: Positive Feedback on Your Interview!",
-      body: "We received great feedback from your recent interview! The employer was very impressed with your qualifications and experience. We will be in touch shortly regarding the next steps."
+    app_received: {
+      subject: "Application Received – Global Job Connect",
+      body: "Thank you for submitting your application for the [Position].\n\nWe confirm that your application has been received and is currently under review by our recruitment team.\n\nWe will contact you once the next stage of the recruitment process is confirmed.\n\nPlease keep your contact details up to date and monitor your email for further communication."
     },
-    job_offer: {
-      subject: "Congratulations! You Have a Job Offer",
-      body: "We are thrilled to inform you that an employer has extended a formal job offer to you! Please review the attached details in your portal or reply to this email for further instructions on how to accept the offer."
+    app_shortlisted: {
+      subject: "Congratulations! Your Application has been Shortlisted",
+      body: "We are pleased to inform you that your application for the [Position] has been shortlisted.\n\nYour application will now proceed to the next stage, which may include an interview, document verification, or assessment.\n\nFurther details regarding the next step will be communicated to you shortly.\n\nCongratulations, and thank you for your interest."
     },
     interview_invite: {
-      subject: "Invitation to Interview",
-      body: "We would like to invite you for an interview with a prospective employer. Please let us know your availability for this week so we can schedule a time that works."
+      subject: "Invitation to Interview: [Position]",
+      body: "We are pleased to invite you for an interview for the position of [Position].\n\nDate: [Date]\nTime: [Time]\nLocation/Platform: [Location/Meeting Link]\nInterview Type: [Online/In-person]\n\nPlease confirm your availability by [Date].\n\nIf you are unable to attend at the scheduled time, kindly contact us as soon as possible.\n\nWe look forward to speaking with you."
     },
-    missing_info: {
-      subject: "Action Required: Missing Information",
-      body: "We are currently reviewing your application, but we need some additional information to proceed. Please log in to your dashboard to provide the missing details."
+    app_progressed: {
+      subject: "Application Progress Update",
+      body: "We are pleased to confirm that your application for the [Position] in [Country] has successfully progressed through the required recruitment stages.\n\nThe next steps are:\n1. [Step 1]\n2. [Step 2]\n3. [Step 3]\n\nOur team will continue to guide you through the remaining process and will contact you if any additional documents or information are required.\n\nThank you for your cooperation and patience throughout the process."
+    },
+    doc_request_general: {
+      subject: "Action Required: Additional Documents Needed",
+      body: "Following a review of your application, we require the following additional documents/information:\n\n* [Document/Information 1]\n* [Document/Information 2]\n\nPlease provide the requested documents by [Date] so that we can proceed with the next stage of your application.\n\nThank you for your cooperation."
+    },
+    doc_request_id: {
+      subject: "Action Required: Passport/National ID Verification",
+      body: "As part of the verification process for your application, please provide a clear copy of your valid Passport or National ID.\n\nPlease ensure that all relevant details are clearly visible and that the document is not expired.\n\nKindly submit the document by [Date] by replying to this email.\n\nThank you for your cooperation."
+    },
+    fee_request: {
+      subject: "Action Required: Recruitment Processing Fee",
+      body: "We are pleased to inform you that your application for the [Position] has progressed to the next stage.\n\nTo continue processing your application, a recruitment/processing fee of [Amount] is applicable.\n\nPayment details:\nAmount: [Amount]\nPayment Method: [Method]\nReference: [Applicant ID/Name]\n\nOnce payment has been made, please reply to this email with your payment confirmation or receipt."
+    },
+    fee_reminder: {
+      subject: "Reminder: Outstanding Processing Fee",
+      body: "This is a friendly reminder regarding the outstanding recruitment/processing fee of [Amount] for your application for the [Position].\n\nIf you have already completed the payment, kindly disregard this message and forward the payment confirmation if you have not done so.\n\nIf payment is still pending, please complete it by [Date] to avoid delays in processing your application."
+    },
+    app_pending_req: {
+      subject: "Application Pending: Outstanding Requirement",
+      body: "Your application for the [Position] is currently pending due to the following outstanding requirement:\n\nOutstanding Item: [Document/Payment/Information]\n\nPlease complete this requirement by [Date] so that we can continue processing your application.\n\nIf you have already completed the requested action, kindly send us the relevant confirmation."
+    },
+    rejection: {
+      subject: "Update on your Application",
+      body: "Thank you for your interest in the [Position] and for taking the time to apply.\n\nAfter careful consideration, we regret to inform you that we will not be moving forward with your application at this time. We will keep your profile in our database and may reach out if a suitable role becomes available in the future.\n\nWe wish you the best in your job search and future professional endeavors."
     }
   };
 
