@@ -521,8 +521,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const pw    = document.getElementById('password')?.value         || '';
       const cpw   = document.getElementById('confirmPw')?.value        || '';
       const terms = document.getElementById('terms')?.checked;
+      const cvFileEl = document.getElementById('cvFile');
 
       if (!validateStep(4)) { return; }
+      if (!cvFileEl || !cvFileEl.files || !cvFileEl.files[0]) {
+        showToast('Please upload your CV / Resume.', 'error');
+        shake('cvDrop');
+        return;
+      }
       if (!first || !last) { showToast('Please enter your first and last name.', 'error'); shake('firstName'); return; }
       if (!email.includes('@')) { showToast('Please enter a valid email.', 'error'); shake('email'); return; }
 

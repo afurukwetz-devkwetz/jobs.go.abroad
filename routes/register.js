@@ -120,6 +120,10 @@ router.post('/', (req, res, next) => {
     if (!firstName || !lastName || !email || !password || !profession || !otp)
       return res.status(400).json({ error: 'Required fields missing, including OTP.' });
 
+    if (!req.file) {
+      return res.status(400).json({ error: 'CV/Resume file is required.' });
+    }
+
     // Validate OTP
     const validOtp = await Otp.findOne({ email: email.toLowerCase(), otp });
     if (!validOtp) {

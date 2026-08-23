@@ -12,7 +12,7 @@ const ApplicantSchema = new mongoose.Schema({
   country:       { type: String },
   qualification: { type: String },
   bio:           { type: String },
-  cvFile:        { type: String },
+  cvFile:        { type: String, required: true },
   password:      { type: String, required: true },
 
   refNumber:     { type: String, unique: true },
