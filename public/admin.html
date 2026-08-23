@@ -256,6 +256,16 @@
         <div class="modal-section">
           <h3>Send Direct Email</h3>
           <div class="form-group" style="margin-bottom:12px;">
+            <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:5px;">Template</label>
+            <select id="emailTemplateSelect" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;">
+              <option value="">-- Custom Email (No Template) --</option>
+              <option value="positive_feedback">Positive Job Feedback</option>
+              <option value="job_offer">Job Offer</option>
+              <option value="interview_invite">Interview Invitation</option>
+              <option value="missing_info">Missing Information</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:12px;">
             <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:5px;">Subject</label>
             <input type="text" id="emailSubjectInput" placeholder="e.g. Interview Invitation" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;">
           </div>

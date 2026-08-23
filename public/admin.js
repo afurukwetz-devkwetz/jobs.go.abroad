@@ -428,6 +428,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ─── Custom Email & Document Request ──────────────────────────────────────────
+  const emailTemplates = {
+    positive_feedback: {
+      subject: "Great News: Positive Feedback on Your Interview!",
+      body: "We received great feedback from your recent interview! The employer was very impressed with your qualifications and experience. We will be in touch shortly regarding the next steps."
+    },
+    job_offer: {
+      subject: "Congratulations! You Have a Job Offer",
+      body: "We are thrilled to inform you that an employer has extended a formal job offer to you! Please review the attached details in your portal or reply to this email for further instructions on how to accept the offer."
+    },
+    interview_invite: {
+      subject: "Invitation to Interview",
+      body: "We would like to invite you for an interview with a prospective employer. Please let us know your availability for this week so we can schedule a time that works."
+    },
+    missing_info: {
+      subject: "Action Required: Missing Information",
+      body: "We are currently reviewing your application, but we need some additional information to proceed. Please log in to your dashboard to provide the missing details."
+    }
+  };
+
+  const templateSelect = document.getElementById('emailTemplateSelect');
+  if (templateSelect) {
+    templateSelect.addEventListener('change', (e) => {
+      const val = e.target.value;
+      if (val && emailTemplates[val]) {
+        document.getElementById('emailSubjectInput').value = emailTemplates[val].subject;
+        document.getElementById('emailBodyInput').value = emailTemplates[val].body;
+      } else {
+        document.getElementById('emailSubjectInput').value = '';
+        document.getElementById('emailBodyInput').value = '';
+      }
+    });
+  }
+
   document.getElementById('btnSendEmail')?.addEventListener('click', async () => {
     if (!currentApplicant) return;
     const subject = document.getElementById('emailSubjectInput').value.trim();
@@ -445,6 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       if (data.success) {
         alert('Email sent successfully!');
+        if (templateSelect) templateSelect.value = '';
         document.getElementById('emailSubjectInput').value = '';
         document.getElementById('emailBodyInput').value = '';
         switchTab('info');
