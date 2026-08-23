@@ -429,45 +429,154 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ─── Custom Email & Document Request ──────────────────────────────────────────
   const emailTemplates = {
+    // A. Application & Initial Communication
     app_received: {
-      subject: "Application Received – Global Job Connect",
-      body: "Thank you for submitting your application for the [Position].\n\nWe confirm that your application has been received and is currently under review by our recruitment team.\n\nWe will contact you once the next stage of the recruitment process is confirmed.\n\nPlease keep your contact details up to date and monitor your email for further communication."
+      subject: "Application Received",
+      body: "Thank you for applying for the position of [Position] with [Company Name].\n\nWe confirm that your application has been received and is currently under review.\n\nIf your application meets the requirements for the next stage, we will contact you with further instructions.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    app_under_review: {
+      subject: "Application Under Review",
+      body: "We would like to inform you that your application for [Position] is currently under review.\n\nOur recruitment team is assessing your qualifications and supporting documents. We will contact you once the review has been completed.\n\nThank you for your patience.\n\nKind regards,\n[HR/Recruitment Team]"
     },
     app_shortlisted: {
-      subject: "Congratulations! Your Application has been Shortlisted",
-      body: "We are pleased to inform you that your application for the [Position] has been shortlisted.\n\nYour application will now proceed to the next stage, which may include an interview, document verification, or assessment.\n\nFurther details regarding the next step will be communicated to you shortly.\n\nCongratulations, and thank you for your interest."
+      subject: "Application Shortlisted",
+      body: "We are pleased to inform you that your application for [Position] has been shortlisted.\n\nYou have successfully met the initial requirements, and your application will now proceed to the next stage of the recruitment process.\n\nFurther instructions will be provided shortly.\n\nCongratulations, and we look forward to working with you.\n\nKind regards,\n[HR/Recruitment Team]"
     },
-    interview_invite: {
-      subject: "Invitation to Interview: [Position]",
-      body: "We are pleased to invite you for an interview for the position of [Position].\n\nDate: [Date]\nTime: [Time]\nLocation/Platform: [Location/Meeting Link]\nInterview Type: [Online/In-person]\n\nPlease confirm your availability by [Date].\n\nIf you are unable to attend at the scheduled time, kindly contact us as soon as possible.\n\nWe look forward to speaking with you."
+    app_not_successful: {
+      subject: "Application Not Successful",
+      body: "Thank you for your interest in [Position] and for taking the time to submit your application.\n\nAfter careful consideration, we regret to inform you that your application will not proceed to the next stage at this time.\n\nWe appreciate your interest in [Company Name] and wish you every success in your future career.\n\nKind regards,\n[HR/Recruitment Team]"
     },
-    app_progressed: {
-      subject: "Application Progress Update",
-      body: "We are pleased to confirm that your application for the [Position] in [Country] has successfully progressed through the required recruitment stages.\n\nThe next steps are:\n1. [Step 1]\n2. [Step 2]\n3. [Step 3]\n\nOur team will continue to guide you through the remaining process and will contact you if any additional documents or information are required.\n\nThank you for your cooperation and patience throughout the process."
+    // B. Documents & Verification
+    req_documents: {
+      subject: "Request for Documents",
+      body: "To proceed with your application, please provide the following documents:\n\n[Document 1]\n[Document 2]\n[Document 3]\n[Document 4]\n\nPlease submit clear and valid copies by [Date].\n\nKindly reply to this email with the required documents attached.\n\nKind regards,\n[HR/Recruitment Team]"
     },
-    doc_request_general: {
-      subject: "Action Required: Additional Documents Needed",
-      body: "Following a review of your application, we require the following additional documents/information:\n\n* [Document/Information 1]\n* [Document/Information 2]\n\nPlease provide the requested documents by [Date] so that we can proceed with the next stage of your application.\n\nThank you for your cooperation."
+    missing_documents: {
+      subject: "Missing Documents",
+      body: "Following our review of your application, we note that the following documents are still outstanding:\n\n[Document 1]\n[Document 2]\n\nPlease provide the outstanding documents by [Date] to avoid delays in processing your application.\n\nKind regards,\n[HR/Recruitment Team]"
     },
-    doc_request_id: {
-      subject: "Action Required: Passport/National ID Verification",
-      body: "As part of the verification process for your application, please provide a clear copy of your valid Passport or National ID.\n\nPlease ensure that all relevant details are clearly visible and that the document is not expired.\n\nKindly submit the document by [Date] by replying to this email.\n\nThank you for your cooperation."
+    doc_quality_issue: {
+      subject: "Document Quality Issue",
+      body: "We have received the documents submitted with your application. However, [document name] could not be properly verified because [reason – unclear/expired/incomplete/etc.].\n\nPlease provide a clear and valid copy of the document by [Date].\n\nThank you for your cooperation.\n\nKind regards,\n[HR/Recruitment Team]"
     },
+    passport_id_req: {
+      subject: "Passport/ID Request",
+      body: "As part of the verification process, please provide a clear copy of your valid [Passport/National ID].\n\nPlease ensure that all relevant information is clearly visible and that the document is valid.\n\nKindly submit it by [Date].\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    cred_verification: {
+      subject: "Credential Verification",
+      body: "As part of our verification process, we are currently reviewing your academic and/or professional qualifications.\n\nPlease provide the following information/documents:\n\n[Certificate/Diploma/Degree]\n[Transcript]\n[Professional Registration/License]\n[Other]\n\nPlease ensure that the information provided is accurate and complete.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    verification_completed: {
+      subject: "Verification Completed",
+      body: "We are pleased to confirm that the initial verification of your submitted documents has been completed successfully.\n\nYour application will now proceed to the next stage of the recruitment process.\n\nWe will contact you if any additional information is required.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    // C. Fees & Payments
     fee_request: {
-      subject: "Action Required: Recruitment Processing Fee",
-      body: "We are pleased to inform you that your application for the [Position] has progressed to the next stage.\n\nTo continue processing your application, a recruitment/processing fee of [Amount] is applicable.\n\nPayment details:\nAmount: [Amount]\nPayment Method: [Method]\nReference: [Applicant ID/Name]\n\nOnce payment has been made, please reply to this email with your payment confirmation or receipt."
+      subject: "Payment/Processing Fee Request",
+      body: "Your application has progressed to the next stage.\n\nThe following fee is applicable:\n\nFee: [Description]\nAmount: [Amount]\nCurrency: [Currency]\nDue Date: [Date]\n\nPayment instructions are provided below:\n\n[Payment Instructions]\n\nAfter completing the payment, please send the official payment confirmation/receipt to our team.\n\nKind regards,\n[HR/Recruitment Team]"
     },
     fee_reminder: {
-      subject: "Reminder: Outstanding Processing Fee",
-      body: "This is a friendly reminder regarding the outstanding recruitment/processing fee of [Amount] for your application for the [Position].\n\nIf you have already completed the payment, kindly disregard this message and forward the payment confirmation if you have not done so.\n\nIf payment is still pending, please complete it by [Date] to avoid delays in processing your application."
+      subject: "Payment Reminder",
+      body: "This is a reminder that the payment of [Amount] for [purpose] remains outstanding.\n\nPlease complete the payment by [Date] to prevent delays in the processing of your application.\n\nIf you have already made the payment, kindly forward the official receipt or payment confirmation.\n\nKind regards,\n[HR/Recruitment Team]"
     },
-    app_pending_req: {
-      subject: "Application Pending: Outstanding Requirement",
-      body: "Your application for the [Position] is currently pending due to the following outstanding requirement:\n\nOutstanding Item: [Document/Payment/Information]\n\nPlease complete this requirement by [Date] so that we can continue processing your application.\n\nIf you have already completed the requested action, kindly send us the relevant confirmation."
+    fee_received: {
+      subject: "Payment Received",
+      body: "We confirm receipt of your payment of [Amount] for [purpose].\n\nYour payment has been recorded against application reference [Application ID].\n\nWe will now proceed with the relevant stage of your application.\n\nThank you.\n\nKind regards,\n[HR/Recruitment Team]"
     },
-    rejection: {
-      subject: "Update on your Application",
-      body: "Thank you for your interest in the [Position] and for taking the time to apply.\n\nAfter careful consideration, we regret to inform you that we will not be moving forward with your application at this time. We will keep your profile in our database and may reach out if a suitable role becomes available in the future.\n\nWe wish you the best in your job search and future professional endeavors."
+    fee_conf_req: {
+      subject: "Payment Confirmation Required",
+      body: "Our records indicate that a payment for [purpose] may have been initiated, but we have not yet received the payment confirmation.\n\nIf payment has been completed, please forward the official receipt or transaction confirmation for verification.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    fee_issue: {
+      subject: "Payment Issue",
+      body: "We are currently unable to verify the payment submitted for [purpose].\n\nPlease provide the official payment receipt/confirmation showing:\n\nTransaction/reference number\nAmount paid\nDate of payment\nPayment method\n\nOnce received, our team will review and update your application.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    // D. Assessment & Interview
+    assessment_invite: {
+      subject: "Assessment Invitation",
+      body: "You have been invited to complete the [Assessment Name] as part of the recruitment process for [Position].\n\nDate: [Date]\nTime: [Time]\nDuration: [Duration]\nLocation/Platform: [Details]\n\nPlease complete the assessment within the specified timeframe.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    interview_invite: {
+      subject: "Interview Invitation",
+      body: "We are pleased to invite you for an interview for the position of [Position].\n\nDate: [Date]\nTime: [Time]\nLocation/Platform: [Details]\nInterview Type: [Online/In-person]\n\nPlease confirm your availability by [Date].\n\nWe look forward to speaking with you.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    interview_reminder: {
+      subject: "Interview Reminder",
+      body: "This is a reminder that your interview for [Position] is scheduled as follows:\n\nDate: [Date]\nTime: [Time]\nLocation/Platform: [Details]\n\nPlease ensure that you are available and ready at the scheduled time.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    interview_reschedule: {
+      subject: "Interview Rescheduling",
+      body: "Please note that your interview for [Position] has been rescheduled.\n\nNew Date: [Date]\nNew Time: [Time]\nLocation/Platform: [Details]\n\nWe apologize for any inconvenience and appreciate your understanding.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    interview_followup: {
+      subject: "Interview Follow-Up",
+      body: "Thank you for attending the interview for [Position].\n\nWe appreciate the time you took to discuss your qualifications and experience with our team.\n\nYour application remains under consideration, and we will contact you once a decision has been made.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    // E. Offer & Selection
+    selected_position: {
+      subject: "Selected for Position",
+      body: "We are pleased to inform you that you have been selected for the position of [Position] with [Employer/Company].\n\nCongratulations on successfully progressing through the recruitment process.\n\nFurther information regarding your offer, employment conditions, and next steps will be provided separately.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    emp_offer: {
+      subject: "Employment Offer",
+      body: "We are pleased to offer you the position of [Position] with [Employer].\n\nThe key details of the offer are:\n\nPosition: [Position]\nEmployer: [Employer]\nLocation: [Location]\nSalary: [Salary]\nStart Date: [Date]\n\nPlease review the attached offer letter and return the signed copy by [Date].\n\nCongratulations.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    offer_acceptance: {
+      subject: "Offer Acceptance Confirmation",
+      body: "Thank you for returning your signed offer letter.\n\nWe confirm that your acceptance has been received and recorded.\n\nWe will now proceed with the remaining pre-employment and onboarding requirements.\n\nFurther instructions will follow.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    // F. Pre-Employment & Onboarding
+    pre_emp_req: {
+      subject: "Pre-Employment Requirements",
+      body: "As you prepare to join [Employer/Company], please complete the following requirements:\n\n[Requirement 1]\n[Requirement 2]\n[Requirement 3]\n[Requirement 4]\n\nPlease complete these requirements by [Date].\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    med_background: {
+      subject: "Medical/Background Check",
+      body: "As part of the pre-employment process, you are required to complete [background verification/medical examination/other applicable requirement].\n\nPlease follow the instructions provided below:\n\n[Instructions]\n\nKindly complete this requirement by [Date].\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    onboarding_info: {
+      subject: "Onboarding Information",
+      body: "We are pleased to welcome you to [Company/Employer].\n\nYour onboarding details are as follows:\n\nPosition: [Position]\nStart Date: [Date]\nReporting Time: [Time]\nLocation: [Location]\nReporting To: [Name/Department]\n\nPlease bring [required documents/items] on your first day.\n\nWe look forward to welcoming you.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    // G. International Recruitment / Visa / Relocation
+    visa_docs: {
+      subject: "Visa/Work Permit Documents",
+      body: "Your application has progressed to the visa/work permit stage.\n\nTo begin the relevant process, please provide the following documents:\n\nValid passport\n[Employment/Offer Letter]\n[Qualification documents]\n[Professional registration]\n[Other required documents]\n\nPlease submit the documents by [Date].\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    visa_update: {
+      subject: "Visa Process Update",
+      body: "We would like to provide you with an update regarding your visa/work permit process.\n\nCurrent Status: [Status]\n\nThe next expected step is [Next Step].\n\nWe will provide further updates as they become available.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    travel_info: {
+      subject: "Travel/Relocation Information",
+      body: "As you prepare for your relocation to [Country/Location], please review the following information:\n\nExpected Travel Date: [Date]\nDestination: [Location]\nReporting Date: [Date]\nAccommodation: [Details, if applicable]\nContact Person: [Name]\n\nPlease ensure that all required travel and employment documents are available before departure.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    // H. Delays & Status Updates
+    processing_delay: {
+      subject: "Processing Delay",
+      body: "We would like to inform you that there is currently a delay in processing your application due to [general reason, if appropriate].\n\nYour application remains active, and our team is continuing to work on the next stage.\n\nWe appreciate your patience and will provide an update as soon as possible.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    no_response: {
+      subject: "Applicant Has Not Responded",
+      body: "We previously contacted you regarding [documents/payment/interview/requirement], but we have not yet received a response.\n\nPlease provide the requested information by [Date].\n\nIf we do not hear from you by the stated deadline, your application may be placed on hold.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    app_on_hold: {
+      subject: "Application Put on Hold",
+      body: "Please be advised that your application for [Position] has been placed on hold pending [outstanding requirement/review/availability].\n\nYour application may resume once the outstanding matter has been resolved.\n\nWe will contact you when there is a further update.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    // I. Final / Closure
+    app_withdrawn: {
+      subject: "Application Withdrawn",
+      body: "We confirm receipt of your request to withdraw your application for [Position].\n\nYour application has now been closed in our recruitment system.\n\nWe appreciate your interest in [Company Name] and wish you all the best.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    app_closed: {
+      subject: "Application Closed",
+      body: "We are writing to inform you that your application for [Position] has now been closed due to [reason, if appropriate].\n\nThank you for your interest in [Company Name] and for participating in our recruitment process.\n\nWe wish you success in your future career.\n\nKind regards,\n[HR/Recruitment Team]"
+    },
+    welcome_final: {
+      subject: "Welcome / Final Confirmation",
+      body: "Congratulations once again on successfully completing the recruitment process.\n\nWe are pleased to welcome you to [Company/Employer] as [Position].\n\nYour joining details and any remaining instructions will be communicated to you separately.\n\nWe look forward to having you join the team.\n\nKind regards,\n[HR/Recruitment Team]"
     }
   };
 

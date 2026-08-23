@@ -265,16 +265,59 @@
             <label style="font-size:0.82rem;color:rgba(255,255,255,.5);display:block;margin-bottom:5px;">Template</label>
             <select id="emailTemplateSelect" style="width:100%;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:#fff;">
               <option value="">-- Custom Email (No Template) --</option>
-              <option value="app_received">Application Received</option>
-              <option value="app_shortlisted">Application Shortlisted</option>
-              <option value="interview_invite">Interview Invitation</option>
-              <option value="app_progressed">Application Progressed</option>
-              <option value="doc_request_general">Additional Documents Request</option>
-              <option value="doc_request_id">Passport/ID Verification</option>
-              <option value="fee_request">Fee Payment Request</option>
-              <option value="fee_reminder">Fee Payment Reminder</option>
-              <option value="app_pending_req">Pending Requirement</option>
-              <option value="rejection">Application Rejected</option>
+              <optgroup label="A. Application & Initial Communication">
+                <option value="app_received">1. Application Received</option>
+                <option value="app_under_review">2. Application Under Review</option>
+                <option value="app_shortlisted">3. Application Shortlisted</option>
+                <option value="app_not_successful">4. Application Not Successful</option>
+              </optgroup>
+              <optgroup label="B. Documents & Verification">
+                <option value="req_documents">5. Request for Documents</option>
+                <option value="missing_documents">6. Missing Documents</option>
+                <option value="doc_quality_issue">7. Document Quality Issue</option>
+                <option value="passport_id_req">8. Passport/ID Request</option>
+                <option value="cred_verification">9. Credential Verification</option>
+                <option value="verification_completed">10. Verification Completed</option>
+              </optgroup>
+              <optgroup label="C. Fees & Payments">
+                <option value="fee_request">11. Payment/Processing Fee Request</option>
+                <option value="fee_reminder">12. Payment Reminder</option>
+                <option value="fee_received">13. Payment Received</option>
+                <option value="fee_conf_req">14. Payment Confirmation Required</option>
+                <option value="fee_issue">15. Payment Issue</option>
+              </optgroup>
+              <optgroup label="D. Assessment & Interview">
+                <option value="assessment_invite">16. Assessment Invitation</option>
+                <option value="interview_invite">17. Interview Invitation</option>
+                <option value="interview_reminder">18. Interview Reminder</option>
+                <option value="interview_reschedule">19. Interview Rescheduling</option>
+                <option value="interview_followup">20. Interview Follow-Up</option>
+              </optgroup>
+              <optgroup label="E. Offer & Selection">
+                <option value="selected_position">21. Selected for Position</option>
+                <option value="emp_offer">22. Employment Offer</option>
+                <option value="offer_acceptance">23. Offer Acceptance Confirmation</option>
+              </optgroup>
+              <optgroup label="F. Pre-Employment & Onboarding">
+                <option value="pre_emp_req">24. Pre-Employment Requirements</option>
+                <option value="med_background">25. Medical/Background Check</option>
+                <option value="onboarding_info">26. Onboarding Information</option>
+              </optgroup>
+              <optgroup label="G. International Recruitment / Visa / Relocation">
+                <option value="visa_docs">27. Visa/Work Permit Documents</option>
+                <option value="visa_update">28. Visa Process Update</option>
+                <option value="travel_info">29. Travel/Relocation Information</option>
+              </optgroup>
+              <optgroup label="H. Delays & Status Updates">
+                <option value="processing_delay">30. Processing Delay</option>
+                <option value="no_response">31. Applicant Has Not Responded</option>
+                <option value="app_on_hold">32. Application Put on Hold</option>
+              </optgroup>
+              <optgroup label="I. Final / Closure">
+                <option value="app_withdrawn">33. Application Withdrawn</option>
+                <option value="app_closed">34. Application Closed</option>
+                <option value="welcome_final">35. Welcome / Final Confirmation</option>
+              </optgroup>
             </select>
           </div>
           <div class="form-group" style="margin-bottom:12px;">
