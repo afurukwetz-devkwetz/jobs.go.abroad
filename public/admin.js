@@ -533,14 +533,21 @@ document.addEventListener('DOMContentLoaded', () => {
   async function fetchTemplates() {
     try {
       const res  = await fetch(API_BASE_URL + '/api/templates', { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
       const data = await res.json();
       if (data.success) {
-        allTemplates = data.templates;
+        allTemplates = data.templates || [];
         populateEmailDropdown();
         renderTemplates();
+      } else {
+        throw new Error(data.error || 'Failed to load templates');
       }
     } catch (err) {
       console.error('Failed to fetch templates', err);
+      const grid = document.getElementById('templatesGrid');
+      if (grid) {
+        grid.innerHTML = `<div class="tpl-empty"><i class="fas fa-exclamation-triangle"></i><p>Error loading templates: ${err.message}</p></div>`;
+      }
     }
   }
 

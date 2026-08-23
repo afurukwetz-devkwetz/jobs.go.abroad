@@ -63,7 +63,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/register',   authLimiter, require('./routes/register'));
 app.use('/api/track',      require('./routes/track'));
 app.use('/api/admin',      authLimiter, require('./routes/admin'));
-app.use('/api/templates',  authLimiter, require('./routes/templates'));
+app.use('/api/templates',  require('./routes/templates'));
 app.use('/api/verify',     require('./routes/verify'));
 app.use('/api/applicant',  authLimiter, require('./routes/applicant'));
 
