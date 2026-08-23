@@ -650,20 +650,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const catFilter = document.getElementById('tplCategoryFilter')?.value || 'all';
     const grid      = document.getElementById('templatesGrid');
     if (!grid) return;
-
-    let filtered = allTemplates;
-    if (catFilter !== 'all') filtered = filtered.filter(t => t.category === catFilter);
-    if (search)             filtered = filtered.filter(t => t.name.toLowerCase().includes(search) || t.subject.toLowerCase().includes(search));
-
-    if (!filtered.length) {
-      grid.innerHTML = '<div class="tpl-empty"><i class="fas fa-search"></i><p>No templates match your search.</p></div>';
-      return;
-    }
-
-    grid.innerHTML = '';
-    filtered.forEach(tpl => {
-      const meta = CATEGORY_ICON_MAP[tpl.category] || { icon: 'fa-envelope', cls: 'cat-color-application' };
-      const card = document.createElement('div');
       card.className = 'tpl-card';
       card.innerHTML = `
         <div class="tpl-card-head">
