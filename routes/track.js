@@ -59,12 +59,36 @@ router.put('/update', requireAdmin, async (req, res) => {
   try {
     const { refNumber, step, note, status, adminNote } = req.body;
 
+    const applicantDoc = await Applicant.findOne({ refNumber: refNumber.trim().toUpperCase() });
+    if (!applicantDoc) return res.status(404).json({ error: 'Applicant not found.' });
+
     let updateFields = {};
+    const finalStep = step !== undefined && step >= 0 && step <= 4 ? step : applicantDoc.progressStep;
+    
     if (step !== undefined && step >= 0 && step <= 4) {
         updateFields.progressStep = step;
     }
     if (note     !== undefined) updateFields.progressNote = note;
-    if (status)                updateFields.status        = status;
+    if (status) {
+        updateFields.status = status;
+        // Auto-sync stageStatuses so UI and client dashboard match overall decision
+        if (status === 'Approved' || status === 'Rejected') {
+           const currentStages = applicantDoc.stageStatuses && applicantDoc.stageStatuses.length === 5 
+                ? [...applicantDoc.stageStatuses] 
+                : ['Pending', 'Pending', 'Pending', 'Pending', 'Pending'];
+           
+           currentStages[finalStep] = status;
+           // If Approved, approve all previous steps as well
+           if (status === 'Approved') {
+               for (let i = 0; i < finalStep; i++) {
+                   if (currentStages[i] === 'Pending' || currentStages[i] === 'Under Review') {
+                       currentStages[i] = 'Approved';
+                   }
+               }
+           }
+           updateFields.stageStatuses = currentStages;
+        }
+    }
     if (adminNote !== undefined) updateFields.adminNote   = adminNote;
 
     const applicant = await Applicant.findOneAndUpdate(
