@@ -15,7 +15,7 @@ if (SENDGRID_CONFIGURED) {
 
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_USER || 'noreply@globaljobconnect.com';
 const FROM_NAME  = 'Global Job Connect';
-const SITE       = process.env.FRONTEND_URL || 'https://jobs-go-abroad-3pbi.onrender.com';
+const SITE       = process.env.FRONTEND_URL || 'https://globaljobconnect.online';
 
 console.log(`📧 [EmailService] Sending from: ${FROM_EMAIL} | SendGrid configured: ${SENDGRID_CONFIGURED}`);
 

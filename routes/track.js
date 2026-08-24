@@ -235,7 +235,7 @@ router.post('/request-document', requireAdmin, async (req, res) => {
     );
 
     // Send email — applicant uploads via /my-application dashboard
-    const uploadUrl = `${process.env.FRONTEND_URL || 'https://jobs-go-abroad-3pbi.onrender.com'}/my-application`;
+    const uploadUrl = `${process.env.FRONTEND_URL || 'https://globaljobconnect.online'}/my-application`;
     setImmediate(async () => {
       try {
         await sendDocumentRequestEmail({
