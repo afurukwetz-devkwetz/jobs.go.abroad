@@ -423,7 +423,12 @@ function renderProgress(step, stageStatuses) {
     : STAGES.map((_, i) => i < clamped ? 'Verified' : i === clamped ? 'In Process' : 'Pending');
 
   STAGES.forEach((s, i) => {
-    const status = statuses[i] || 'Pending';
+    let status = statuses[i] || 'Pending';
+    // Normalize legacy values
+    if (status === 'Verified') status = 'Approved';
+    if (status === 'Failed') status = 'Rejected';
+    if (status === 'In Process') status = 'Under Review';
+
     const statusClass = status === 'Approved'     ? 'step-approved'
       : status === 'Rejected'     ? 'step-rejected'
       : status === 'Pending'      ? 'step-pending'

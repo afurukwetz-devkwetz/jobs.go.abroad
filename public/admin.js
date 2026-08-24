@@ -456,7 +456,12 @@ document.addEventListener('DOMContentLoaded', () => {
     container.innerHTML = '';
 
     STAGE_DEFS.forEach((stage, i) => {
-      const status = statuses[i] || 'Pending';
+      let status = statuses[i] || 'Pending';
+      // Normalize legacy values
+      if (status === 'Verified') status = 'Approved';
+      if (status === 'Failed') status = 'Rejected';
+      if (status === 'In Process') status = 'Under Review';
+
       const rowClass  = status === 'Approved'     ? 'stage-approved'
         : status === 'Rejected'     ? 'stage-rejected'
         : status === 'Under Review' ? 'stage-review'
