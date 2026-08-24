@@ -457,9 +457,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     STAGE_DEFS.forEach((stage, i) => {
       const status = statuses[i] || 'Pending';
-      const rowClass = status === 'Verified' ? 'stage-verified' : status === 'Failed' ? 'stage-failed' : status === 'In Process' ? 'stage-inprocess' : '';
-      const pillClass = status === 'Verified' ? 'pill-verified' : status === 'Failed' ? 'pill-failed' : status === 'In Process' ? 'pill-inprocess' : 'pill-pending';
-      const pillIcon  = status === 'Verified' ? 'fa-check' : status === 'Failed' ? 'fa-times' : status === 'In Process' ? 'fa-spinner fa-spin' : 'fa-clock';
+      const rowClass  = status === 'Approved'     ? 'stage-approved'
+        : status === 'Rejected'     ? 'stage-rejected'
+        : status === 'Under Review' ? 'stage-review'
+        : status === 'Pending'      ? 'stage-pending'
+        : '';
+      const pillClass = status === 'Approved'     ? 'pill-approved'
+        : status === 'Rejected'     ? 'pill-rejected'
+        : status === 'Under Review' ? 'pill-review'
+        : status === 'Pending'      ? 'pill-pending'
+        : 'pill-default';
+      const pillIcon  = status === 'Approved'     ? 'fa-check-circle'
+        : status === 'Rejected'     ? 'fa-times-circle'
+        : status === 'Under Review' ? 'fa-search'
+        : 'fa-clock';
 
       const row = document.createElement('div');
       row.className = `stage-row ${rowClass}`;
@@ -470,9 +481,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="stage-status-pill ${pillClass}"><i class="fas ${pillIcon}"></i> ${status}</span>
         </div>
         <div class="stage-btns">
-          <button class="stage-btn stage-btn-inprocess ${status === 'In Process' ? 'active' : ''}" data-idx="${i}" data-status="In Process" title="Mark In Process"><i class="fas fa-spinner"></i></button>
-          <button class="stage-btn stage-btn-verified   ${status === 'Verified'   ? 'active' : ''}" data-idx="${i}" data-status="Verified"   title="Mark Verified"><i class="fas fa-check"></i></button>
-          <button class="stage-btn stage-btn-failed     ${status === 'Failed'     ? 'active' : ''}" data-idx="${i}" data-status="Failed"     title="Mark Failed"><i class="fas fa-times"></i></button>
+          <button class="stage-btn stage-btn-approved ${status === 'Approved'     ? 'active' : ''}" data-idx="${i}" data-status="Approved"     title="Approve"><i class="fas fa-check"></i> Approve</button>
+          <button class="stage-btn stage-btn-rejected ${status === 'Rejected'     ? 'active' : ''}" data-idx="${i}" data-status="Rejected"     title="Reject"><i class="fas fa-times"></i> Reject</button>
+          <button class="stage-btn stage-btn-pending  ${status === 'Pending'      ? 'active' : ''}" data-idx="${i}" data-status="Pending"      title="Set Pending"><i class="fas fa-hourglass"></i> Pending</button>
+          <button class="stage-btn stage-btn-review   ${status === 'Under Review' ? 'active' : ''}" data-idx="${i}" data-status="Under Review" title="Under Review"><i class="fas fa-search"></i> Review</button>
         </div>`;
       container.appendChild(row);
     });

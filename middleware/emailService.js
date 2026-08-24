@@ -149,9 +149,10 @@ async function sendStatusEmail({ firstName, email, refNumber, newStatus, adminNo
 async function sendStageUpdateEmail({ firstName, email, refNumber, stageName, newStatus }) {
   const trackUrl = `${SITE}/#track`;
   const cfg = {
-    'Verified':   { color: '#10b981', icon: '✅', title: 'Stage Verified' },
-    'Failed':     { color: '#ef4444', icon: '❌', title: 'Stage Update: Failed' },
-    'In Process': { color: '#3b82f6', icon: '🔄', title: 'Stage Update: In Process' }
+    'Approved':     { color: '#10b981', icon: '✅', title: 'Stage Approved' },
+    'Rejected':     { color: '#ef4444', icon: '❌', title: 'Stage Rejected' },
+    'Pending':      { color: '#f59e0b', icon: '⏳', title: 'Stage Pending Review' },
+    'Under Review': { color: '#3b82f6', icon: '🔍', title: 'Stage Under Review' }
   }[newStatus] || { color: '#6366f1', icon: 'ℹ️', title: 'Stage Update' };
 
   return sendMail({

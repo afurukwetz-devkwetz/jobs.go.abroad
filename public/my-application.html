@@ -166,19 +166,22 @@
     .progress-step.active .step-label { color: #fff; }
 
     /* Per-stage status classes */
-    .progress-step.step-verified .step-circle  { background: #10b981; border-color: #10b981; color: #fff; }
-    .progress-step.step-verified .step-label   { color: #34d399; }
-    .progress-step.step-verified:not(:last-child)::after { background: #10b981; }
-    .progress-step.step-failed .step-circle    { background: #ef4444; border-color: #ef4444; color: #fff; }
-    .progress-step.step-failed .step-label     { color: #fb7185; }
-    .progress-step.step-failed:not(:last-child)::after { background: rgba(239,68,68,0.4); }
-    .progress-step.step-inprocess .step-circle { background: #3b82f6; border-color: #3b82f6; color: #fff; box-shadow: 0 0 0 4px rgba(59,130,246,0.25); animation: pulseBadge 1.5s infinite; }
-    .progress-step.step-inprocess .step-label  { color: #93c5fd; }
+    .progress-step.step-approved .step-circle  { background: #10b981; border-color: #10b981; color: #fff; }
+    .progress-step.step-approved .step-label   { color: #34d399; }
+    .progress-step.step-approved:not(:last-child)::after { background: #10b981; }
+    .progress-step.step-rejected .step-circle  { background: #ef4444; border-color: #ef4444; color: #fff; }
+    .progress-step.step-rejected .step-label   { color: #fb7185; }
+    .progress-step.step-rejected:not(:last-child)::after { background: rgba(239,68,68,0.4); }
+    .progress-step.step-pending  .step-circle  { background: #f59e0b; border-color: #f59e0b; color: #fff; }
+    .progress-step.step-pending  .step-label   { color: #fbbf24; }
+    .progress-step.step-review   .step-circle  { background: #3b82f6; border-color: #3b82f6; color: #fff; box-shadow: 0 0 0 4px rgba(59,130,246,0.25); animation: pulseBadge 1.5s infinite; }
+    .progress-step.step-review   .step-label   { color: #93c5fd; }
     .step-status-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; color: var(--muted); }
-    .progress-step.step-verified  .step-status-label { color: #34d399; }
-    .progress-step.step-failed    .step-status-label { color: #fb7185; }
-    .progress-step.step-inprocess .step-status-label { color: #93c5fd; }
-    .progress-step.active         .step-status-label { color: rgba(255,255,255,.6); }
+    .progress-step.step-approved .step-status-label { color: #34d399; }
+    .progress-step.step-rejected .step-status-label { color: #fb7185; }
+    .progress-step.step-pending  .step-status-label { color: #fbbf24; }
+    .progress-step.step-review   .step-status-label { color: #93c5fd; }
+    .progress-step.active        .step-status-label { color: rgba(255,255,255,.6); }
     @keyframes pulseBadge { 0%,100% { box-shadow: 0 0 0 4px rgba(59,130,246,0.25); } 50% { box-shadow: 0 0 0 8px rgba(59,130,246,0.1); } }
 
     .stage-desc { margin-top: 16px; padding: 12px 16px; background: rgba(21,101,192,0.1); border-left: 3px solid var(--blue); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: rgba(255,255,255,0.7); }
@@ -421,14 +424,16 @@ function renderProgress(step, stageStatuses) {
 
   STAGES.forEach((s, i) => {
     const status = statuses[i] || 'Pending';
-    const statusClass = status === 'Verified' ? 'step-verified'
-      : status === 'Failed'     ? 'step-failed'
-      : status === 'In Process' ? 'step-inprocess'
-      : i < clamped             ? 'done'
-      : i === clamped           ? 'active'
+    const statusClass = status === 'Approved'     ? 'step-approved'
+      : status === 'Rejected'     ? 'step-rejected'
+      : status === 'Pending'      ? 'step-pending'
+      : status === 'Under Review' ? 'step-review'
+      : i < clamped               ? 'done'
+      : i === clamped             ? 'active'
       : '';
-    const statusIcon = status === 'Verified' ? 'fa-check-circle'
-      : status === 'Failed'     ? 'fa-times-circle'
+    const statusIcon = status === 'Approved'     ? 'fa-check-circle'
+      : status === 'Rejected'     ? 'fa-times-circle'
+      : status === 'Under Review' ? 'fa-search'
       : s.icon;
 
     const div = document.createElement('div');
