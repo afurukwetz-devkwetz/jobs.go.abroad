@@ -151,13 +151,19 @@ router.put('/update-stage', requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'stageIndex and newStatus are required.' });
     }
 
-    const updateFields = {};
-    updateFields[`stageStatuses.${stageIndex}`] = newStatus;
+    const applicantDoc = await Applicant.findOne({ refNumber: refNumber.trim().toUpperCase() });
+    if (!applicantDoc) return res.status(404).json({ error: 'Applicant not found.' });
+
+    let currentStages = applicantDoc.stageStatuses && applicantDoc.stageStatuses.length === 5 
+        ? [...applicantDoc.stageStatuses] 
+        : ['Pending', 'Pending', 'Pending', 'Pending', 'Pending'];
+    
+    currentStages[stageIndex] = newStatus;
 
     const applicant = await Applicant.findOneAndUpdate(
       { refNumber: refNumber.trim().toUpperCase() },
-      { $set: updateFields },
-      { returnDocument: 'after' }
+      { $set: { stageStatuses: currentStages } },
+      { new: true }
     );
 
     if (!applicant) return res.status(404).json({ error: 'Applicant not found.' });
