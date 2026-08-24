@@ -145,6 +145,45 @@ async function sendStatusEmail({ firstName, email, refNumber, newStatus, adminNo
   });
 }
 
+// ── Send stage-specific update notification ──────────────────────────────────
+async function sendStageUpdateEmail({ firstName, email, refNumber, stageName, newStatus }) {
+  const trackUrl = `${SITE}/#track`;
+  const cfg = {
+    'Verified':   { color: '#10b981', icon: '✅', title: 'Stage Verified' },
+    'Failed':     { color: '#ef4444', icon: '❌', title: 'Stage Update: Failed' },
+    'In Process': { color: '#3b82f6', icon: '🔄', title: 'Stage Update: In Process' }
+  }[newStatus] || { color: '#6366f1', icon: 'ℹ️', title: 'Stage Update' };
+
+  return sendMail({
+    to: email,
+    subject: `Application Stage Update: ${stageName} is now ${newStatus}`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
+        <div style="padding:30px;background:${cfg.color};text-align:center;">
+          <p style="font-size:36px;margin:0;">${cfg.icon}</p>
+          <h1 style="color:#fff;margin:8px 0 0;font-size:20px;">Global Job Connect</h1>
+        </div>
+        <div style="padding:30px;">
+          <h2 style="color:#222;">${cfg.title}</h2>
+          <p style="color:#444;line-height:1.6;">Hi <strong>${firstName}</strong>,</p>
+          <p style="color:#444;line-height:1.6;">Your application stage <strong>${stageName}</strong> has been updated to <strong>${newStatus}</strong>.</p>
+          <div style="background:#f9f9f9;border-left:4px solid ${cfg.color};padding:14px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
+            <p style="margin:0;color:#666;font-size:13px;">Reference Number: <strong style="color:#222;">${refNumber}</strong></p>
+            <p style="margin:6px 0 0;color:#666;font-size:13px;">Stage: <strong style="color:#222;">${stageName}</strong></p>
+            <p style="margin:6px 0 0;color:#666;font-size:13px;">Status: <strong style="color:${cfg.color};">${newStatus}</strong></p>
+          </div>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${trackUrl}" style="background:#1565c0;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Track My Application</a>
+          </div>
+        </div>
+        <div style="padding:16px;text-align:center;background:#f5f5f5;">
+          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect · Work Anywhere. Grow Everywhere.</p>
+        </div>
+      </div>
+    `,
+  });
+}
+
 // ── Send verification email (legacy — kept for compatibility) ─────────────────
 async function sendVerificationEmail({ firstName, email, verificationToken }) {
   const verifyUrl = `${SITE}/api/verify/${verificationToken}`;
@@ -224,4 +263,4 @@ async function sendDocumentRequestEmail({ firstName, email, docLabel, uploadUrl 
   });
 }
 
-module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail, sendOtpEmail, sendCustomEmail, sendDocumentRequestEmail };
+module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail, sendStageUpdateEmail, sendOtpEmail, sendCustomEmail, sendDocumentRequestEmail };

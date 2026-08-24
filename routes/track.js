@@ -4,7 +4,7 @@ const crypto    = require('crypto');
 const Applicant = require('../models/Applicant');
 const Batch     = require('../models/Batch');
 const { requireAdmin } = require('../middleware/auth');
-const { sendStatusEmail, sendCustomEmail, sendDocumentRequestEmail } = require('../middleware/emailService');
+const { sendStatusEmail, sendCustomEmail, sendDocumentRequestEmail, sendStageUpdateEmail } = require('../middleware/emailService');
 const { sendWhatsAppMessage } = require('../middleware/whatsappService');
 const EmailLog  = require('../models/EmailLog');
 
@@ -116,6 +116,50 @@ router.put('/update', requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('❌ [Track Single Update] Error:', err);
     res.status(500).json({ error: 'Server error.', details: err.message });
+  }
+});
+
+// PUT /api/track/update-stage — admin updates a specific stage's status
+router.put('/update-stage', requireAdmin, async (req, res) => {
+  try {
+    const { refNumber, stageIndex, newStatus } = req.body;
+    if (stageIndex === undefined || !newStatus) {
+      return res.status(400).json({ error: 'stageIndex and newStatus are required.' });
+    }
+
+    const updateFields = {};
+    updateFields[`stageStatuses.${stageIndex}`] = newStatus;
+
+    const applicant = await Applicant.findOneAndUpdate(
+      { refNumber: refNumber.trim().toUpperCase() },
+      { $set: updateFields },
+      { returnDocument: 'after' }
+    );
+
+    if (!applicant) return res.status(404).json({ error: 'Applicant not found.' });
+
+    // Send email notification for stage update
+    if (applicant.email) {
+      setImmediate(async () => {
+        try {
+          const stageName = STAGES[stageIndex]?.label || \`Stage \${stageIndex + 1}\`;
+          await sendStageUpdateEmail({
+            firstName: applicant.firstName,
+            email: applicant.email,
+            refNumber: applicant.refNumber,
+            stageName,
+            newStatus
+          });
+        } catch (e) {
+          console.error('❌ [Stage Update Email]:', e.message);
+        }
+      });
+    }
+
+    res.json({ success: true, stageStatuses: applicant.stageStatuses });
+  } catch (err) {
+    console.error('❌ [Update Stage Error]:', err);
+    res.status(500).json({ error: 'Server error.' });
   }
 });
 

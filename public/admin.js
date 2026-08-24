@@ -349,6 +349,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Qualifications tab
     renderQualsTab(a);
 
+    // Stages tab
+    renderStagesUI(a);
+
     // Reset to first tab
     switchTab('info');
 
@@ -434,6 +437,83 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch {
       alert('Error updating status');
+    }
+  }
+
+  // ─── Stage Verification UI ────────────────────────────────────────────────────
+  const STAGE_DEFS = [
+    { label: 'Application Received',   icon: 'fa-inbox' },
+    { label: 'Document Verification',  icon: 'fa-file-circle-check' },
+    { label: 'Background Check',       icon: 'fa-shield-halved' },
+    { label: 'Interview / Assessment', icon: 'fa-comments' },
+    { label: 'Final Decision',         icon: 'fa-trophy' },
+  ];
+
+  function renderStagesUI(applicant) {
+    const container = document.getElementById('stagesList');
+    if (!container) return;
+    const statuses = applicant.stageStatuses || ['Pending','Pending','Pending','Pending','Pending'];
+    container.innerHTML = '';
+
+    STAGE_DEFS.forEach((stage, i) => {
+      const status = statuses[i] || 'Pending';
+      const rowClass = status === 'Verified' ? 'stage-verified' : status === 'Failed' ? 'stage-failed' : status === 'In Process' ? 'stage-inprocess' : '';
+      const pillClass = status === 'Verified' ? 'pill-verified' : status === 'Failed' ? 'pill-failed' : status === 'In Process' ? 'pill-inprocess' : 'pill-pending';
+      const pillIcon  = status === 'Verified' ? 'fa-check' : status === 'Failed' ? 'fa-times' : status === 'In Process' ? 'fa-spinner fa-spin' : 'fa-clock';
+
+      const row = document.createElement('div');
+      row.className = `stage-row ${rowClass}`;
+      row.innerHTML = `
+        <div class="stage-icon-wrap"><i class="fas ${stage.icon}"></i></div>
+        <div class="stage-info">
+          <div class="stage-name">${stage.label}</div>
+          <span class="stage-status-pill ${pillClass}"><i class="fas ${pillIcon}"></i> ${status}</span>
+        </div>
+        <div class="stage-btns">
+          <button class="stage-btn stage-btn-inprocess ${status === 'In Process' ? 'active' : ''}" data-idx="${i}" data-status="In Process" title="Mark In Process"><i class="fas fa-spinner"></i></button>
+          <button class="stage-btn stage-btn-verified   ${status === 'Verified'   ? 'active' : ''}" data-idx="${i}" data-status="Verified"   title="Mark Verified"><i class="fas fa-check"></i></button>
+          <button class="stage-btn stage-btn-failed     ${status === 'Failed'     ? 'active' : ''}" data-idx="${i}" data-status="Failed"     title="Mark Failed"><i class="fas fa-times"></i></button>
+        </div>`;
+      container.appendChild(row);
+    });
+
+    // Attach click handlers
+    container.querySelectorAll('.stage-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const idx       = parseInt(btn.dataset.idx);
+        const newStatus = btn.dataset.status;
+        await updateStageStatus(idx, newStatus);
+      });
+    });
+  }
+
+  async function updateStageStatus(stageIndex, newStatus) {
+    if (!currentApplicant) return;
+    try {
+      const res = await fetch(API_BASE_URL + '/api/track/update-stage', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          refNumber: currentApplicant.refNumber,
+          stageIndex,
+          newStatus,
+        }),
+      });
+      if (res.status === 401 || res.status === 403) { alert('Session expired.'); return logout(); }
+      const data = await res.json();
+      if (data.success) {
+        // Update local state and re-render stages
+        if (!currentApplicant.stageStatuses) currentApplicant.stageStatuses = ['Pending','Pending','Pending','Pending','Pending'];
+        currentApplicant.stageStatuses[stageIndex] = newStatus;
+        // Also sync in allApplicants
+        const idx = allApplicants.findIndex(a => a.refNumber === currentApplicant.refNumber);
+        if (idx !== -1) allApplicants[idx].stageStatuses = [...currentApplicant.stageStatuses];
+        renderStagesUI(currentApplicant);
+      } else {
+        alert(data.error || 'Failed to update stage.');
+      }
+    } catch {
+      alert('Network error updating stage.');
     }
   }
 

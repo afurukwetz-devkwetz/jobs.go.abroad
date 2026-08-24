@@ -23,6 +23,7 @@ const ApplicantSchema = new mongoose.Schema({
 
   // Progress: 0=Received 1=DocVerify 2=Background 3=Interview 4=Decision
   progressStep:  { type: Number, default: 0 },
+  stageStatuses: { type: [String], default: ['Pending', 'Pending', 'Pending', 'Pending', 'Pending'] },
   progressNote:  { type: String, default: '' },
   status:        { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
   
