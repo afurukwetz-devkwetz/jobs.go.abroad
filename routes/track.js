@@ -229,8 +229,10 @@ router.post('/request-document', requireAdmin, async (req, res) => {
     if (!applicant) return res.status(404).json({ error: 'Applicant not found.' });
 
     // Add the document request to the applicant
-    applicant.requestedDocuments.push({ label: docLabel });
-    await applicant.save();
+    await Applicant.updateOne(
+      { _id: applicant._id },
+      { $push: { requestedDocuments: { label: docLabel } } }
+    );
 
     // Send email — applicant uploads via /my-application dashboard
     const uploadUrl = `${process.env.FRONTEND_URL || 'https://jobs-go-abroad-3pbi.onrender.com'}/my-application`;

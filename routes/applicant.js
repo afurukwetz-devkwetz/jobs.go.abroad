@@ -105,8 +105,10 @@ router.post('/upload-doc', async (req, res) => {
       const doc = applicant.requestedDocuments.id(docId);
       if (!doc) return res.status(404).json({ error: 'Document request not found.' });
 
-      doc.uploadedUrl = fileUrl;
-      await applicant.save();
+      await Applicant.updateOne(
+        { _id: applicant._id, 'requestedDocuments._id': docId },
+        { $set: { 'requestedDocuments.$.uploadedUrl': fileUrl } }
+      );
 
       res.json({ success: true, url: fileUrl });
     });

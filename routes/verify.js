@@ -58,9 +58,10 @@ router.get('/:token', async (req, res) => {
       `);
     }
 
-    applicant.isVerified = true;
-    applicant.verificationToken = undefined; // Clear the token
-    await applicant.save();
+    await Applicant.updateOne(
+      { _id: applicant._id },
+      { $set: { isVerified: true }, $unset: { verificationToken: 1 } }
+    );
 
     res.send(`
       <div style="font-family: sans-serif; text-align: center; margin-top: 50px;">
