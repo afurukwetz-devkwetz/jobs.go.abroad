@@ -142,7 +142,7 @@ router.put('/update-stage', requireAdmin, async (req, res) => {
     if (applicant.email) {
       setImmediate(async () => {
         try {
-          const stageName = STAGES[stageIndex]?.label || \`Stage \${stageIndex + 1}\`;
+          const stageName = STAGES[stageIndex]?.label || `Stage ${stageIndex + 1}`;
           await sendStageUpdateEmail({
             firstName: applicant.firstName,
             email: applicant.email,
