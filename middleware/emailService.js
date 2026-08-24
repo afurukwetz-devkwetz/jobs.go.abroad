@@ -149,15 +149,15 @@ async function sendStatusEmail({ firstName, email, refNumber, newStatus, adminNo
 async function sendStageUpdateEmail({ firstName, email, refNumber, stageName, newStatus }) {
   const trackUrl = `${SITE}/#track`;
   const cfg = {
-    'Approved':     { color: '#10b981', icon: '✅', title: 'Stage Approved' },
-    'Rejected':     { color: '#ef4444', icon: '❌', title: 'Stage Rejected' },
-    'Pending':      { color: '#f59e0b', icon: '⏳', title: 'Stage Pending Review' },
-    'Under Review': { color: '#3b82f6', icon: '🔍', title: 'Stage Under Review' }
-  }[newStatus] || { color: '#6366f1', icon: 'ℹ️', title: 'Stage Update' };
+    'Approved':     { color: '#10b981', icon: '✅' },
+    'Rejected':     { color: '#ef4444', icon: '❌' },
+    'Pending':      { color: '#f59e0b', icon: '⏳' },
+    'Under Review': { color: '#3b82f6', icon: '🔍' }
+  }[newStatus] || { color: '#6366f1', icon: 'ℹ️' };
 
   return sendMail({
     to: email,
-    subject: `Application Stage Update: ${stageName} is now ${newStatus}`,
+    subject: `Application Update: ${stageName} is ${newStatus}`,
     html: `
       <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden;">
         <div style="padding:30px;background:${cfg.color};text-align:center;">
@@ -165,9 +165,9 @@ async function sendStageUpdateEmail({ firstName, email, refNumber, stageName, ne
           <h1 style="color:#fff;margin:8px 0 0;font-size:20px;">Global Job Connect</h1>
         </div>
         <div style="padding:30px;">
-          <h2 style="color:#222;">${cfg.title}</h2>
+          <h2 style="color:#222;margin-top:0;">${stageName}: ${newStatus}</h2>
           <p style="color:#444;line-height:1.6;">Hi <strong>${firstName}</strong>,</p>
-          <p style="color:#444;line-height:1.6;">Your application stage <strong>${stageName}</strong> has been updated to <strong>${newStatus}</strong>.</p>
+          <p style="color:#444;line-height:1.6;">Your application stage for <strong>${stageName}</strong> has been updated to <strong>${newStatus}</strong>.</p>
           <div style="background:#f9f9f9;border-left:4px solid ${cfg.color};padding:14px 18px;border-radius:0 8px 8px 0;margin:20px 0;">
             <p style="margin:0;color:#666;font-size:13px;">Reference Number: <strong style="color:#222;">${refNumber}</strong></p>
             <p style="margin:6px 0 0;color:#666;font-size:13px;">Stage: <strong style="color:#222;">${stageName}</strong></p>

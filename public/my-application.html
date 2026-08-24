@@ -418,13 +418,17 @@ function renderProgress(step, stageStatuses) {
   const track = document.getElementById('progressTrack');
   track.innerHTML = '';
   const clamped  = Math.min(Math.max(step || 0, 0), STAGES.length - 1);
-  const statuses = stageStatuses && stageStatuses.length === STAGES.length
-    ? stageStatuses
-    : STAGES.map((_, i) => i < clamped ? 'Verified' : i === clamped ? 'In Process' : 'Pending');
+  const hasStageData = stageStatuses && stageStatuses.length > 0;
 
   STAGES.forEach((s, i) => {
-    let status = statuses[i] || 'Pending';
-    // Normalize legacy values
+    let status = 'Pending';
+    if (hasStageData && stageStatuses[i]) {
+      status = stageStatuses[i];
+    } else if (!hasStageData) {
+      status = i < clamped ? 'Approved' : i === clamped ? 'Under Review' : 'Pending';
+    }
+
+    // Normalize legacy values just in case
     if (status === 'Verified') status = 'Approved';
     if (status === 'Failed') status = 'Rejected';
     if (status === 'In Process') status = 'Under Review';
