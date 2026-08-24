@@ -32,16 +32,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Rate Limiting
+const { authLimiter } = require('./middleware/rateLimiter');
+
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 300, // limit each IP to 300 requests per windowMs
   message: { error: 'Too many requests from this IP, please try again later.' }
-});
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // strict limit for auth routes
-  message: { error: 'Too many attempts, please try again after 15 minutes.' }
 });
 
 app.use(globalLimiter);
@@ -62,10 +58,10 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/register',   authLimiter, require('./routes/register'));
 app.use('/api/track',      require('./routes/track'));
-app.use('/api/admin',      authLimiter, require('./routes/admin'));
+app.use('/api/admin',      require('./routes/admin'));
 app.use('/api/templates',  require('./routes/templates'));
 app.use('/api/verify',     require('./routes/verify'));
-app.use('/api/applicant',  authLimiter, require('./routes/applicant'));
+app.use('/api/applicant',  require('./routes/applicant'));
 
 // Public: fetch platform settings (e.g. WhatsApp number)
 const Setting = require('./models/Setting');
