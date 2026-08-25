@@ -133,6 +133,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(API_BASE_URL + '/api/track/applicants', { headers: getAuthHeaders() });
       if (res.status === 401 || res.status === 403) { alert('Session expired. Please log in again.'); return logout(); }
       allApplicants = await res.json();
+      
+      // Populate Batch Filter
+      const batchSet = new Set(allApplicants.map(a => a.batchCode).filter(Boolean));
+      const batchSelect = document.getElementById('filterBatch');
+      if (batchSelect) {
+        const currentBatch = batchSelect.value;
+        batchSelect.innerHTML = '<option value="all">All Batches</option>';
+        Array.from(batchSet).sort().forEach(b => {
+          const opt = document.createElement('option');
+          opt.value = b;
+          opt.textContent = b;
+          batchSelect.appendChild(opt);
+        });
+        batchSelect.value = currentBatch || 'all';
+      }
+
       updateStats();
       renderTable();
       fetchAnalytics();
@@ -206,17 +222,27 @@ document.addEventListener('DOMContentLoaded', () => {
   window.renderTable = function () {
     const statusFilter = document.getElementById('filterStatus').value;
     const profFilter   = document.getElementById('filterProfession').value;
+    const batchFilter  = document.getElementById('filterBatch')?.value || 'all';
+    const docsFilter   = document.getElementById('filterDocs')?.value || 'all';
     const query        = (document.getElementById('searchInput').value || '').toLowerCase().trim();
 
     let filtered = allApplicants.filter(a => {
       const matchStatus = statusFilter === 'all' || a.status === statusFilter;
       const matchProf   = profFilter   === 'all' || (a.profession || '').toLowerCase() === profFilter;
+      const matchBatch  = batchFilter  === 'all' || a.batchCode === batchFilter;
+      let matchDocs = true;
+      if (docsFilter === 'missing') {
+        matchDocs = a.requestedDocuments && a.requestedDocuments.some(d => !d.uploadedUrl || d.status === 'Pending' || d.status === 'Rejected');
+      }
+      
       const matchSearch = !query ||
         (`${a.firstName} ${a.lastName}`).toLowerCase().includes(query) ||
         (a.email || '').toLowerCase().includes(query) ||
         (a.refNumber || '').toLowerCase().includes(query);
-      return matchStatus && matchProf && matchSearch;
+      return matchStatus && matchProf && matchBatch && matchDocs && matchSearch;
     });
+
+    window.currentFilteredApplicants = filtered;
 
     const tbody = document.getElementById('applicantsBody');
     const count = document.getElementById('tableCount');
@@ -237,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? '<i class="fas fa-check-circle" style="color:#34d399" title="Verified"></i>'
         : '<i class="fas fa-times-circle" style="color:#fb7185" title="Unverified"></i>';
       tr.innerHTML = `
+        <td><input type="checkbox" class="applicant-cb" value="${app.refNumber}" onchange="updateBulkActions()"></td>
         <td><strong>${app.refNumber || 'N/A'}</strong></td>
         <td>${app.firstName} ${app.lastName}</td>
         <td><a href="mailto:${app.email}" style="color:#60a5fa;text-decoration:none;">${app.email}</a></td>
@@ -250,6 +277,123 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       tbody.appendChild(tr);
     });
+  };
+
+  // ─── Export CSV ───────────────────────────────────────────────────────────────
+  window.exportCsv = function() {
+    const list = window.currentFilteredApplicants || allApplicants || [];
+    if (list.length === 0) return alert('No applicants to export.');
+
+    const headers = ['Ref Number', 'First Name', 'Last Name', 'Email', 'Phone', 'Profession', 'Country', 'Status', 'Batch Code', 'Applied On'];
+    const rows = list.map(a => [
+      a.refNumber || '',
+      a.firstName || '',
+      a.lastName || '',
+      a.email || '',
+      a.phone || '',
+      a.profession || '',
+      a.country || '',
+      a.status || 'Pending',
+      a.batchCode || '',
+      new Date(a.createdAt).toLocaleDateString()
+    ]);
+
+    let csvContent = [
+      headers.join(','),
+      ...rows.map(r => r.map(f => `"${String(f).replace(/"/g, '""')}"`).join(','))
+    ].join('\\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'global_job_connect_applicants.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // ─── Bulk Email Logic ────────────────────────────────────────────────────────
+  window.toggleSelectAll = function() {
+    const master = document.getElementById('selectAllCheckbox');
+    const checkboxes = document.querySelectorAll('.applicant-cb');
+    checkboxes.forEach(cb => cb.checked = master.checked);
+    updateBulkActions();
+  };
+
+  window.updateBulkActions = function() {
+    const selected = document.querySelectorAll('.applicant-cb:checked').length;
+    const bar = document.getElementById('bulkActionsBar');
+    document.getElementById('bulkCount').textContent = selected;
+    if (selected > 0) bar.style.display = 'flex';
+    else bar.style.display = 'none';
+  };
+
+  window.openBulkEmailModal = function() {
+    const selected = document.querySelectorAll('.applicant-cb:checked');
+    if (selected.length > 50) return alert('You can only select up to 50 applicants at once for bulk emails.');
+    document.getElementById('bulkModalCount').textContent = selected.length;
+    
+    const sel = document.getElementById('bulkTemplateSelect');
+    sel.innerHTML = '<option value="">-- Custom Email --</option>';
+    if (window.emailTemplates) {
+      window.emailTemplates.forEach(t => {
+        sel.innerHTML += `<option value="${t._id}">${t.name}</option>`;
+      });
+    }
+    
+    document.getElementById('bulkSubject').value = '';
+    document.getElementById('bulkBody').value = '';
+    document.getElementById('bulkEmailModal').style.display = 'flex';
+  };
+
+  window.closeBulkEmailModal = function() {
+    document.getElementById('bulkEmailModal').style.display = 'none';
+  };
+
+  window.applyBulkTemplate = function() {
+    const tid = document.getElementById('bulkTemplateSelect').value;
+    if (!tid) return;
+    const t = window.emailTemplates.find(x => x._id === tid);
+    if (t) {
+      document.getElementById('bulkSubject').value = t.subject;
+      document.getElementById('bulkBody').value = t.body;
+    }
+  };
+
+  window.sendBulkEmail = async function() {
+    const selected = Array.from(document.querySelectorAll('.applicant-cb:checked')).map(cb => cb.value);
+    const subject = document.getElementById('bulkSubject').value.trim();
+    const body = document.getElementById('bulkBody').value.trim();
+    const templateId = document.getElementById('bulkTemplateSelect').value;
+
+    if (selected.length === 0) return alert('No applicants selected');
+    if (!subject || !body) return alert('Subject and body are required');
+
+    const btn = document.getElementById('btnSendBulk');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    try {
+      const res = await fetch(API_BASE_URL + '/api/track/send-bulk-email', {
+        method: 'POST', headers: getAuthHeaders(),
+        body: JSON.stringify({ refNumbers: selected, subject, body, templateId: templateId || null })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(`Successfully sent email to ${data.sentCount} applicants.`);
+        closeBulkEmailModal();
+        document.getElementById('selectAllCheckbox').checked = false;
+        toggleSelectAll();
+      } else {
+        alert(data.error || 'Failed to send bulk email');
+      }
+    } catch (e) {
+      alert('Error sending bulk email');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send to All';
+    }
   };
 
   // ─── Charts ───────────────────────────────────────────────────────────────────

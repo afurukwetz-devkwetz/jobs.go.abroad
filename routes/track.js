@@ -231,6 +231,77 @@ router.get('/applicants', requireAdmin, async (req, res) => {
   }
 });
 
+// POST /api/track/send-bulk-email — admin sends bulk email
+router.post('/send-bulk-email', requireAdmin, async (req, res) => {
+  try {
+    const { refNumbers, subject, body, templateId } = req.body;
+    if (!refNumbers || !Array.isArray(refNumbers) || refNumbers.length === 0) {
+      return res.status(400).json({ error: 'No applicants selected.' });
+    }
+    if (refNumbers.length > 50) {
+      return res.status(400).json({ error: 'Maximum 50 applicants per bulk email.' });
+    }
+
+    const applicants = await Applicant.find({ refNumber: { $in: refNumbers } });
+    if (!applicants.length) return res.status(404).json({ error: 'Applicants not found.' });
+
+    let sentCount = 0;
+    
+    // Process sequentially or in parallel batches
+    for (const applicant of applicants) {
+      if (!applicant.email) continue;
+      
+      let finalSubject = subject;
+      let finalBody = body;
+      
+      if (templateId) {
+        const Template = require('../models/Template');
+        const tpl = await Template.findById(templateId);
+        if (tpl) {
+          finalSubject = tpl.subject;
+          finalBody = tpl.body;
+        }
+      }
+
+      // Replace placeholders
+      finalSubject = finalSubject.replace(/\[Applicant Name\]/g, applicant.firstName || '');
+      finalBody = finalBody.replace(/\[Applicant Name\]/g, applicant.firstName || '');
+      finalBody = finalBody.replace(/\[Ref Number\]/g, applicant.refNumber || '');
+      finalBody = finalBody.replace(/\[Batch Code\]/g, applicant.batchCode || 'Not Assigned');
+
+      // Create log
+      const log = await EmailLog.create({
+        applicantId: applicant._id,
+        templateName: templateId ? 'Bulk: ' + templateId : 'Bulk Email',
+        subject: finalSubject,
+        bodyPreview: finalBody.substring(0, 300) + '...',
+        sentBy: req.admin.email || 'admin'
+      });
+
+      // Inject tracking pixel
+      const trackingPixel = `<img src="${process.env.FRONTEND_URL || 'https://globaljobconnect.online'}/api/track/pixel/${log._id}.gif" width="1" height="1" alt="" style="display:none;" />`;
+      const htmlBody = finalBody + trackingPixel;
+
+      try {
+        await sendCustomEmail({
+          to: applicant.email,
+          subject: finalSubject,
+          body: htmlBody,
+          firstName: applicant.firstName
+        });
+        sentCount++;
+      } catch (e) {
+        console.error(`Failed to send bulk email to ${applicant.email}`, e);
+      }
+    }
+
+    res.json({ success: true, sentCount });
+  } catch (err) {
+    console.error('❌ [Bulk Email] Error:', err);
+    res.status(500).json({ error: 'Server error.', details: err.message });
+  }
+});
+
 // GET /api/track/batches — list all batches (admin dashboard)
 router.get('/batches', requireAdmin, async (req, res) => {
   try {

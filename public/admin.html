@@ -263,14 +263,26 @@
               <option value="truck">Truck Driver</option>
               <option value="gardener">Gardener</option>
             </select>
+            <select id="filterBatch" onchange="renderTable()">
+              <option value="all">All Batches</option>
+            </select>
+            <select id="filterDocs" onchange="renderTable()">
+              <option value="all">All Doc States</option>
+              <option value="missing">Missing Docs</option>
+            </select>
             <button class="btn btn-secondary" onclick="exportCsv()" style="font-size:0.85rem; display:flex; align-items:center; gap:6px;"><i class="fas fa-file-csv"></i> Export CSV</button>
           </div>
         </div>
         
         <div class="table-responsive">
+          <div id="bulkActionsBar" style="display:none;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.3);padding:10px 16px;border-radius:8px;margin-bottom:12px;align-items:center;justify-content:space-between;">
+            <span style="color:#60a5fa;font-size:0.9rem;font-weight:600;"><span id="bulkCount">0</span> applicants selected</span>
+            <button class="btn btn-primary btn-sm" onclick="openBulkEmailModal()"><i class="fas fa-envelope"></i> Send Bulk Email</button>
+          </div>
           <table id="applicantsTable">
             <thead>
               <tr>
+                <th style="width:40px;"><input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()"></th>
                 <th>Ref ID</th>
                 <th>Name</th>
                 <th>Email</th>
@@ -637,6 +649,37 @@
   </div>
 
   <script src="config.js"></script>
-  <script src="admin.js"></script>
+  <!-- ── Bulk Email Modal ── -->
+  <div id="bulkEmailModal" class="modal">
+    <div class="modal-content" style="max-width:550px">
+      <button class="close-btn" onclick="closeBulkEmailModal()"><i class="fas fa-times"></i></button>
+      <h2 style="margin-bottom:6px;"><i class="fas fa-envelope" style="color:#60a5fa"></i> Send Bulk Email</h2>
+      <p style="color:rgba(255,255,255,.5);font-size:0.85rem;margin-bottom:20px;">Sending to <strong id="bulkModalCount" style="color:#fff">0</strong> selected applicants. (Max 50)</p>
+      
+      <div class="tpl-field">
+        <label>Use Template (Optional)</label>
+        <select id="bulkTemplateSelect" onchange="applyBulkTemplate()">
+          <option value="">-- Custom Email --</option>
+        </select>
+      </div>
+
+      <div class="tpl-field">
+        <label>Subject</label>
+        <input type="text" id="bulkSubject" placeholder="Email subject...">
+      </div>
+
+      <div class="tpl-field">
+        <label>Message Body</label>
+        <textarea id="bulkBody" placeholder="Type your message here... You can use placeholders like [Applicant Name] and [Ref Number]"></textarea>
+      </div>
+
+      <div class="tpl-editor-actions">
+        <button class="btn btn-secondary" onclick="closeBulkEmailModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="sendBulkEmail()" id="btnSendBulk"><i class="fas fa-paper-plane"></i> Send to All</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js?v=6"></script>
 </body>
 </html>

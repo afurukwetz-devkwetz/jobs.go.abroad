@@ -789,4 +789,31 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   initDraftSave();
 
+  // ── Drag and Drop CV ──
+  const cvDrop = document.getElementById('cvDrop');
+  const cvFile = document.getElementById('cvFile');
+  if (cvDrop && cvFile) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      cvDrop.addEventListener(eventName, preventDefaults, false);
+    });
+    function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      cvDrop.addEventListener(eventName, () => cvDrop.style.borderColor = '#60a5fa', false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      cvDrop.addEventListener(eventName, () => cvDrop.style.borderColor = 'rgba(255,255,255,0.2)', false);
+    });
+    
+    cvDrop.addEventListener('drop', e => {
+      let dt = e.dataTransfer;
+      let files = dt.files;
+      if (files && files.length > 0) {
+        cvFile.files = files; // Assign files to the input
+        handleCvFile(cvFile);
+      }
+    }, false);
+  }
+
 }); // end DOMContentLoaded
