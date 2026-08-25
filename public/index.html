@@ -380,6 +380,18 @@
           </p>
         </div>
 
+        <!-- Fee Notice (Option A – Compact inline) -->
+        <div id="feeNoticeInline" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(239,68,68,0.08));border:1px solid rgba(245,158,11,0.35);border-radius:14px;padding:14px 16px;margin-bottom:16px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <i class="fas fa-circle-dollar-to-slot" style="color:#f59e0b;font-size:1.2rem;margin-top:2px;flex-shrink:0;"></i>
+            <div>
+              <p style="margin:0 0 6px;font-size:0.82rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;">Application Processing Fee</p>
+              <p style="margin:0 0 8px;font-size:0.8rem;color:rgba(255,255,255,0.82);line-height:1.55;">To begin your journey with <strong>Global Job Connect</strong>, a one-time, non-refundable application processing fee is required. This fee covers credential verification, profile preparation, employer matching, and ongoing administrative support throughout your recruitment process — ensuring only serious, committed candidates enter our placement pool.</p>
+              <p style="margin:0;font-size:0.8rem;color:rgba(255,255,255,0.82);line-height:1.55;">The fee is fully transparent and will be clearly disclosed before any payment is required — <strong>no hidden charges, no surprises</strong>. Once paid, you will receive a unique <strong>Reference Number</strong> to track your application live at any time through our Applicant Portal. <a href="#" onclick="openFeeDetailModal(); return false;" style="color:#60a5fa;font-weight:600;">Read full fee policy →</a></p>
+            </div>
+          </div>
+        </div>
+
         <!-- Terms -->
         <div class="terms-row">
           <input type="checkbox" id="terms">
@@ -669,24 +681,83 @@
 <script src="script.js?v=17"></script>
 <!-- Fee Alert Modal -->
 <div id="feeModal" class="modal-overlay" style="display:none;">
-  <div class="modal-content" style="max-width:450px;">
+  <div class="modal-content" style="max-width:520px;">
     <div class="modal-header">
-      <h2>Important Notice</h2>
+      <h2><i class="fas fa-circle-dollar-to-slot" style="color:#f59e0b;margin-right:8px;"></i> Application Processing Fee</h2>
       <button class="close-modal" id="closeFeeModal">&times;</button>
     </div>
-    <div class="modal-body" style="text-align:center;">
-      <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:#f59e0b;margin-bottom:1rem;"></i>
-      <h3 style="color:#1e293b;margin-bottom:1rem;">Application Processing Fee</h3>
-      <p style="color:#475569;line-height:1.6;margin-bottom:1.5rem;">
-        Please note that there is a mandatory application and processing fee required to complete your registration and visa processing. You will receive further payment instructions once your initial profile is approved.
+    <div class="modal-body">
+      <div style="display:flex;justify-content:center;margin-bottom:1.2rem;">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ef4444);display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(245,158,11,0.35);">
+          <i class="fas fa-file-invoice-dollar" style="font-size:1.8rem;color:#fff;"></i>
+        </div>
+      </div>
+      <p style="color:#334155;line-height:1.7;margin-bottom:1rem;font-size:0.92rem;">
+        At <strong>Global Job Connect</strong>, we are committed to connecting talented nursing, caregiving, and skilled trade professionals with life-changing international job opportunities. To facilitate this, a <strong>one-time, non-refundable application processing fee</strong> is collected from all applicants upon registration. This fee enables us to dedicate the necessary time and resources to properly evaluate your qualifications, verify your submitted documents, and professionally match your profile with accredited employers in your destination country of choice.
       </p>
+      <p style="color:#334155;line-height:1.7;margin-bottom:1rem;font-size:0.92rem;">
+        The funds from this fee directly support the services you receive throughout the recruitment process — including employer outreach, interview scheduling, visa guidance, and real-time application tracking through our secure Applicant Portal. We operate under <strong>Government License No. NEA-2025-0192</strong>, and all collected fees are handled in full compliance with our regulatory obligations. Every applicant is treated with the highest standard of professionalism and care.
+      </p>
+      <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:10px 14px;margin-bottom:1.2rem;display:flex;gap:10px;align-items:flex-start;">
+        <i class="fas fa-shield-halved" style="color:#0284c7;margin-top:2px;flex-shrink:0;"></i>
+        <p style="margin:0;font-size:0.8rem;color:#0369a1;line-height:1.5;"><strong>No hidden charges.</strong> The fee amount will only be requested after your profile has been reviewed and you have been notified of the next steps. Proceeding here does not charge you anything.</p>
+      </div>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button id="btnCancelFee" class="btn btn-secondary">Cancel</button>
-        <button id="btnAcceptFee" class="btn btn-primary" style="background:#1565c0;color:#fff;">I Understand & Proceed</button>
+        <button id="btnAcceptFee" class="btn btn-primary" style="background:#1565c0;color:#fff;"><i class="fas fa-check" style="margin-right:6px;"></i>I Understand &amp; Proceed</button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Fee Detail Modal (Full Policy) -->
+<div id="feeDetailModal" class="modal-overlay" style="display:none;position:fixed;inset:0;z-index:99998;align-items:center;justify-content:center;padding:20px;background:rgba(6,13,31,0.85);backdrop-filter:blur(6px);">
+  <div style="position:relative;background:linear-gradient(145deg,rgba(13,29,64,0.98),rgba(9,20,50,0.98));border:1px solid rgba(255,255,255,0.12);border-radius:24px;width:100%;max-width:600px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(0,0,0,0.7);">
+    <div style="padding:24px 28px 18px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:14px;flex-shrink:0;">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#ef4444);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fas fa-file-invoice-dollar" style="color:#fff;font-size:1.1rem;"></i>
+      </div>
+      <div style="flex:1;">
+        <h2 style="margin:0;font-size:1.1rem;font-weight:800;color:#fff;">Application Processing Fee — Full Policy</h2>
+        <p style="margin:2px 0 0;font-size:0.7rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;">Global Job Connect · License NEA-2025-0192</p>
+      </div>
+      <button onclick="closeFeeDetailModal()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div style="overflow-y:auto;padding:24px 28px 28px;flex:1;">
+      <div style="margin-bottom:20px;">
+        <h3 style="font-size:0.78rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.8px;margin:0 0 8px;">Why a Processing Fee?</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.8);line-height:1.7;margin:0;">At Global Job Connect, we are committed to connecting talented nursing, caregiving, and skilled trade professionals with life-changing international job opportunities. To facilitate this, a one-time, non-refundable application processing fee is collected from all applicants upon registration. This fee enables us to dedicate the necessary time and resources to properly evaluate your qualifications, verify your submitted documents, and professionally match your profile with accredited employers in your destination country of choice.</p>
+      </div>
+      <div style="margin-bottom:20px;">
+        <h3 style="font-size:0.78rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.8px;margin:0 0 8px;">What the Fee Covers</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.8);line-height:1.7;margin:0;">The funds from this fee directly support the services you receive throughout the recruitment process — including employer outreach, interview scheduling, visa guidance, and real-time application tracking through our secure Applicant Portal. We operate under Government License No. NEA-2025-0192, and all collected fees are handled in full compliance with our regulatory obligations. Every applicant is treated with the highest standard of professionalism and care.</p>
+      </div>
+      <div style="margin-bottom:20px;">
+        <h3 style="font-size:0.78rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.8px;margin:0 0 8px;">Transparency Guarantee</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.8);line-height:1.7;margin:0;">Your fee amount will be clearly disclosed at the next stage of the process — before any payment is requested — ensuring complete transparency at all times. Should you have any questions, please contact our support team at <a href="mailto:support@globaljoconnect.online" style="color:#60a5fa;">support@globaljoconnect.online</a>. We look forward to helping you take your next big step — <em>Work Anywhere. Grow Everywhere.</em></p>
+      </div>
+      <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);border-radius:12px;padding:12px 16px;margin-bottom:20px;">
+        <p style="margin:0;font-size:0.8rem;color:rgba(255,255,255,0.75);line-height:1.6;"><i class="fas fa-circle-info" style="color:#f59e0b;margin-right:6px;"></i><strong>Non-refundable notice:</strong> The processing fee is non-refundable once your application has been submitted and accepted into the recruitment pool. Payment does not guarantee employment, visa approval, or placement, as these decisions rest with employers and relevant authorities.</p>
+      </div>
+      <div style="text-align:center;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+        <button onclick="closeFeeDetailModal()" style="background:linear-gradient(135deg,#1565c0,#42a5f5);border:none;color:#fff;padding:11px 32px;border-radius:12px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(21,101,192,0.5);"><i class="fas fa-check" style="margin-right:8px;"></i>Got it</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function openFeeDetailModal() {
+  const m = document.getElementById('feeDetailModal');
+  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+function closeFeeDetailModal() {
+  const m = document.getElementById('feeDetailModal');
+  if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeFeeDetailModal();
+});
+</script>
 
 <!-- OTP Verification Modal -->
 <div id="otpModal" class="modal-overlay" style="display:none;">
