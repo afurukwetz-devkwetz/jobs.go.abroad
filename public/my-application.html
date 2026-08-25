@@ -532,14 +532,40 @@ async function loadDashboard() {
     if (a.requestedDocuments && a.requestedDocuments.length > 0) {
       reqDocs.innerHTML = '<p style="font-size:0.85rem;color:var(--amber);margin:12px 0 8px;font-weight:600;"><i class="fas fa-bell"></i> Documents Requested by Admin</p>';
       a.requestedDocuments.forEach(doc => {
-        if (doc.uploadedUrl) {
+        const status = doc.status || 'Pending';
+        if (status === 'Verified') {
+          // ✅ Verified
           reqDocs.innerHTML += `
-            <div class="doc-item">
-              <i class="fas fa-check-circle" style="color:var(--green)"></i>
-              <span class="doc-name">${doc.label} <small style="color:var(--muted)">(Uploaded)</small></span>
+            <div class="doc-item" style="border-color:rgba(16,185,129,.3);">
+              <i class="fas fa-check-circle" style="color:#34d399"></i>
+              <span class="doc-name">${doc.label} <small style="background:#065f46;color:#34d399;padding:2px 8px;border-radius:12px;font-size:0.72rem;font-weight:700;">✓ Verified</small></span>
+              <a href="${doc.uploadedUrl}" target="_blank"><i class="fas fa-eye"></i> View</a>
+            </div>`;
+        } else if (status === 'Rejected') {
+          // ❌ Rejected — show note and allow re-upload
+          reqDocs.innerHTML += `
+            <div class="req-doc-item" style="border-color:rgba(248,113,113,.3);background:rgba(239,68,68,.06);">
+              <div>
+                <span class="doc-label" style="color:#fb7185;"><i class="fas fa-times-circle"></i> ${doc.label}</span>
+                ${doc.adminNote ? `<p style="color:#fcd34d;font-size:0.78rem;margin:4px 0 0;"><i class="fas fa-comment-alt"></i> ${doc.adminNote}</p>` : ''}
+                <p style="color:rgba(255,255,255,.4);font-size:0.75rem;margin:4px 0 0;">Please re-upload a corrected version.</p>
+              </div>
+              <form class="upload-form" onsubmit="uploadRequestedDoc(event, '${doc._id}')">
+                <label class="btn-upload" style="background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.4);color:#fb7185;"><i class="fas fa-redo"></i> Re-upload
+                  <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="this.form.dispatchEvent(new Event('submit'))">
+                </label>
+              </form>
+            </div>`;
+        } else if (doc.uploadedUrl) {
+          // Uploaded, awaiting review
+          reqDocs.innerHTML += `
+            <div class="doc-item" style="border-color:rgba(245,158,11,.3);">
+              <i class="fas fa-hourglass-half" style="color:#fbbf24"></i>
+              <span class="doc-name">${doc.label} <small style="background:rgba(245,158,11,.12);color:#fbbf24;padding:2px 8px;border-radius:12px;font-size:0.72rem;font-weight:700;">Under Review</small></span>
               <a href="${doc.uploadedUrl}" target="_blank"><i class="fas fa-eye"></i> View</a>
             </div>`;
         } else {
+          // Not yet uploaded
           reqDocs.innerHTML += `
             <div class="req-doc-item">
               <span class="doc-label"><i class="fas fa-exclamation-circle"></i> ${doc.label}</span>

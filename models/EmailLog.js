@@ -21,6 +21,10 @@ const emailLogSchema = new mongoose.Schema({
   sentBy: {
     type: String, // Admin email or ID
     default: 'System'
+  },
+  openedAt: {
+    type: Date,
+    default: null
   }
 }, { timestamps: true });
 

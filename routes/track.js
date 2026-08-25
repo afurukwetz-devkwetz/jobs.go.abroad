@@ -258,20 +258,26 @@ router.post('/send-email', requireAdmin, async (req, res) => {
     const applicant = await Applicant.findOne({ refNumber: refNumber.trim().toUpperCase() });
     if (!applicant) return res.status(404).json({ error: 'Applicant not found.' });
 
-    await sendCustomEmail({
-      to: applicant.email,
-      subject,
-      body,
-      firstName: applicant.firstName,
-    });
-
-    // Log the email
-    await EmailLog.create({
+    // 1. Create the Email Log first to get its ID for the tracking pixel
+    const emailLog = await EmailLog.create({
       applicantId: applicant._id,
       templateName: templateName || 'Custom Email',
       subject,
       body,
-      sentBy: req.user ? req.user.email : 'Admin' // Assuming req.user is set by requireAdmin
+      sentBy: req.user ? req.user.email : 'Admin'
+    });
+
+    // 2. Inject tracking pixel into the email body
+    const siteUrl = process.env.SITE || 'https://globaljobconnect.online';
+    const trackingPixel = `<img src="${siteUrl}/api/track/pixel/${emailLog._id}.gif" width="1" height="1" style="display:none;" />`;
+    const finalBody = body + trackingPixel;
+
+    // 3. Send the email
+    await sendCustomEmail({
+      to: applicant.email,
+      subject,
+      body: finalBody,
+      firstName: applicant.firstName,
     });
 
     res.json({ success: true, message: `Email sent to ${applicant.email}` });
@@ -420,6 +426,48 @@ router.get('/analytics', requireAdmin, async (req, res) => {
   } catch (err) {
     console.error('❌ [Analytics]:', err);
     res.status(500).json({ error: 'Server error.' });
+  }
+});
+
+// GET /api/track/pixel/:logId.gif — Email tracking pixel
+router.get('/pixel/:logId.gif', async (req, res) => {
+  const buf = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+  try {
+    const { logId } = req.params;
+    await EmailLog.updateOne(
+      { _id: logId, openedAt: null },
+      { $set: { openedAt: new Date() } }
+    );
+  } catch (err) {
+    // Fail silently so pixel still loads
+  }
+  res.set('Content-Type', 'image/gif');
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.send(buf);
+});
+
+// PUT /api/track/document-status — Admin updates status of an uploaded document
+router.put('/document-status', requireAdmin, async (req, res) => {
+  try {
+    const { applicantId, docId, status, adminNote } = req.body;
+    if (!applicantId || !docId || !status) {
+      return res.status(400).json({ error: 'Missing required fields.' });
+    }
+
+    const applicant = await Applicant.findById(applicantId);
+    if (!applicant) return res.status(404).json({ error: 'Applicant not found.' });
+
+    const doc = applicant.requestedDocuments.id(docId);
+    if (!doc) return res.status(404).json({ error: 'Document request not found.' });
+
+    doc.status = status;
+    if (adminNote !== undefined) doc.adminNote = adminNote;
+
+    await applicant.save();
+    res.json({ success: true, message: `Document marked as ${status}.` });
+  } catch (err) {
+    console.error('❌ [Update Document Status]:', err);
+    res.status(500).json({ error: 'Server error.', details: err.message });
   }
 });
 

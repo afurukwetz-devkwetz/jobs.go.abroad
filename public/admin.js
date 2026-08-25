@@ -396,6 +396,10 @@ document.addEventListener('DOMContentLoaded', () => {
       loadEmailHistory(currentApplicant._id);
       updateEmailPreview();
     }
+    // If switching to docRequest, render submitted docs
+    if (tab === 'docRequest' && currentApplicant) {
+      renderDocStatusList(currentApplicant);
+    }
   };
 
   window.closeModal = function () {
@@ -597,13 +601,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       container.innerHTML = '';
       data.logs.forEach((log, idx) => {
-        const date = new Date(log.createdAt).toLocaleString();
+        const sentDate = new Date(log.createdAt).toLocaleString();
+        const openedBadge = log.openedAt
+          ? `<span style="background:#065f46;color:#34d399;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;"><i class="fas fa-eye" style="margin-right:3px;"></i>Opened ${new Date(log.openedAt).toLocaleString()}</span>`
+          : `<span style="background:rgba(251,191,36,.12);color:#fbbf24;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:8px;"><i class="fas fa-envelope" style="margin-right:3px;"></i>Unread</span>`;
         const div  = document.createElement('div');
         div.className = 'email-log-item';
         div.innerHTML = `
           <div class="email-log-header">
-            <span class="email-log-template"><i class="fas fa-envelope"></i> ${log.templateName}</span>
-            <span class="email-log-date">${date}</span>
+            <span class="email-log-template"><i class="fas fa-envelope"></i> ${log.templateName}${openedBadge}</span>
+            <span class="email-log-date">${sentDate}</span>
           </div>
           <div class="email-log-subject">Subject: ${log.subject}</div>
           <div class="email-log-by">Sent by: ${log.sentBy || 'Admin'}</div>
@@ -623,6 +630,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const isVisible = preview.style.display === 'block';
     preview.style.display = isVisible ? 'none' : 'block';
     btn.innerHTML = isVisible ? '<i class="fas fa-chevron-down"></i> View message' : '<i class="fas fa-chevron-up"></i> Hide message';
+  };
+
+  // ─── Document Status List ─────────────────────────────────────────────────────
+  function renderDocStatusList(applicant) {
+    const container = document.getElementById('adminDocStatusList');
+    if (!container) return;
+    const docs = applicant.requestedDocuments || [];
+    if (!docs.length) {
+      container.innerHTML = '<p style="color:rgba(255,255,255,.3);font-style:italic;font-size:0.88rem;">No document requests yet.</p>';
+      return;
+    }
+    container.innerHTML = '';
+    docs.forEach(doc => {
+      const statusColor = doc.status === 'Verified' ? '#34d399' : doc.status === 'Rejected' ? '#fb7185' : '#fbbf24';
+      const statusIcon  = doc.status === 'Verified' ? 'fa-check-circle' : doc.status === 'Rejected' ? 'fa-times-circle' : 'fa-hourglass-half';
+      const hasFile = !!doc.uploadedUrl;
+      const row = document.createElement('div');
+      row.style.cssText = 'padding:12px 14px;border:1px solid rgba(255,255,255,.1);border-radius:10px;margin-bottom:10px;background:rgba(255,255,255,.03);';
+      row.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <div>
+            <strong style="color:#fff;font-size:0.9rem;">${doc.label}</strong><br>
+            <span style="font-size:0.75rem;color:rgba(255,255,255,.35);">Requested: ${new Date(doc.requestedAt).toLocaleDateString()}</span>
+            ${doc.adminNote ? `<br><span style="font-size:0.78rem;color:#fcd34d;"><i class="fas fa-comment-alt"></i> ${doc.adminNote}</span>` : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="color:${statusColor};font-size:0.8rem;font-weight:700;"><i class="fas ${statusIcon}"></i> ${doc.status}</span>
+            ${hasFile ? `<a href="${doc.uploadedUrl}" target="_blank" class="btn btn-secondary" style="font-size:0.75rem;padding:4px 10px;"><i class="fas fa-eye"></i> View</a>` : '<span style="color:rgba(255,255,255,.3);font-size:0.78rem;">Not uploaded</span>'}
+          </div>
+        </div>
+        ${hasFile && doc.status !== 'Verified' ? `
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button class="btn btn-success" style="font-size:0.78rem;padding:5px 12px;" onclick="updateDocStatus('${applicant._id}','${doc._id}','Verified')">
+              <i class="fas fa-check"></i> Verify
+            </button>
+            <button class="btn btn-danger" style="font-size:0.78rem;padding:5px 12px;" onclick="promptRejectDoc('${applicant._id}','${doc._id}')">
+              <i class="fas fa-times"></i> Reject
+            </button>
+          </div>` : ''}
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  window.updateDocStatus = async function(applicantId, docId, status, adminNote) {
+    try {
+      const res = await fetch(API_BASE_URL + '/api/track/document-status', {
+        method: 'PUT', headers: getAuthHeaders(),
+        body: JSON.stringify({ applicantId, docId, status, adminNote: adminNote || '' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        // Update local data and re-render
+        const doc = currentApplicant.requestedDocuments.find(d => d._id === docId);
+        if (doc) { doc.status = status; if (adminNote) doc.adminNote = adminNote; }
+        renderDocStatusList(currentApplicant);
+      } else alert(data.error || 'Failed to update document status.');
+    } catch { alert('Network error updating document status.'); }
+  };
+
+  window.promptRejectDoc = function(applicantId, docId) {
+    const note = prompt('Rejection reason (optional, shown to applicant):');
+    if (note === null) return; // cancelled
+    updateDocStatus(applicantId, docId, 'Rejected', note);
   };
 
   // ─── Database-driven Templates ────────────────────────────────────────────────
