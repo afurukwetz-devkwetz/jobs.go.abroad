@@ -101,6 +101,50 @@ async function seedDefaultTemplates() {
     const initialTemplates = [
       // ─── Application ────────────────────────────────────────────────────────────
       {
+        category: 'Application', name: 'Welcome & Onboarding Guide',
+        subject: 'Welcome to Global Job Connect, [Applicant Name]! Here\'s What Happens Next 🌍',
+        body: `Dear [Applicant Name],
+
+Welcome aboard! Thank you for registering with Global Job Connect. Your application has been received and you are now officially in our recruitment pipeline. Your reference number is [Application ID] (Batch: [Batch Code]) — please save this as you will need it at every stage.
+
+Below is a step-by-step guide of your application journey so you always know what to expect and where you stand:
+
+STEP 1 ✅ APPLICATION RECEIVED (DONE)
+Your registration form, CV, and all submitted documents have been received and logged in our system.
+
+STEP 2 🔍 PROFILE REVIEW & DOCUMENT VERIFICATION
+Our recruitment team will review your qualifications, professional certifications, and submitted documents. This typically takes 3–7 business days. You may be contacted if any documents are missing or need clarification.
+
+STEP 3 💳 PROCESSING FEE PAYMENT
+Once your profile passes initial review, you will be notified about the one-time, non-refundable application processing fee. The exact amount will be clearly disclosed before any payment is requested. This fee covers document processing, employer liaison, and administrative support. Payment does not guarantee placement.
+
+STEP 4 🤝 EMPLOYER MATCHING & SHORTLISTING
+Your profile will be matched with suitable international employers across the UK, USA, Canada, Germany, and Australia based on your profession, experience, and preferred destinations. Shortlisted candidates will be notified and moved to the interview stage.
+
+STEP 5 🎤 INTERVIEW & ASSESSMENT
+Shortlisted applicants will be invited for an interview (virtual or in-person) with the prospective employer. Our team will provide interview coaching, employer briefing, and scheduling support throughout this stage.
+
+STEP 6 📄 OFFER & PRE-EMPLOYMENT CHECKS
+Successful candidates will receive a formal employment offer. Pre-employment requirements (background checks, medical, licensing, and final document submission) will be completed at this stage.
+
+STEP 7 🛂 VISA, WORK PERMIT & RELOCATION
+We will guide you through the full visa and work permit application process for your destination country. Once approved, our team will provide pre-departure briefings and relocation coordination support.
+
+⚠️ IMPORTANT REMINDERS:
+- Always quote your reference number [Application ID] in all communications.
+- Respond promptly to requests for documents — delays may affect your placement timeline.
+- We will NEVER request payment through unofficial channels. All payment instructions are sent only to your registered email.
+- Track your application at any time at: [Tracking URL]
+
+Questions? Contact us at support@globaljoconnect.online and quote your reference number.
+
+Kind regards,
+[HR Officer]
+Global Job Connect
+License: NEA-2025-0192
+support@globaljoconnect.online`
+      },
+      {
         category: 'Application', name: 'Application Received',
         subject: 'Application Received – [Position] | Ref: [Application ID]',
         body: 'Dear [Applicant Name],\n\nThank you for submitting your application for [Position]. We confirm that your application has been received and is currently under review.\n\nWe will contact you regarding the next stage of the process.\n\nKind regards,\n[HR Officer]\n[Company Name]\n[Contact Information]'

@@ -8,7 +8,7 @@ const crypto     = require('crypto');
 const Applicant  = require('../models/Applicant');
 const Otp        = require('../models/Otp');
 const Batch      = require('../models/Batch');
-const { sendVerificationEmail, sendRefNumberEmail } = require('../middleware/emailService');
+const { sendVerificationEmail, sendRefNumberEmail, sendWelcomeOnboardingEmail } = require('../middleware/emailService');
 
 // ── STORAGE STRATEGY ─────────────────────────────────────────────────────────
 const CLOUDINARY_CONFIGURED =
@@ -179,6 +179,12 @@ router.post('/', (req, res, next) => {
         console.log('✅ [Email] Reference number email sent to:', email);
       } catch (e) {
         console.error('❌ [Email] Reference number email failed:', e.message);
+      }
+      try {
+        await sendWelcomeOnboardingEmail({ firstName, email, refNumber, batchCode: batch.batchCode });
+        console.log('✅ [Email] Welcome onboarding email sent to:', email);
+      } catch (e) {
+        console.error('❌ [Email] Welcome onboarding email failed:', e.message);
       }
     });
 

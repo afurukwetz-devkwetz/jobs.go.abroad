@@ -212,6 +212,153 @@ async function sendVerificationEmail({ firstName, email, verificationToken }) {
   });
 }
 
+// ── Welcome & Onboarding: Application Process Guide ──────────────────────────
+async function sendWelcomeOnboardingEmail({ firstName, email, refNumber, batchCode }) {
+  const trackUrl    = `${SITE}/#track`;
+  const portalUrl   = `${SITE}/my-application`;
+  const supportMail = 'support@globaljoconnect.online';
+
+  return sendMail({
+    to: email,
+    subject: `Welcome to Global Job Connect, ${firstName}! Here's What Happens Next 🌍`,
+    html: `
+      <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:620px;margin:0 auto;background:#ffffff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#1565c0 0%,#1976d2 50%,#0d47a1 100%);padding:36px 30px;text-align:center;">
+          <p style="font-size:36px;margin:0 0 8px;">✈️</p>
+          <h1 style="color:#ffffff;margin:0;font-size:24px;font-weight:800;letter-spacing:-0.5px;">Global Job Connect</h1>
+          <p style="color:rgba(255,255,255,0.75);margin:6px 0 0;font-size:13px;text-transform:uppercase;letter-spacing:1.5px;">Work Anywhere. Grow Everywhere.</p>
+        </div>
+
+        <!-- Greeting -->
+        <div style="padding:32px 32px 0;">
+          <h2 style="color:#1565c0;margin:0 0 12px;font-size:22px;">Welcome aboard, ${firstName}! 🎉</h2>
+          <p style="color:#475569;line-height:1.7;margin:0 0 10px;font-size:15px;">Thank you for registering with <strong>Global Job Connect</strong>. Your application has been received and you are now officially in our recruitment pipeline.</p>
+          <p style="color:#475569;line-height:1.7;margin:0;font-size:15px;">Below is a step-by-step guide of the entire process so you always know what to expect and where you stand.</p>
+        </div>
+
+        <!-- Ref Number Box -->
+        <div style="margin:28px 32px;background:#f0f7ff;border:2px solid #1565c0;border-radius:12px;padding:20px;text-align:center;">
+          <p style="color:#64748b;margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:1px;">Your Reference Number</p>
+          <p style="color:#1565c0;font-size:30px;font-weight:900;margin:0;letter-spacing:3px;">${refNumber}</p>
+          <p style="color:#94a3b8;font-size:12px;margin:8px 0 0;">Batch: <strong style="color:#475569;">${batchCode}</strong> &nbsp;·&nbsp; Save this number — you will need it at every stage.</p>
+        </div>
+
+        <!-- Process Steps -->
+        <div style="padding:0 32px 32px;">
+          <h3 style="color:#1e293b;font-size:16px;font-weight:700;margin:0 0 20px;border-left:4px solid #1565c0;padding-left:12px;">📋 Your Application Journey — Step by Step</h3>
+
+          <!-- Step 1 -->
+          <div style="display:flex;gap:16px;margin-bottom:22px;">
+            <div style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#1565c0;display:flex;align-items:center;justify-content:center;">
+              <span style="color:#fff;font-weight:800;font-size:15px;">1</span>
+            </div>
+            <div>
+              <p style="margin:0 0 4px;font-weight:700;color:#1e293b;font-size:15px;">✅ Application Received <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;margin-left:8px;">DONE</span></p>
+              <p style="margin:0;color:#64748b;line-height:1.6;font-size:14px;">Your registration form, CV, and all submitted documents have been received. You will shortly get a confirmation email with your unique reference number.</p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div style="display:flex;gap:16px;margin-bottom:22px;">
+            <div style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#f59e0b;display:flex;align-items:center;justify-content:center;">
+              <span style="color:#fff;font-weight:800;font-size:15px;">2</span>
+            </div>
+            <div>
+              <p style="margin:0 0 4px;font-weight:700;color:#1e293b;font-size:15px;">🔍 Profile Review & Document Verification</p>
+              <p style="margin:0;color:#64748b;line-height:1.6;font-size:14px;">Our recruitment team will review your profile, verify your qualifications, professional certifications, and the documents you have submitted. This typically takes <strong>3–7 business days</strong>. You may be contacted if any documents are missing or unclear.</p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div style="display:flex;gap:16px;margin-bottom:22px;">
+            <div style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;">
+              <span style="color:#fff;font-weight:800;font-size:15px;">3</span>
+            </div>
+            <div>
+              <p style="margin:0 0 4px;font-weight:700;color:#1e293b;font-size:15px;">💳 Processing Fee Payment</p>
+              <p style="margin:0;color:#64748b;line-height:1.6;font-size:14px;">Once your profile passes initial review, you will be notified about the <strong>one-time, non-refundable application processing fee</strong>. The exact amount will be clearly disclosed before any payment is requested. This fee covers document processing, employer liaison, and administrative support. Payment does not guarantee placement.</p>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div style="display:flex;gap:16px;margin-bottom:22px;">
+            <div style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#0891b2;display:flex;align-items:center;justify-content:center;">
+              <span style="color:#fff;font-weight:800;font-size:15px;">4</span>
+            </div>
+            <div>
+              <p style="margin:0 0 4px;font-weight:700;color:#1e293b;font-size:15px;">🤝 Employer Matching & Shortlisting</p>
+              <p style="margin:0;color:#64748b;line-height:1.6;font-size:14px;">Your profile will be matched with suitable international employers across the <strong>UK, USA, Canada, Germany, and Australia</strong> based on your profession, experience, and preferred destinations. Shortlisted candidates will be notified and moved to the interview stage.</p>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div style="display:flex;gap:16px;margin-bottom:22px;">
+            <div style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#0284c7;display:flex;align-items:center;justify-content:center;">
+              <span style="color:#fff;font-weight:800;font-size:15px;">5</span>
+            </div>
+            <div>
+              <p style="margin:0 0 4px;font-weight:700;color:#1e293b;font-size:15px;">🎤 Interview & Assessment</p>
+              <p style="margin:0;color:#64748b;line-height:1.6;font-size:14px;">Shortlisted applicants will be invited for an interview (virtual or in-person) with the prospective employer. Our team will provide you with interview coaching, employer briefing, and scheduling support throughout this stage.</p>
+            </div>
+          </div>
+
+          <!-- Step 6 -->
+          <div style="display:flex;gap:16px;margin-bottom:22px;">
+            <div style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;">
+              <span style="color:#fff;font-weight:800;font-size:15px;">6</span>
+            </div>
+            <div>
+              <p style="margin:0 0 4px;font-weight:700;color:#1e293b;font-size:15px;">📄 Offer & Pre-Employment Checks</p>
+              <p style="margin:0;color:#64748b;line-height:1.6;font-size:14px;">Successful candidates will receive a formal employment offer. Pre-employment requirements (background checks, medical, licensing, and final document submission) will be completed at this stage.</p>
+            </div>
+          </div>
+
+          <!-- Step 7 -->
+          <div style="display:flex;gap:16px;margin-bottom:8px;">
+            <div style="flex-shrink:0;width:40px;height:40px;border-radius:50%;background:#10b981;display:flex;align-items:center;justify-content:center;">
+              <span style="color:#fff;font-weight:800;font-size:15px;">7</span>
+            </div>
+            <div>
+              <p style="margin:0 0 4px;font-weight:700;color:#1e293b;font-size:15px;">🛂 Visa, Work Permit & Relocation</p>
+              <p style="margin:0;color:#64748b;line-height:1.6;font-size:14px;">We will guide you through the full visa and work permit application process for your destination country. Once approved, our team will provide pre-departure briefings and relocation coordination support to help you settle in smoothly.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Important Notice -->
+        <div style="margin:0 32px 28px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:18px 20px;">
+          <p style="margin:0 0 6px;font-weight:700;color:#92400e;font-size:13px;">⚠️ Important Reminders</p>
+          <ul style="margin:0;padding-left:18px;color:#78350f;font-size:13px;line-height:1.8;">
+            <li>Always quote your reference number <strong>${refNumber}</strong> in all communications.</li>
+            <li>Respond promptly to requests for documents or action — delays may affect your placement timeline.</li>
+            <li>Beware of fraudsters. We will <strong>NEVER</strong> ask for payment through unofficial channels. All payments are communicated through your registered email only.</li>
+            <li>Track your application status at any time through our secure portal using your reference number.</li>
+          </ul>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div style="padding:0 32px 32px;text-align:center;">
+          <a href="${trackUrl}" style="background:#1565c0;color:#fff;padding:14px 28px;text-decoration:none;border-radius:10px;font-weight:700;display:inline-block;font-size:15px;margin-right:12px;margin-bottom:10px;">📊 Track My Application</a>
+          <a href="${portalUrl}" style="background:#f8fafc;color:#1565c0;padding:14px 28px;text-decoration:none;border-radius:10px;font-weight:700;display:inline-block;font-size:15px;border:2px solid #1565c0;margin-bottom:10px;">👤 Applicant Portal</a>
+        </div>
+
+        <!-- Support -->
+        <div style="margin:0 32px 32px;text-align:center;">
+          <p style="color:#94a3b8;font-size:13px;line-height:1.6;margin:0;">Questions? Email us at <a href="mailto:${supportMail}" style="color:#1565c0;font-weight:600;">${supportMail}</a><br>Please quote your reference number <strong>${refNumber}</strong> in every message.</p>
+        </div>
+
+        <!-- Footer -->
+        <div style="padding:18px;text-align:center;background:#f1f5f9;border-top:1px solid #e2e8f0;">
+          <p style="color:#94a3b8;font-size:12px;margin:0;">© 2026 Global Job Connect &nbsp;·&nbsp; License: NEA-2025-0192 &nbsp;·&nbsp; Work Anywhere. Grow Everywhere.</p>
+        </div>
+
+      </div>
+    `,
+  });
+}
+
 // ── Send custom admin message to applicant ─────────────────────────────────────
 async function sendCustomEmail({ to, subject, body, firstName }) {
   return sendMail({
@@ -264,4 +411,4 @@ async function sendDocumentRequestEmail({ firstName, email, docLabel, uploadUrl 
   });
 }
 
-module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail, sendStageUpdateEmail, sendOtpEmail, sendCustomEmail, sendDocumentRequestEmail };
+module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail, sendStageUpdateEmail, sendOtpEmail, sendCustomEmail, sendDocumentRequestEmail, sendWelcomeOnboardingEmail };
