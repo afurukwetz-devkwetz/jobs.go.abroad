@@ -62,6 +62,7 @@ async function sendOtpEmail({ email, otp }) {
           <div style="margin:30px 0;background:#f3f4f6;padding:20px;border-radius:8px;display:inline-block;">
             <span style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#1565c0;">${otp}</span>
           </div>
+          <p style="color:#888;font-size:13px;margin:5px 0;">If you don't see this email in your inbox, please check your <strong style="color:#f59e0b;">Spam / Junk</strong> folder (or iPhone Junk mailbox).</p>
           <p style="color:#888;font-size:13px;">If you did not request this code, please ignore this email.</p>
         </div>
         <div style="padding:16px;text-align:center;background:#f5f5f5;">
