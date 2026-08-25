@@ -313,6 +313,8 @@
         <div class="info-item"><label>Experience</label><span id="infoExperience"></span></div>
         <div class="info-item"><label>Qualification</label><span id="infoQualification"></span></div>
         <div class="info-item"><label>Batch</label><span id="infoBatch"></span></div>
+        <div class="info-item"><label>Applied On</label><span id="infoAppliedOn"></span></div>
+        <div class="info-item"><label>Last Login</label><span id="infoLastLogin"></span></div>
       </div>
       <div style="margin-top:16px;">
         <label style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600;">About / Bio</label>
@@ -501,6 +503,15 @@ async function loadDashboard() {
     document.getElementById('infoExperience').textContent   = a.experience ? `${a.experience} years` : '—';
     document.getElementById('infoQualification').textContent = a.qualification || '—';
     document.getElementById('infoBatch').textContent        = a.batchCode || '—';
+    
+    // Add date/time fields
+    document.getElementById('infoAppliedOn').textContent = a.createdAt 
+      ? new Date(a.createdAt).toLocaleString() 
+      : '—';
+    document.getElementById('infoLastLogin').textContent = a.lastLoginAt 
+      ? new Date(a.lastLoginAt).toLocaleString() 
+      : '—';
+
     document.getElementById('infoBio').textContent          = a.bio || 'No bio provided.';
 
     // Documents

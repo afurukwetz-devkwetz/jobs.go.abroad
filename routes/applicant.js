@@ -23,6 +23,10 @@ router.post('/login', authLimiter, async (req, res) => {
     if (!process.env.JWT_SECRET)
       return res.status(500).json({ error: 'Server configuration error.' });
 
+    // Update last login
+    applicant.lastLoginAt = new Date();
+    await applicant.save();
+
     const token = jwt.sign(
       { id: applicant._id, email: applicant.email, role: 'applicant' },
       process.env.JWT_SECRET,

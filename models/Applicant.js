@@ -50,7 +50,8 @@ const ApplicantSchema = new mongoose.Schema({
     requestedAt: { type: Date, default: Date.now }
   }],
 
-  createdAt:     { type: Date, default: Date.now }
+  createdAt:     { type: Date, default: Date.now },
+  lastLoginAt:   { type: Date }
 });
 
 module.exports = mongoose.model('Applicant', ApplicantSchema);
