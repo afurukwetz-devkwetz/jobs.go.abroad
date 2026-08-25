@@ -592,8 +592,19 @@ async function loadDashboard() {
 // ── Upload a requested document ────────────────────────────────
 async function uploadRequestedDoc(e, docId) {
   e.preventDefault();
-  const file = e.target.querySelector('input[type=file]').files[0];
+  const fileInput = e.target.querySelector('input[type=file]');
+  const file = fileInput.files[0];
   if (!file) return;
+  
+  if (file.size > 5 * 1024 * 1024) {
+    return toast('File is too large. Maximum size is 5MB.', 'error');
+  }
+
+  const label = e.target.querySelector('.btn-upload');
+  const originalHtml = label.innerHTML;
+  label.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+  label.style.pointerEvents = 'none';
+
   const fd = new FormData();
   fd.append('file', file);
   fd.append('docId', docId);
@@ -602,10 +613,19 @@ async function uploadRequestedDoc(e, docId) {
       method: 'POST', headers: { 'Authorization': 'Bearer ' + getToken() }, body: fd,
     });
     const d = await res.json();
-    if (!res.ok) { toast(d.error || 'Upload failed.', 'error'); return; }
+    if (!res.ok) { 
+      label.innerHTML = originalHtml;
+      label.style.pointerEvents = 'auto';
+      toast(d.error || 'Upload failed.', 'error'); 
+      return; 
+    }
     toast('Document uploaded successfully!', 'success');
     setTimeout(loadDashboard, 1200);
-  } catch { toast('Upload error. Please try again.', 'error'); }
+  } catch { 
+    label.innerHTML = originalHtml;
+    label.style.pointerEvents = 'auto';
+    toast('Upload error. Please try again.', 'error'); 
+  }
 }
 
 // ── Service Worker Unregistration (Remove PWA) ────────────────
