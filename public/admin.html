@@ -401,8 +401,9 @@
         <div>
           <h2 id="modalName">Applicant Details</h2>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px">
-            <p class="ref-badge" id="modalRef">REF: ---</p>
+            <p class="ref-badge" id="modalRef" title="Click to copy" onclick="copyRef()" style="cursor:pointer;" >REF: ---</p>
             <span id="modalVerified" class="verify-badge">NOT VERIFIED</span>
+            <span id="refCopiedHint" style="font-size:0.72rem;color:#34d399;display:none;"><i class="fas fa-check"></i> Copied!</span>
           </div>
         </div>
       </div>
@@ -412,7 +413,7 @@
         <button class="modal-tab" onclick="switchTab('quals')">Qualifications</button>
         <button class="modal-tab" onclick="switchTab('decision')">Decision</button>
         <button class="modal-tab" onclick="switchTab('email')"><i class="fas fa-envelope" style="margin-right:4px;"></i>Email</button>
-        <button class="modal-tab" onclick="switchTab('docRequest')">Doc Request</button>
+        <button class="modal-tab" onclick="switchTab('docRequest')">Doc Request <span id="docPendingBadge" style="display:none;background:#ef4444;color:#fff;font-size:0.65rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:4px;"></span></button>
       </div>
 
       <!-- Profile Tab -->

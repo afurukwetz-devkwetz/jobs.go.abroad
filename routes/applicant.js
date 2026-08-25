@@ -111,7 +111,11 @@ router.post('/upload-doc', async (req, res) => {
 
       await Applicant.updateOne(
         { _id: applicant._id, 'requestedDocuments._id': docId },
-        { $set: { 'requestedDocuments.$.uploadedUrl': fileUrl } }
+        { $set: {
+          'requestedDocuments.$.uploadedUrl': fileUrl,
+          'requestedDocuments.$.status': 'Pending',
+          'requestedDocuments.$.adminNote': ''
+        }}
       );
 
       res.json({ success: true, url: fileUrl });

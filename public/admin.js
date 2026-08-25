@@ -354,10 +354,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stages tab
     renderStagesUI(a);
 
+    // Pending docs badge
+    const pending = (a.requestedDocuments || []).filter(d => d.uploadedUrl && d.status === 'Pending').length;
+    const badge = document.getElementById('docPendingBadge');
+    if (badge) {
+      if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline'; }
+      else { badge.style.display = 'none'; }
+    }
+
     // Reset to first tab
     switchTab('info');
 
     document.getElementById('applicantModal').style.display = 'flex';
+  };
+
+  // Copy REF to clipboard
+  window.copyRef = function() {
+    const refText = document.getElementById('modalRef')?.textContent?.replace('REF: ', '').trim();
+    if (!refText || refText === '---') return;
+    navigator.clipboard.writeText(refText).then(() => {
+      const hint = document.getElementById('refCopiedHint');
+      if (hint) { hint.style.display = 'inline'; setTimeout(() => hint.style.display = 'none', 2000); }
+    });
   };
 
   function renderQualsTab(a) {
