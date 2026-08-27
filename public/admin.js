@@ -1233,7 +1233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Map logical name to actual element ID
     const idMap = { dashboard: 'dashboard-view', templates: 'templates-section', support: 'support-view' };
     const targetEl = document.getElementById(idMap[viewId] || (viewId + '-view'));
-    if (targetEl) targetEl.style.display = 'block';
+    if (targetEl) targetEl.style.display = viewId === 'support' ? 'flex' : 'block';
 
     if (viewId === 'dashboard') {
       document.getElementById('navDashboard').classList.add('active');
