@@ -255,10 +255,10 @@
     }
     .msg-animate { animation: fadeSlideUpMsg 0.3s ease-out forwards; }
     
-    #supportUserMessages::-webkit-scrollbar { width: 6px; }
-    #supportUserMessages::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
-    #supportUserMessages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-    #supportUserMessages::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
     @media (max-width: 600px) {
       .profile-header { flex-direction: column; text-align: center; }
@@ -757,7 +757,7 @@ async function loadSupportTicket() {
           msgContainer.innerHTML = data.ticket.messages.map(m => `
             <div class="msg-animate" style="max-width:85%; align-self: ${m.sender === 'applicant' ? 'flex-end' : 'flex-start'};">
               <div style="font-size:0.7rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'applicant' ? 'right' : 'left'};">${m.sender === 'applicant' ? 'You' : 'Support'} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',timeZoneName:'short'})}</div>
-              <div style="padding:10px 14px; border-radius:12px; background:${m.sender === 'applicant' ? '#1565c0' : 'rgba(255,255,255,.1)'}; color:#fff; font-size:0.9rem; line-height:1.5; white-space: pre-wrap; word-break: break-word;">${formatMsg(m.text)}</div>
+              <div style="padding:10px 14px; border-radius:12px; background:${m.sender === 'applicant' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'rgba(255,255,255,.1)'}; color:#fff; font-size:0.9rem; line-height:1.5; white-space: pre-wrap; word-break: break-word; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);">${formatMsg(m.text)}</div>
             </div>
           `).join('');
           // Scroll to bottom only if user hasn't scrolled up (simplified for now)
