@@ -1292,7 +1292,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
       const listEl = document.getElementById('supportList');
       if (!data.tickets || data.tickets.length === 0) {
-        listEl.innerHTML = '<div style="text-align:center; padding:30px; color:rgba(255,255,255,.3);">No active support tickets</div>';
+        listEl.innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,.2);text-align:center;padding:30px;">
+            <i class="fas fa-inbox" style="font-size:3rem;margin-bottom:12px;"></i>
+            <p style="margin:0;font-size:0.9rem;">No active support tickets</p>
+          </div>`;
         return;
       }
       
@@ -1343,7 +1347,7 @@ document.addEventListener('DOMContentLoaded', () => {
       msgContainer.innerHTML = t.messages.map(m => `
         <div class="msg-animate" style="max-width:80%; align-self: ${m.sender === 'admin' ? 'flex-end' : 'flex-start'};">
           <div style="font-size:0.75rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'admin' ? 'right' : 'left'};">${m.sender === 'admin' ? 'You' : t.applicantName} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',timeZoneName:'short'})}</div>
-          <div style="padding:12px 16px; border-radius:12px; background:${m.sender === 'admin' ? '#1565c0' : 'rgba(255,255,255,.08)'}; color:#fff; line-height:1.5; white-space: pre-wrap; word-break: break-word;">${formatMsg(m.text)}</div>
+          <div style="padding:12px 16px; border-radius:12px; background:${m.sender === 'admin' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'rgba(255,255,255,.08)'}; color:#fff; line-height:1.5; white-space: pre-wrap; word-break: break-word; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);">${formatMsg(m.text)}</div>
         </div>
       `).join('');
       
@@ -1386,7 +1390,7 @@ document.addEventListener('DOMContentLoaded', () => {
         msgContainer.innerHTML = t.messages.map(m => `
           <div class="msg-animate" style="max-width:80%; align-self: ${m.sender === 'admin' ? 'flex-end' : 'flex-start'};">
             <div style="font-size:0.75rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'admin' ? 'right' : 'left'};">${m.sender === 'admin' ? 'You' : t.applicantName} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',timeZoneName:'short'})}</div>
-            <div style="padding:12px 16px; border-radius:12px; background:${m.sender === 'admin' ? '#1565c0' : 'rgba(255,255,255,.08)'}; color:#fff; line-height:1.5; white-space: pre-wrap; word-break: break-word;">${formatMsg(m.text)}</div>
+            <div style="padding:12px 16px; border-radius:12px; background:${m.sender === 'admin' ? 'linear-gradient(135deg, #2563eb, #1d4ed8)' : 'rgba(255,255,255,.08)'}; color:#fff; line-height:1.5; white-space: pre-wrap; word-break: break-word; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);">${formatMsg(m.text)}</div>
           </div>
         `).join('');
         msgContainer.scrollTop = msgContainer.scrollHeight;
