@@ -23,9 +23,8 @@ router.post('/login', authLimiter, async (req, res) => {
     if (!process.env.JWT_SECRET)
       return res.status(500).json({ error: 'Server configuration error.' });
 
-    // Update last login
-    applicant.lastLoginAt = new Date();
-    await applicant.save();
+    // Update last login without triggering full schema validation
+    await Applicant.updateOne({ _id: applicant._id }, { $set: { lastLoginAt: new Date() } });
 
     const token = jwt.sign(
       { id: applicant._id, email: applicant.email, role: 'applicant' },
