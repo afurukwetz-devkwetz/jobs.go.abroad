@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     fetchTemplates();
     setupSessionTimer(tok || localStorage.getItem('adminToken'));
+    // Initialize the view system — show dashboard by default
+    setTimeout(() => switchMainView('dashboard'), 0);
   }
 
   function logout() {
