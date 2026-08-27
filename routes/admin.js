@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const Setting = require('../models/Setting');
-const { authLimiter } = require('../middleware/rateLimiter');
+const { loginLimiter } = require('../middleware/rateLimiter');
 
 // Middleware: verify admin JWT
 function requireAdmin(req, res, next) {
@@ -19,7 +19,7 @@ function requireAdmin(req, res, next) {
 }
 
 // POST /api/admin/login
-router.post('/login', authLimiter, (req, res) => {
+router.post('/login', loginLimiter, (req, res) => {
   try {
     const { email, password } = req.body || {};
 

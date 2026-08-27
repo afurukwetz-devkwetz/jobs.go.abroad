@@ -6,4 +6,11 @@ const authLimiter = rateLimit({
   message: { error: 'Too many attempts, please try again after 15 minutes.' }
 });
 
-module.exports = { authLimiter };
+// Separate instance so register hits don't consume admin login quota
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Too many login attempts, please try again after 15 minutes.' }
+});
+
+module.exports = { authLimiter, loginLimiter };

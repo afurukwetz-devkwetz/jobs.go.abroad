@@ -53,8 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         loginError.textContent = data.error || 'Login failed';
       }
-    } catch {
-      loginError.textContent = 'Server error during login';
+    } catch (err) {
+      if (!navigator.onLine) {
+        loginError.textContent = 'No internet connection. Please check your network.';
+      } else {
+        loginError.textContent = 'Server is waking up (free tier). Please wait 30 seconds and try again.';
+      }
     }
   });
 
