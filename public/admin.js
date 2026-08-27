@@ -1215,5 +1215,159 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save Settings'; }
     }
   };
+  // ─── Support System ────────────────────────────────────────────────────────
+  let supportPollingInterval = null;
+  let currentTicketId = null;
+
+  window.switchMainView = function (viewId) {
+    document.querySelectorAll('.admin-main').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.admin-nav-tab').forEach(el => el.classList.remove('active'));
+    
+    document.getElementById(viewId + '-view').style.display = 'block';
+    
+    if (viewId === 'dashboard') {
+      document.getElementById('navDashboard').classList.add('active');
+      clearInterval(supportPollingInterval);
+    } else if (viewId === 'templates') {
+      document.getElementById('navTemplates').classList.add('active');
+      clearInterval(supportPollingInterval);
+    } else if (viewId === 'support') {
+      document.getElementById('navSupport').classList.add('active');
+      loadSupportTickets();
+      supportPollingInterval = setInterval(loadSupportTickets, 5000);
+      if (currentTicketId) openSupportTicket(currentTicketId);
+    }
+  };
+
+  async function updateSupportBadge() {
+    const tok = localStorage.getItem('adminToken');
+    if (!tok) return;
+    try {
+      const res = await fetch(API_BASE_URL + '/api/support/unread-count', { headers: { Authorization: `Bearer ${tok}` }});
+      const data = await res.json();
+      const badge = document.getElementById('supportBadge');
+      if (data.count > 0) {
+        badge.style.display = 'inline-block';
+        badge.textContent = data.count;
+      } else {
+        badge.style.display = 'none';
+      }
+    } catch (e) {}
+  }
+
+  // Poll badge everywhere, every 10 seconds
+  setInterval(updateSupportBadge, 10000);
+
+  window.loadSupportTickets = async function () {
+    const tok = localStorage.getItem('adminToken');
+    if (!tok) return;
+    try {
+      const res = await fetch(API_BASE_URL + '/api/support/tickets', { headers: { Authorization: `Bearer ${tok}` }});
+      const data = await res.json();
+      const listEl = document.getElementById('supportList');
+      if (!data.tickets || data.tickets.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center; padding:30px; color:rgba(255,255,255,.3);">No active support tickets</div>';
+        return;
+      }
+      
+      listEl.innerHTML = data.tickets.map(t => `
+        <div onclick="openSupportTicket('${t._id}')" style="padding:12px; background:rgba(255,255,255,.03); border-radius:8px; margin-bottom:8px; cursor:pointer; border-left:4px solid ${t.unreadByAdmin > 0 ? '#60a5fa' : 'transparent'};">
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+            <strong style="color:${t.unreadByAdmin > 0 ? '#fff' : 'rgba(255,255,255,.8)'};">${t.applicantName}</strong>
+            <span style="font-size:0.75rem; color:rgba(255,255,255,.4);">${new Date(t.lastMessageAt).toLocaleDateString()}</span>
+          </div>
+          <div style="font-size:0.85rem; color:rgba(255,255,255,.5); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.applicantEmail}</div>
+        </div>
+      `).join('');
+      updateSupportBadge(); // Update badge right after fetching tickets
+    } catch (e) {
+      console.warn('Failed to load tickets', e);
+    }
+  };
+
+  window.openSupportTicket = async function (ticketId) {
+    currentTicketId = ticketId;
+    const tok = localStorage.getItem('adminToken');
+    if (!tok) return;
+    try {
+      const res = await fetch(API_BASE_URL + `/api/support/tickets/${ticketId}`, { headers: { Authorization: `Bearer ${tok}` }});
+      const data = await res.json();
+      const t = data.ticket;
+      
+      document.getElementById('supportThreadName').textContent = t.applicantName;
+      document.getElementById('supportThreadEmail').textContent = t.applicantEmail;
+      document.getElementById('closeTicketBtn').style.display = 'block';
+      document.getElementById('supportReplyBox').style.display = 'block';
+
+      const msgContainer = document.getElementById('supportMessages');
+      msgContainer.innerHTML = t.messages.map(m => `
+        <div style="max-width:80%; align-self: ${m.sender === 'admin' ? 'flex-end' : 'flex-start'};">
+          <div style="font-size:0.75rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'admin' ? 'right' : 'left'};">${m.sender === 'admin' ? 'You' : t.applicantName} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+          <div style="padding:12px 16px; border-radius:12px; background:${m.sender === 'admin' ? '#1565c0' : 'rgba(255,255,255,.08)'}; color:#fff; line-height:1.5;">${m.text}</div>
+        </div>
+      `).join('');
+      
+      // Auto scroll to bottom
+      msgContainer.scrollTop = msgContainer.scrollHeight;
+
+      // Re-fetch list to clear unread indicator
+      loadSupportTickets();
+
+    } catch (e) {
+      console.error('Error loading ticket thread', e);
+    }
+  };
+
+  window.sendSupportReply = async function () {
+    if (!currentTicketId) return;
+    const txtBox = document.getElementById('supportReplyText');
+    const text = txtBox.value.trim();
+    if (!text) return;
+    
+    const tok = localStorage.getItem('adminToken');
+    try {
+      const res = await fetch(API_BASE_URL + `/api/support/tickets/${currentTicketId}/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${tok}` },
+        body: JSON.stringify({ text })
+      });
+      const data = await res.json();
+      if (data.success) {
+        txtBox.value = '';
+        openSupportTicket(currentTicketId); // refresh thread
+      } else {
+        alert('Failed to send reply: ' + data.error);
+      }
+    } catch (e) {
+      alert('Network error sending reply');
+    }
+  };
+
+  window.closeSupportTicket = async function () {
+    if (!currentTicketId) return;
+    if (!confirm('Are you sure you want to resolve and close this ticket?')) return;
+    
+    const tok = localStorage.getItem('adminToken');
+    try {
+      const res = await fetch(API_BASE_URL + `/api/support/tickets/${currentTicketId}/close`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${tok}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        currentTicketId = null;
+        document.getElementById('supportThreadName').textContent = 'Select a ticket';
+        document.getElementById('supportThreadEmail').textContent = '';
+        document.getElementById('closeTicketBtn').style.display = 'none';
+        document.getElementById('supportReplyBox').style.display = 'none';
+        document.getElementById('supportMessages').innerHTML = '<div style="margin:auto; color:rgba(255,255,255,.2); font-size:3rem;"><i class="fas fa-check-circle"></i></div>';
+        loadSupportTickets();
+      } else {
+        alert('Failed to close ticket: ' + data.error);
+      }
+    } catch (e) {
+      alert('Network error closing ticket');
+    }
+  };
 
 });

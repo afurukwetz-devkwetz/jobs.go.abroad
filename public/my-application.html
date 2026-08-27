@@ -337,6 +337,34 @@
 </div>
 
 
+<!-- ── Support Chat Widget ── -->
+<div id="supportWidget" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9999;">
+  <!-- Minimized Bubble -->
+  <div id="supportBubble" onclick="toggleSupportChat()" style="background:#1565c0; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3); transition:transform 0.2s; position:relative;">
+    <i class="fas fa-comment-dots" style="font-size:24px; color:#fff;"></i>
+    <span id="supportUserBadge" style="display:none; position:absolute; top:-5px; right:-5px; background:#ef4444; color:#fff; font-size:12px; font-weight:bold; border-radius:50%; width:22px; height:22px; text-align:center; line-height:22px; box-shadow:0 2px 4px rgba(0,0,0,0.2);">0</span>
+  </div>
+  
+  <!-- Chat Window -->
+  <div id="supportChatWindow" style="display:none; width:340px; height:450px; background:var(--navy); border:1px solid var(--border); border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.5); flex-direction:column; overflow:hidden; position:absolute; bottom:70px; right:0;">
+    <div style="background:linear-gradient(135deg, #1565c0, #1976d2); padding:16px; display:flex; justify-content:space-between; align-items:center;">
+      <h4 style="margin:0; color:#fff;"><i class="fas fa-headset"></i> Support</h4>
+      <button onclick="toggleSupportChat()" style="background:none; border:none; color:rgba(255,255,255,0.7); cursor:pointer; font-size:16px;"><i class="fas fa-times"></i></button>
+    </div>
+    
+    <div id="supportUserMessages" style="flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; background:rgba(0,0,0,0.2);">
+      <div style="text-align:center; color:rgba(255,255,255,0.4); font-size:0.85rem; padding:20px;">
+        Start a conversation with our team.<br>We usually reply within 24 hours.
+      </div>
+    </div>
+    
+    <div style="padding:12px; border-top:1px solid var(--border); background:rgba(0,0,0,0.3); display:flex; gap:8px;">
+      <input type="text" id="supportUserInput" placeholder="Type a message..." style="flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:20px; padding:8px 16px; color:#fff; font-family:inherit; font-size:0.9rem;">
+      <button onclick="sendSupportUserMsg()" style="background:#1565c0; border:none; border-radius:50%; width:36px; height:36px; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center;"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer"></div>
 
 <script src="/config.js"></script>
@@ -649,6 +677,90 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   }).catch(function(err) {
     console.error('Service worker unregistration failed: ', err);
   });
+}
+
+// ── Support System ────────────────────────────────────────────────────────
+let supportInterval = null;
+let isChatOpen = false;
+
+function toggleSupportChat() {
+  isChatOpen = !isChatOpen;
+  document.getElementById('supportChatWindow').style.display = isChatOpen ? 'flex' : 'none';
+  if (isChatOpen) {
+    loadSupportTicket();
+    document.getElementById('supportUserBadge').style.display = 'none'; // Clear badge
+    supportInterval = setInterval(loadSupportTicket, 4000);
+  } else {
+    clearInterval(supportInterval);
+  }
+}
+
+async function loadSupportTicket() {
+  if (!getToken()) return;
+  try {
+    const res = await fetch(BASE + '/api/support/my', { headers: { 'Authorization': 'Bearer ' + getToken() }});
+    const data = await res.json();
+    
+    // Manage widget visibility
+    document.getElementById('supportWidget').style.display = 'block';
+
+    if (data.ticket) {
+      // Update badge if chat is closed
+      if (!isChatOpen && data.ticket.unreadByApplicant > 0) {
+        const badge = document.getElementById('supportUserBadge');
+        badge.style.display = 'inline-block';
+        badge.textContent = data.ticket.unreadByApplicant;
+      }
+      
+      // Update messages if chat is open
+      if (isChatOpen) {
+        const msgContainer = document.getElementById('supportUserMessages');
+        if (data.ticket.messages && data.ticket.messages.length > 0) {
+          msgContainer.innerHTML = data.ticket.messages.map(m => `
+            <div style="max-width:85%; align-self: ${m.sender === 'applicant' ? 'flex-end' : 'flex-start'};">
+              <div style="font-size:0.7rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'applicant' ? 'right' : 'left'};">${m.sender === 'applicant' ? 'You' : 'Support'} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+              <div style="padding:10px 14px; border-radius:12px; background:${m.sender === 'applicant' ? '#1565c0' : 'rgba(255,255,255,.1)'}; color:#fff; font-size:0.9rem; line-height:1.5;">${m.text}</div>
+            </div>
+          `).join('');
+          // Scroll to bottom only if user hasn't scrolled up (simplified for now)
+          msgContainer.scrollTop = msgContainer.scrollHeight;
+        }
+      }
+    }
+  } catch (e) {}
+}
+
+async function sendSupportUserMsg() {
+  const input = document.getElementById('supportUserInput');
+  const text = input.value.trim();
+  if (!text) return;
+  
+  input.value = '';
+  try {
+    const res = await fetch(BASE + '/api/support/send', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+    if (res.ok) {
+      loadSupportTicket();
+    } else {
+      toast('Failed to send message', 'error');
+    }
+  } catch (e) {
+    toast('Network error', 'error');
+  }
+}
+
+// Enter key to send
+document.getElementById('supportUserInput')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendSupportUserMsg();
+});
+
+// Initialize polling for widget if logged in
+if (getToken()) {
+  setTimeout(loadSupportTicket, 1000);
+  setInterval(() => { if (!isChatOpen) loadSupportTicket(); }, 10000); // Poll every 10s for badge when closed
 }
 
 // ── Init ───────────────────────────────────────────────────────

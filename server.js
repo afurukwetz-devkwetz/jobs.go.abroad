@@ -62,6 +62,7 @@ app.use('/api/admin',      require('./routes/admin'));
 app.use('/api/templates',  require('./routes/templates'));
 app.use('/api/verify',     require('./routes/verify'));
 app.use('/api/applicant',  require('./routes/applicant'));
+app.use('/api/support',    require('./routes/support'));
 
 // Public: fetch platform settings (e.g. WhatsApp number)
 const Setting = require('./models/Setting');

@@ -374,4 +374,66 @@ async function sendDocumentRequestEmail({ firstName, email, docLabel, uploadUrl 
   });
 }
 
-module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail, sendStageUpdateEmail, sendOtpEmail, sendCustomEmail, sendDocumentRequestEmail, sendWelcomeOnboardingEmail };
+// ── Support chat: admin replied ──────────────────────────────────────────────
+async function sendSupportReplyEmail({ firstName, email, adminMessage }) {
+  const dashUrl = `${SITE}/my-application`;
+  return sendMail({
+    to: email,
+    subject: 'Support Reply from Global Job Connect',
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0d2d6b;border-radius:12px;overflow:hidden;">
+        <div style="padding:30px;background:linear-gradient(135deg,#1565c0,#1976d2);text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:22px;">✈️ Global Job Connect</h1>
+          <p style="color:rgba(255,255,255,.8);margin:6px 0 0;font-size:14px;">Support Centre</p>
+        </div>
+        <div style="padding:30px;background:#fff;">
+          <h2 style="color:#1565c0;margin:0 0 12px;">💬 New Reply from Support</h2>
+          <p style="color:#444;line-height:1.6;">Hi <strong>${firstName}</strong>,</p>
+          <p style="color:#444;line-height:1.6;">Our support team has replied to your enquiry:</p>
+          <div style="background:#f3f4f6;border-left:4px solid #1565c0;border-radius:8px;padding:16px 20px;margin:20px 0;">
+            <p style="color:#1e293b;margin:0;line-height:1.7;font-size:15px;">${adminMessage}</p>
+          </div>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${dashUrl}" style="background:#1565c0;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">View Conversation</a>
+          </div>
+          <p style="color:#888;font-size:13px;">You can reply directly from your applicant dashboard.</p>
+        </div>
+        <div style="padding:16px;text-align:center;background:#f5f5f5;">
+          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect · Work Anywhere. Grow Everywhere.</p>
+        </div>
+      </div>
+    `,
+  });
+}
+
+// ── Support chat: ticket closed ───────────────────────────────────────────────
+async function sendSupportClosedEmail({ firstName, email }) {
+  const dashUrl = `${SITE}/my-application`;
+  return sendMail({
+    to: email,
+    subject: 'Your Support Ticket Has Been Resolved — Global Job Connect',
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0d2d6b;border-radius:12px;overflow:hidden;">
+        <div style="padding:30px;background:linear-gradient(135deg,#1565c0,#1976d2);text-align:center;">
+          <h1 style="color:#fff;margin:0;font-size:22px;">✈️ Global Job Connect</h1>
+          <p style="color:rgba(255,255,255,.8);margin:6px 0 0;font-size:14px;">Support Centre</p>
+        </div>
+        <div style="padding:30px;background:#fff;">
+          <h2 style="color:#10b981;margin:0 0 12px;">✅ Ticket Resolved</h2>
+          <p style="color:#444;line-height:1.6;">Hi <strong>${firstName}</strong>,</p>
+          <p style="color:#444;line-height:1.6;">Your support ticket has been marked as <strong>resolved</strong> by our team. We hope your issue has been addressed.</p>
+          <p style="color:#444;line-height:1.6;">If you still need help, you can open a new support conversation from your dashboard at any time.</p>
+          <div style="text-align:center;margin:24px 0;">
+            <a href="${dashUrl}" style="background:#10b981;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Go to Dashboard</a>
+          </div>
+          <p style="color:#888;font-size:13px;">Thank you for contacting Global Job Connect support.</p>
+        </div>
+        <div style="padding:16px;text-align:center;background:#f5f5f5;">
+          <p style="color:#aaa;font-size:12px;margin:0;">© 2026 Global Job Connect · Work Anywhere. Grow Everywhere.</p>
+        </div>
+      </div>
+    `,
+  });
+}
+
+module.exports = { sendVerificationEmail, sendRefNumberEmail, sendStatusEmail, sendStageUpdateEmail, sendOtpEmail, sendCustomEmail, sendDocumentRequestEmail, sendWelcomeOnboardingEmail, sendSupportReplyEmail, sendSupportClosedEmail };
