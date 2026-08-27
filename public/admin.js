@@ -1271,7 +1271,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       listEl.innerHTML = data.tickets.map(t => `
-        <div onclick="openSupportTicket('${t._id}')" style="padding:12px; background:rgba(255,255,255,.03); border-radius:8px; margin-bottom:8px; cursor:pointer; border-left:4px solid ${t.unreadByAdmin > 0 ? '#60a5fa' : 'transparent'};">
+        <div onclick="openSupportTicket('${t._id}')" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='rgba(255,255,255,.03)'" style="padding:12px; background:rgba(255,255,255,.03); border-radius:8px; margin-bottom:8px; cursor:pointer; border-left:4px solid ${t.unreadByAdmin > 0 ? '#60a5fa' : 'transparent'}; transition:background 0.2s;">
           <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
             <strong style="color:${t.unreadByAdmin > 0 ? '#fff' : 'rgba(255,255,255,.8)'};">${t.applicantName}</strong>
             <span style="font-size:0.75rem; color:rgba(255,255,255,.4);">${new Date(t.lastMessageAt).toLocaleDateString()}</span>
