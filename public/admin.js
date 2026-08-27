@@ -26,8 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     fetchTemplates();
     setupSessionTimer(tok || localStorage.getItem('adminToken'));
-    // Initialize the view system — show dashboard by default
-    setTimeout(() => switchMainView('dashboard'), 0);
+    // Ensure dashboard view is visible and others are hidden
+    const ids = { dashboard: 'dashboard-view', templates: 'templates-section', support: 'support-view' };
+    Object.entries(ids).forEach(([key, id]) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = key === 'dashboard' ? 'block' : 'none';
+    });
+    updateSupportBadge();
   }
 
   function logout() {
