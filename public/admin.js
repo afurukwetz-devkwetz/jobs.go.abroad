@@ -1262,7 +1262,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const tok = localStorage.getItem('adminToken');
     if (!tok) return;
     try {
-      const res = await fetch(API_BASE_URL + '/api/support/tickets', { headers: { Authorization: `Bearer ${tok}` }});
+      const res = await fetch(API_BASE_URL + `/api/support/tickets?t=${Date.now()}`, { 
+        headers: { Authorization: `Bearer ${tok}` },
+        cache: 'no-store'
+      });
       const data = await res.json();
       const listEl = document.getElementById('supportList');
       if (!data.tickets || data.tickets.length === 0) {
@@ -1290,7 +1293,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const tok = localStorage.getItem('adminToken');
     if (!tok) return;
     try {
-      const res = await fetch(API_BASE_URL + `/api/support/tickets/${ticketId}`, { headers: { Authorization: `Bearer ${tok}` }});
+      const res = await fetch(API_BASE_URL + `/api/support/tickets/${ticketId}?t=${Date.now()}`, { 
+        headers: { Authorization: `Bearer ${tok}` },
+        cache: 'no-store' 
+      });
       const data = await res.json();
       const t = data.ticket;
       

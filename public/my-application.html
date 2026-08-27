@@ -721,7 +721,10 @@ function toggleSupportChat() {
 async function loadSupportTicket() {
   if (!getToken()) return;
   try {
-    const res = await fetch(BASE + '/api/support/my', { headers: { 'Authorization': 'Bearer ' + getToken() }});
+    const res = await fetch(BASE + `/api/support/my?t=${Date.now()}`, { 
+      headers: { 'Authorization': 'Bearer ' + getToken() },
+      cache: 'no-store'
+    });
     const data = await res.json();
     
     // Manage widget visibility
