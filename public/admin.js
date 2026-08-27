@@ -46,7 +46,17 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
+      // Safely read body as text first to handle non-JSON error pages
+      const raw = await res.text();
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        // Server returned HTML (Express v5 error page) — log it
+        console.error('Non-JSON server response:', raw.substring(0, 300));
+        loginError.textContent = `Server error (${res.status}): Please try again or contact support.`;
+        return;
+      }
       if (data.success) {
         localStorage.setItem('adminToken', data.token);
         showDashboard(data.token);
@@ -57,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!navigator.onLine) {
         loginError.textContent = 'No internet connection. Please check your network.';
       } else {
-        loginError.textContent = 'Server is waking up (free tier). Please wait 30 seconds and try again.';
+        loginError.textContent = 'Cannot reach server. Please wait 30 seconds and try again.';
       }
     }
   });
