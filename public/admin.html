@@ -680,13 +680,13 @@
             <button id="closeTicketBtn" class="btn btn-danger" style="display:none;" onclick="closeSupportTicket()"><i class="fas fa-check-circle"></i> Resolve Ticket</button>
           </div>
           
-          <div id="supportMessages" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:16px;">
+          <div id="supportMessages" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:16px; scroll-behavior: smooth;">
             <!-- Messages injected here -->
             <div style="margin:auto; color:rgba(255,255,255,.2); font-size:3rem;"><i class="fas fa-comments"></i></div>
           </div>
 
           <div id="supportReplyBox" style="padding:16px; border-top:1px solid rgba(255,255,255,.05); background:rgba(0,0,0,.1); display:none;">
-            <textarea id="supportReplyText" placeholder="Type your reply here..." style="width:100%; height:80px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:12px; color:#fff; font-family:inherit; resize:none; margin-bottom:10px;"></textarea>
+            <textarea id="supportReplyText" placeholder="Type your reply here... (Press Enter to send, Shift+Enter for new line)" style="width:100%; height:80px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:8px; padding:12px; color:#fff; font-family:inherit; resize:none; margin-bottom:10px;" onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendSupportReply(); }"></textarea>
             <div style="display:flex; justify-content:flex-end;">
               <button class="btn btn-primary" onclick="sendSupportReply()"><i class="fas fa-paper-plane"></i> Send Reply</button>
             </div>

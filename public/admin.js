@@ -1273,15 +1273,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       
-      listEl.innerHTML = data.tickets.map(t => `
-        <div onclick="openSupportTicket('${t._id}')" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='rgba(255,255,255,.03)'" style="padding:12px; background:rgba(255,255,255,.03); border-radius:8px; margin-bottom:8px; cursor:pointer; border-left:4px solid ${t.unreadByAdmin > 0 ? '#60a5fa' : 'transparent'}; transition:background 0.2s;">
+      listEl.innerHTML = data.tickets.map(t => {
+        const isActive = t._id === currentTicketId;
+        const bg = isActive ? 'rgba(96,165,250,.15)' : 'rgba(255,255,255,.03)';
+        const hoverBg = isActive ? 'rgba(96,165,250,.2)' : 'rgba(255,255,255,.08)';
+        return `
+        <div onclick="openSupportTicket('${t._id}')" onmouseover="this.style.background='${hoverBg}'" onmouseout="this.style.background='${bg}'" style="padding:12px; background:${bg}; border-radius:8px; margin-bottom:8px; cursor:pointer; border-left:4px solid ${t.unreadByAdmin > 0 ? '#60a5fa' : (isActive ? '#3b82f6' : 'transparent')}; transition:background 0.2s;">
           <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-            <strong style="color:${t.unreadByAdmin > 0 ? '#fff' : 'rgba(255,255,255,.8)'};">${t.applicantName}</strong>
+            <strong style="color:${t.unreadByAdmin > 0 ? '#fff' : (isActive ? '#60a5fa' : 'rgba(255,255,255,.8)')};">${t.applicantName}</strong>
             <span style="font-size:0.75rem; color:rgba(255,255,255,.4);">${new Date(t.lastMessageAt).toLocaleDateString()}</span>
           </div>
-          <div style="font-size:0.85rem; color:rgba(255,255,255,.5); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.applicantEmail}</div>
+          <div style="font-size:0.85rem; color:${isActive ? 'rgba(255,255,255,.7)' : 'rgba(255,255,255,.5)'}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.applicantEmail}</div>
         </div>
-      `).join('');
+      `}).join('');
       updateSupportBadge(); // Update badge right after fetching tickets
     } catch (e) {
       console.warn('Failed to load tickets', e);
