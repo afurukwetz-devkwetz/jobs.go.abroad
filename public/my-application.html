@@ -744,7 +744,7 @@ async function loadSupportTicket() {
         if (data.ticket.messages && data.ticket.messages.length > 0) {
           msgContainer.innerHTML = data.ticket.messages.map(m => `
             <div style="max-width:85%; align-self: ${m.sender === 'applicant' ? 'flex-end' : 'flex-start'};">
-              <div style="font-size:0.7rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'applicant' ? 'right' : 'left'};">${m.sender === 'applicant' ? 'You' : 'Support'} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+              <div style="font-size:0.7rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'applicant' ? 'right' : 'left'};">${m.sender === 'applicant' ? 'You' : 'Support'} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',timeZoneName:'short'})}</div>
               <div style="padding:10px 14px; border-radius:12px; background:${m.sender === 'applicant' ? '#1565c0' : 'rgba(255,255,255,.1)'}; color:#fff; font-size:0.9rem; line-height:1.5;">${m.text}</div>
             </div>
           `).join('');

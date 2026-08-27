@@ -1308,7 +1308,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const msgContainer = document.getElementById('supportMessages');
       msgContainer.innerHTML = t.messages.map(m => `
         <div style="max-width:80%; align-self: ${m.sender === 'admin' ? 'flex-end' : 'flex-start'};">
-          <div style="font-size:0.75rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'admin' ? 'right' : 'left'};">${m.sender === 'admin' ? 'You' : t.applicantName} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+          <div style="font-size:0.75rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'admin' ? 'right' : 'left'};">${m.sender === 'admin' ? 'You' : t.applicantName} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',timeZoneName:'short'})}</div>
           <div style="padding:12px 16px; border-radius:12px; background:${m.sender === 'admin' ? '#1565c0' : 'rgba(255,255,255,.08)'}; color:#fff; line-height:1.5;">${m.text}</div>
         </div>
       `).join('');
