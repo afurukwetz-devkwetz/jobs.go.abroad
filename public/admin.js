@@ -1322,8 +1322,8 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const formatMsg = (text) => {
         if (!text) return '';
-        let t = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        return t.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#93c5fd; text-decoration:underline;">$1</a>');
+        let s = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        return s.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#93c5fd; text-decoration:underline;">$1</a>');
       };
 
       msgContainer.innerHTML = t.messages.map(m => `
