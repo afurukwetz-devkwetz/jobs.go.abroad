@@ -1223,11 +1223,18 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentTicketId = null;
 
   window.switchMainView = function (viewId) {
-    document.querySelectorAll('.admin-main').forEach(el => el.style.display = 'none');
+    // Hide all known views by their actual IDs
+    ['dashboard-view', 'templates-section', 'support-view'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
     document.querySelectorAll('.admin-nav-tab').forEach(el => el.classList.remove('active'));
-    
-    document.getElementById(viewId + '-view').style.display = 'block';
-    
+
+    // Map logical name to actual element ID
+    const idMap = { dashboard: 'dashboard-view', templates: 'templates-section', support: 'support-view' };
+    const targetEl = document.getElementById(idMap[viewId] || (viewId + '-view'));
+    if (targetEl) targetEl.style.display = 'block';
+
     if (viewId === 'dashboard') {
       document.getElementById('navDashboard').classList.add('active');
       clearInterval(supportPollingInterval);
