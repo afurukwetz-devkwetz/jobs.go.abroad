@@ -81,7 +81,7 @@ app.get('/api/settings', async (req, res) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve frontend static files robustly from 'public' folder (with caching)
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d' }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve main frontend pages explicitly for cleaner URLs
 app.get('/', (req, res) => {
