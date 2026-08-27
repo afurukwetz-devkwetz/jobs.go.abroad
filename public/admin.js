@@ -1310,10 +1310,17 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('supportReplyBox').style.display = 'block';
 
       const msgContainer = document.getElementById('supportMessages');
+      
+      const formatMsg = (text) => {
+        if (!text) return '';
+        let t = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        return t.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color:#93c5fd; text-decoration:underline;">$1</a>');
+      };
+
       msgContainer.innerHTML = t.messages.map(m => `
         <div style="max-width:80%; align-self: ${m.sender === 'admin' ? 'flex-end' : 'flex-start'};">
           <div style="font-size:0.75rem; color:rgba(255,255,255,.4); margin-bottom:4px; text-align: ${m.sender === 'admin' ? 'right' : 'left'};">${m.sender === 'admin' ? 'You' : t.applicantName} • ${new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',timeZoneName:'short'})}</div>
-          <div style="padding:12px 16px; border-radius:12px; background:${m.sender === 'admin' ? '#1565c0' : 'rgba(255,255,255,.08)'}; color:#fff; line-height:1.5;">${m.text}</div>
+          <div style="padding:12px 16px; border-radius:12px; background:${m.sender === 'admin' ? '#1565c0' : 'rgba(255,255,255,.08)'}; color:#fff; line-height:1.5; white-space: pre-wrap; word-break: break-word;">${formatMsg(m.text)}</div>
         </div>
       `).join('');
       
