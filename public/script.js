@@ -11,6 +11,16 @@ let selectedProf = 'nurse';
 let currentStep = 1;
 const totalSteps = 4;
 
+function showToast(msg, type = 'error') {
+  const c = document.getElementById('toast-container');
+  if (!c) return;
+  const el = document.createElement('div');
+  el.className = `toast-msg ${type}`;
+  el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${msg}`;
+  c.appendChild(el);
+  setTimeout(() => { el.classList.add('fadeOut'); setTimeout(() => el.remove(), 300); }, 5000);
+}
+
 function nextStep(step) {
   if (!validateStep(step)) return;
   

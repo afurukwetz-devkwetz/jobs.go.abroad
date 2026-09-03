@@ -300,6 +300,7 @@ label:not(.radio-lbl){
 .btn-secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4)}
 
 /* ── Step Tracker ── */
+.card{ animation: fadeIn 0.6s ease-out; }
 .step-wrapper { margin-bottom: 24px; }
 .step-tracker {
   display: flex; align-items: center; justify-content: space-between;
@@ -312,9 +313,10 @@ label:not(.radio-lbl){
   font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.5);
   transition: all .3s; z-index: 2;
 }
+@keyframes pulseStep { 0%,100% { box-shadow: 0 0 12px rgba(66,165,245,.5); } 50% { box-shadow: 0 0 24px rgba(66,165,245,.8), 0 0 0 6px rgba(66,165,245,.15); } }
 .step-indicator.active {
   background: #1565c0; border-color: #42a5f5; color: #fff;
-  box-shadow: 0 0 12px rgba(66,165,245,.5);
+  animation: pulseStep 2s infinite;
 }
 .step-indicator.completed {
   background: #4ade80; border-color: #22c55e; color: #fff;
