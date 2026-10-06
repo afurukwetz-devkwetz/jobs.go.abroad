@@ -483,18 +483,9 @@ document.addEventListener('DOMContentLoaded', function () {
       profBtns.forEach(b => b.classList.remove('prof-btn--active'));
       btn.classList.add('prof-btn--active');
       selectedProf = btn.dataset.prof || 'nurse';
-      // Show nurse qualification section only for nurses
+      // Show qualification section for all professions
       if (nurseQualSection) {
-        if (selectedProf === 'nurse') {
-          nurseQualSection.style.display = 'block';
-        } else {
-          nurseQualSection.style.display = 'none';
-          // Collapse the panel if switching away from nurse
-          const panel = document.getElementById('qualPanel');
-          const chevron = document.getElementById('qualChevron');
-          if (panel) panel.style.display = 'none';
-          if (chevron) chevron.style.transform = '';
-        }
+        nurseQualSection.style.display = 'block';
       }
       
       // Auto-advance to Step 2
