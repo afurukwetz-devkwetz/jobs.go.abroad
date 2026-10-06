@@ -538,7 +538,19 @@ async function loadDashboard() {
     document.getElementById('dashRef').textContent    = `REF: ${a.refNumber || 'N/A'}`;
 
     const profEl = document.getElementById('dashProfession');
-    profEl.textContent = a.profession;
+    const profLabels = {
+      nurse: 'Nurse', caregiver: 'Caregiver', construction: 'Construction Worker',
+      truck: 'Truck Driver', gardener: 'Gardener', factory_worker: 'Factory Worker',
+      storekeeper: 'Storekeeper', massage_therapist: 'Massage Therapist',
+      occupational_therapist: 'Occupational Therapist', social_worker: 'Social Worker',
+      electrician: 'Electrician', plumber: 'Plumber', welder: 'Welder',
+      carpenter: 'Carpenter', pharmacist: 'Pharmacist', physiotherapist: 'Physiotherapist',
+      medical_lab_tech: 'Medical Lab Technician', radiographer: 'Radiographer',
+      chef: 'Chef / Cook', hotel_manager: 'Hotel Manager', teacher: 'Teacher',
+      early_childhood_educator: 'Early Childhood Educator', farm_worker: 'Farm Worker',
+      agronomist: 'Agronomist', agricultural_engineer: 'Agricultural Engineer'
+    };
+    profEl.textContent = profLabels[a.profession] || a.profession;
     profEl.className = 'badge badge-profession';
 
     const statusEl = document.getElementById('dashStatusBadge');

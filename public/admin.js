@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderQualsTab(a) {
     const el = document.getElementById('qualsContent');
     if (!el) return;
-    if (a.profession !== 'nurse' || (!a.destinations?.length && !a.englishQuals?.length && !a.docsAvailable?.length)) {
+    if (!a.destinations?.length && !a.englishQuals?.length && !a.docsAvailable?.length) {
       el.innerHTML = '<p style="color:rgba(255,255,255,.4);font-style:italic;">No qualification assessment data submitted.</p>';
       return;
     }
@@ -1455,16 +1455,31 @@ document.addEventListener('DOMContentLoaded', () => {
   // ─── Settings (WhatsApp + Profession Spots) ──────────────────────────────────
 
   const ALL_PROFESSIONS = [
-    { key: 'nurse',                  label: 'Nurse',                  icon: 'fa-user-nurse' },
-    { key: 'caregiver',              label: 'Caregiver',              icon: 'fa-hand-holding-heart' },
-    { key: 'construction',           label: 'Construction',           icon: 'fa-hard-hat' },
-    { key: 'truck',                  label: 'Truck Driver',           icon: 'fa-truck' },
-    { key: 'gardener',               label: 'Gardener',               icon: 'fa-leaf' },
-    { key: 'factory_worker',         label: 'Factory Worker',         icon: 'fa-industry' },
-    { key: 'storekeeper',            label: 'Storekeeper',            icon: 'fa-boxes-stacked' },
-    { key: 'massage_therapist',      label: 'Massage Therapist',      icon: 'fa-spa' },
-    { key: 'occupational_therapist', label: 'Occupational Therapist', icon: 'fa-user-md' },
-    { key: 'social_worker',          label: 'Social Worker',          icon: 'fa-people-carry-box' },
+    { key: 'nurse',                    label: 'Nurse',                    icon: 'fa-user-nurse' },
+    { key: 'caregiver',                label: 'Caregiver',                icon: 'fa-hand-holding-heart' },
+    { key: 'construction',             label: 'Construction',             icon: 'fa-hard-hat' },
+    { key: 'truck',                    label: 'Truck Driver',             icon: 'fa-truck' },
+    { key: 'gardener',                 label: 'Gardener',                 icon: 'fa-leaf' },
+    { key: 'factory_worker',           label: 'Factory Worker',           icon: 'fa-industry' },
+    { key: 'storekeeper',              label: 'Storekeeper',              icon: 'fa-boxes-stacked' },
+    { key: 'massage_therapist',        label: 'Massage Therapist',        icon: 'fa-spa' },
+    { key: 'occupational_therapist',   label: 'Occupational Therapist',   icon: 'fa-user-md' },
+    { key: 'social_worker',            label: 'Social Worker',            icon: 'fa-people-carry-box' },
+    { key: 'electrician',              label: 'Electrician',              icon: 'fa-bolt' },
+    { key: 'plumber',                  label: 'Plumber',                  icon: 'fa-wrench' },
+    { key: 'welder',                   label: 'Welder',                   icon: 'fa-fire-burner' },
+    { key: 'carpenter',                label: 'Carpenter',                icon: 'fa-hammer' },
+    { key: 'pharmacist',               label: 'Pharmacist',               icon: 'fa-pills' },
+    { key: 'physiotherapist',          label: 'Physiotherapist',          icon: 'fa-crutch' },
+    { key: 'medical_lab_tech',         label: 'Medical Lab Technician',   icon: 'fa-microscope' },
+    { key: 'radiographer',             label: 'Radiographer',             icon: 'fa-x-ray' },
+    { key: 'chef',                     label: 'Chef / Cook',              icon: 'fa-utensils' },
+    { key: 'hotel_manager',            label: 'Hotel Manager',            icon: 'fa-concierge-bell' },
+    { key: 'teacher',                  label: 'Teacher',                  icon: 'fa-chalkboard-user' },
+    { key: 'early_childhood_educator', label: 'Early Childhood Educator', icon: 'fa-child' },
+    { key: 'farm_worker',              label: 'Farm Worker',              icon: 'fa-tractor' },
+    { key: 'agronomist',               label: 'Agronomist',               icon: 'fa-seedling' },
+    { key: 'agricultural_engineer',    label: 'Agricultural Engineer',    icon: 'fa-gear' },
   ];
 
   function renderSpotsGrid(spotsData) {
