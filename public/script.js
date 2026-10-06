@@ -95,8 +95,8 @@ function validateStep(step) {
     }
   }
   
-  // Step 3 (Details): nurse must complete & tick all declaration checkboxes
-  if (step === 3 && selectedProf === 'nurse') {
+  // Step 3 (Details): user must complete & tick all declaration checkboxes
+  if (step === 3) {
     const qualPanel = document.getElementById('qualPanel');
     const isOpen = qualPanel && qualPanel.style.display !== 'none';
     if (isOpen) {
@@ -546,8 +546,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (pw !== cpw) { showToast('Passwords do not match.', 'error'); shake('confirmPw'); return; }
       if (!terms) { showToast('Please agree to the Terms & Conditions.', 'error'); return; }
 
-      // Nurse: qualification assessment is required
-      if (selectedProf === 'nurse') {
+      // Qualification assessment is required
+      {
         const qualPanel = document.getElementById('qualPanel');
         const declBoxes = document.querySelectorAll('input[name="decl"]');
         const allDeclChecked = Array.from(declBoxes).every(cb => cb.checked);
@@ -586,17 +586,15 @@ document.addEventListener('DOMContentLoaded', function () {
         fd.append('password',      pw);
         const cvFile = document.getElementById('cvFile');
         if (cvFile?.files[0]) fd.append('cvFile', cvFile.files[0]);
-        if (selectedProf === 'nurse') {
-          const getChecked = name => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
-          getChecked('dest').forEach(v    => fd.append('destinations',     v));
-          getChecked('english').forEach(v => fd.append('englishQuals',     v));
-          getChecked('reg').forEach(v     => fd.append('professionalRegs', v));
-          getChecked('german').forEach(v  => fd.append('germanLevel',      v));
-          getChecked('docs').forEach(v    => fd.append('docsAvailable',    v));
-          getChecked('decl').forEach(v    => fd.append('qualDeclarations', v));
-          const destOther = (document.getElementById('destOtherText')?.value || '').trim().slice(0, 100);
-          if (destOther) fd.append('destOther', destOther);
-        }
+        const getChecked = name => Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+        getChecked('dest').forEach(v    => fd.append('destinations',     v));
+        getChecked('english').forEach(v => fd.append('englishQuals',     v));
+        getChecked('reg').forEach(v     => fd.append('professionalRegs', v));
+        getChecked('german').forEach(v  => fd.append('germanLevel',      v));
+        getChecked('docs').forEach(v    => fd.append('docsAvailable',    v));
+        getChecked('decl').forEach(v    => fd.append('qualDeclarations', v));
+        const destOther = (document.getElementById('destOtherText')?.value || '').trim().slice(0, 100);
+        if (destOther) fd.append('destOther', destOther);
         return fd;
       }
 
