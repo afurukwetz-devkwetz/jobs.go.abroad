@@ -826,4 +826,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }, false);
   }
 
+  // ── Load & Display Profession Spots from Settings ──────────────────────
+  async function loadProfessionSpots() {
+    try {
+      const base = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '');
+      const res = await fetch(base + '/api/settings');
+      if (!res.ok) return;
+      const cfg = await res.json();
+      const spots = cfg.professionSpots || {};
+      document.querySelectorAll('.prof-btn').forEach(btn => {
+        const prof = btn.dataset.prof;
+        if (!prof || !(prof in spots)) return;
+        const count = parseInt(spots[prof], 10);
+        // Remove existing badge if any
+        const existing = btn.querySelector('.prof-spots-badge');
+        if (existing) existing.remove();
+        const badge = document.createElement('span');
+        badge.className = 'prof-spots-badge' + (count > 5 ? ' spots-open' : count > 0 ? ' spots-low' : '');
+        badge.textContent = count > 0 ? `${count} spot${count !== 1 ? 's' : ''}` : 'Full';
+        btn.appendChild(badge);
+        if (count === 0) btn.style.opacity = '0.55';
+      });
+    } catch { /* silent — spots are optional */ }
+  }
+  loadProfessionSpots();
+
 }); // end DOMContentLoaded

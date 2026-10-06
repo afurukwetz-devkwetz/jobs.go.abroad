@@ -1452,4 +1452,87 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // ─── Settings (WhatsApp + Profession Spots) ──────────────────────────────────
+
+  const ALL_PROFESSIONS = [
+    { key: 'nurse',                  label: 'Nurse',                  icon: 'fa-user-nurse' },
+    { key: 'caregiver',              label: 'Caregiver',              icon: 'fa-hand-holding-heart' },
+    { key: 'construction',           label: 'Construction',           icon: 'fa-hard-hat' },
+    { key: 'truck',                  label: 'Truck Driver',           icon: 'fa-truck' },
+    { key: 'gardener',               label: 'Gardener',               icon: 'fa-leaf' },
+    { key: 'factory_worker',         label: 'Factory Worker',         icon: 'fa-industry' },
+    { key: 'storekeeper',            label: 'Storekeeper',            icon: 'fa-boxes-stacked' },
+    { key: 'massage_therapist',      label: 'Massage Therapist',      icon: 'fa-spa' },
+    { key: 'occupational_therapist', label: 'Occupational Therapist', icon: 'fa-user-md' },
+    { key: 'social_worker',          label: 'Social Worker',          icon: 'fa-people-carry-box' },
+  ];
+
+  function renderSpotsGrid(spotsData) {
+    const grid = document.getElementById('spotsGrid');
+    if (!grid) return;
+    grid.innerHTML = ALL_PROFESSIONS.map(p => {
+      const val = spotsData[p.key] !== undefined ? spotsData[p.key] : '';
+      return `
+        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:rgba(255,255,255,.6);margin-bottom:8px;font-weight:600;">
+            <i class="fas ${p.icon}" style="color:#60a5fa;width:16px;text-align:center;"></i> ${p.label}
+          </label>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="number" id="spot_${p.key}" min="0" max="9999" placeholder="—"
+              value="${val}"
+              style="width:100%;padding:8px 10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#fff;font-size:0.9rem;font-family:inherit;">
+            <span style="font-size:0.75rem;color:rgba(255,255,255,.3);white-space:nowrap;">spots</span>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function loadSettings() {
+    try {
+      const res = await fetch(API_BASE_URL + '/api/admin/settings', { headers: getAuthHeaders() });
+      if (!res.ok) return;
+      const cfg = await res.json();
+      const waEl = document.getElementById('settingWaNumber');
+      if (waEl && cfg.whatsapp) waEl.value = cfg.whatsapp;
+      renderSpotsGrid(cfg.professionSpots || {});
+    } catch { /* silent */ }
+  }
+
+  window.saveSettings = async function () {
+    const waEl = document.getElementById('settingWaNumber');
+    const waNum = waEl ? waEl.value.trim() : '';
+    try {
+      const res = await fetch(API_BASE_URL + '/api/admin/settings', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ whatsapp: waNum }),
+      });
+      if (res.ok) {
+        const msg = document.getElementById('settingsSaveMsg');
+        if (msg) { msg.style.display = 'inline'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
+      }
+    } catch { /* silent */ }
+  };
+
+  window.saveProfessionSpots = async function () {
+    const spots = {};
+    ALL_PROFESSIONS.forEach(p => {
+      const el = document.getElementById('spot_' + p.key);
+      if (el && el.value.trim() !== '') spots[p.key] = parseInt(el.value, 10) || 0;
+    });
+    try {
+      const res = await fetch(API_BASE_URL + '/api/admin/settings', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ professionSpots: spots }),
+      });
+      if (res.ok) {
+        const msg = document.getElementById('spotsSaveMsg');
+        if (msg) { msg.style.display = 'inline'; setTimeout(() => { msg.style.display = 'none'; }, 3000); }
+      } else {
+        alert('Failed to save spots. Please try again.');
+      }
+    } catch { alert('Network error saving spots.'); }
+  };
+
 });
