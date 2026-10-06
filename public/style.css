@@ -229,6 +229,17 @@ label:not(.radio-lbl){
   color:#fff;
   box-shadow:0 4px 18px rgba(66,165,245,.25);
 }
+/* Approximate hourly rate badge */
+.prof-rate{
+  display:inline-block;
+  font-size:0.55rem;font-weight:700;
+  padding:2px 6px;border-radius:20px;
+  margin-top:2px;line-height:1.4;
+  background:rgba(74,222,128,0.15);color:#4ade80;
+  border:1px solid rgba(74,222,128,0.3);
+  letter-spacing:0.2px;
+  white-space:nowrap;
+}
 /* Spots available badge on profession buttons */
 .prof-spots-badge{
   display:inline-block;
