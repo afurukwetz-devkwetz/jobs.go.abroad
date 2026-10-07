@@ -1481,6 +1481,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { key: 'agronomist',               label: 'Agronomist',               icon: 'fa-seedling' },
     { key: 'agricultural_engineer',    label: 'Agricultural Engineer',    icon: 'fa-gear' },
     { key: 'housekeeper',              label: 'Housekeeper',              icon: 'fa-broom' },
+    { key: 'operator',                 label: 'Operator',                 icon: 'fa-cogs' },
   ];
 
   function renderSpotsGrid(spotsData) {
