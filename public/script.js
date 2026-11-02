@@ -1540,6 +1540,18 @@ function escapeHtml(str) {
 // ── Local Storage Save / Restore ──
 function saveResumeToLocal() {
   try {
+    const jobCards = document.querySelectorAll('.ra-job-card');
+    const experiences = [];
+    jobCards.forEach(card => {
+      experiences.push({
+        title: card.querySelector('.ra-job-title')?.value || '',
+        company: card.querySelector('.ra-job-company')?.value || '',
+        city: card.querySelector('.ra-job-city')?.value || '',
+        dates: card.querySelector('.ra-job-dates')?.value || '',
+        bullets: card.querySelector('.ra-job-bullets')?.value || ''
+      });
+    });
+
     const data = {
       name: document.getElementById('raName')?.value || '',
       title: document.getElementById('raTitle')?.value || '',
@@ -1554,7 +1566,8 @@ function saveResumeToLocal() {
       license: document.getElementById('raLicense')?.value || '',
       certs: document.getElementById('raCerts')?.value || '',
       languages: document.getElementById('raLanguages')?.value || '',
-      skills: Array.from(resumeActiveSkills)
+      skills: Array.from(resumeActiveSkills),
+      experiences: experiences
     };
     localStorage.setItem('gjc_resume_draft', JSON.stringify(data));
   } catch (e) {
@@ -1577,16 +1590,72 @@ function loadResumeDataIntoForm(data) {
   if (data.license) document.getElementById('raLicense').value = data.license;
   if (data.certs) document.getElementById('raCerts').value = data.certs;
   if (data.languages) document.getElementById('raLanguages').value = data.languages;
-  if (Array.isArray(data.skills)) {
+  
+  if (Array.isArray(data.skills) && data.skills.length > 0) {
     resumeActiveSkills = new Set(data.skills);
     renderActiveSkills();
   }
+
+  // Restore experiences
+  const container = document.getElementById('raExperienceContainer');
+  if (container) container.innerHTML = '';
+  resumeJobCounter = 0;
+  
+  if (Array.isArray(data.experiences) && data.experiences.length > 0) {
+    data.experiences.forEach(exp => addExperienceItem(exp));
+  } else {
+    // Ensure default jobs are loaded if old draft had none
+    addExperienceItem({
+      title: 'Staff Nurse (Medical-Surgical & Stepdown ICU)',
+      company: 'Metropolitan Referral Hospital',
+      city: 'Nairobi, Kenya',
+      dates: '2021 – Present',
+      bullets: '• Delivered acute nursing care for up to 8 medical-surgical and post-operative patients per shift, continuously monitoring vitals and administering IV medications.\n• Partnered with multi-disciplinary clinical teams to implement individualized patient care plans and rapid response interventions.\n• Maintained strict adherence to hospital infection control standards, ensuring zero central-line and catheter-associated infections in assigned wards.'
+    });
+    addExperienceItem({
+      title: 'Junior Clinical Nurse',
+      company: 'St. Jude Community Hospital',
+      city: 'Eldoret, Kenya',
+      dates: '2019 – 2021',
+      bullets: '• Conducted comprehensive patient admissions, clinical health histories, diagnostic wound dressings, and routine phlebotomy.\n• Managed computerized EHR documentation with 100% compliance during internal quality audits.'
+    });
+  }
+
   updateResumePreview();
 }
 
-// ── Export & Attach Actions ──
-async function attachResumeToApplication() {
+// ── Export & Attach Actions (With Unconstrained Clone to Prevent Clipping) ──
+
+function getCleanResumeExportClone() {
   const doc = document.getElementById('resumeDocument');
+  if (!doc) return null;
+  
+  const clone = doc.cloneNode(true);
+  clone.id = 'resumeDocExportClone';
+  
+  // Apply unconstrained A4 layout dimensions
+  clone.style.width = '794px';        // 210mm A4 width at 96 DPI
+  clone.style.maxWidth = '794px';
+  clone.style.minHeight = '1123px';   // 297mm A4 height at 96 DPI
+  clone.style.height = 'auto';
+  clone.style.maxHeight = 'none';
+  clone.style.overflow = 'visible';
+  clone.style.position = 'fixed';
+  clone.style.top = '0';
+  clone.style.left = '-10000px';      // Hidden offscreen
+  clone.style.margin = '0';
+  clone.style.boxShadow = 'none';
+  clone.style.borderRadius = '0';
+  clone.style.padding = '28px 32px';
+  clone.style.background = '#ffffff';
+  clone.style.color = '#1f2937';
+  clone.style.zIndex = '-99999';
+
+  document.body.appendChild(clone);
+  return clone;
+}
+
+async function attachResumeToApplication() {
   const name = document.getElementById('raName')?.value.trim() || 'Applicant';
   const cleanName = name.replace(/[^a-zA-Z0-9]/g, '_');
   const fileName = `${cleanName}_International_Resume.pdf`;
@@ -1595,25 +1664,36 @@ async function attachResumeToApplication() {
   if (btn) {
     btn.disabled = true;
     btn.style.opacity = '0.7';
-    btn.querySelector('.btn-attach-title').textContent = 'Generating PDF & Attaching...';
+    btn.querySelector('.btn-attach-title').textContent = 'Generating Full PDF & Attaching...';
   }
+
+  const clone = getCleanResumeExportClone();
 
   try {
     let pdfFile = null;
 
-    if (window.html2pdf) {
+    if (window.html2pdf && clone) {
       const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [6, 6, 6, 6],
         filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas: { 
+          scale: 2, 
+          useCORS: true, 
+          logging: false,
+          scrollY: 0,
+          scrollX: 0,
+          windowWidth: 800
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
-      const blob = await html2pdf().set(opt).from(doc).outputPdf('blob');
+      const blob = await html2pdf().set(opt).from(clone).outputPdf('blob');
       pdfFile = new File([blob], fileName, { type: 'application/pdf' });
     } else {
       // Fallback HTML/DOC blob
-      const content = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${name} Resume</title><style>${document.querySelector('style')?.innerHTML || ''}</style></head><body>${doc.outerHTML}</body></html>`;
+      const doc = document.getElementById('resumeDocument');
+      const content = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${name} Resume</title><style>${document.querySelector('style')?.innerHTML || ''}</style></head><body>${doc ? doc.outerHTML : ''}</body></html>`;
       const blob = new Blob([content], { type: 'application/msword' });
       pdfFile = new File([blob], `${cleanName}_International_Resume.doc`, { type: 'application/msword' });
     }
@@ -1662,12 +1742,13 @@ async function attachResumeToApplication() {
       confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
     }
 
-    showToast('🎉 Resume created and attached to your application! Complete the final step below.', 'success');
+    showToast('🎉 Full resume generated and attached to your application! Complete the final step below.', 'success');
 
   } catch (err) {
     console.error('Error attaching resume:', err);
     showToast('Could not auto-generate PDF: ' + err.message + '. Please use Download PDF instead.', 'error');
   } finally {
+    if (clone) clone.remove();
     if (btn) {
       btn.disabled = false;
       btn.style.opacity = '';
@@ -1677,30 +1758,90 @@ async function attachResumeToApplication() {
 }
 
 async function downloadResumePdf() {
-  const doc = document.getElementById('resumeDocument');
   const name = document.getElementById('raName')?.value.trim() || 'Applicant';
   const cleanName = name.replace(/[^a-zA-Z0-9]/g, '_');
   const fileName = `${cleanName}_International_Resume.pdf`;
 
-  if (window.html2pdf) {
-    showToast('Generating your PDF download...', 'info');
+  const clone = getCleanResumeExportClone();
+
+  if (window.html2pdf && clone) {
+    showToast('Generating your complete PDF with all details...', 'info');
     const opt = {
-      margin: [10, 10, 10, 10],
+      margin: [6, 6, 6, 6],
       filename: fileName,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        scrollY: 0,
+        scrollX: 0,
+        windowWidth: 800
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
-    await html2pdf().set(opt).from(doc).save();
-    showToast('PDF downloaded successfully!', 'success');
+    try {
+      await html2pdf().set(opt).from(clone).save();
+      showToast('Full PDF downloaded successfully!', 'success');
+    } catch (err) {
+      console.error('html2pdf download error:', err);
+      printResume();
+    } finally {
+      clone.remove();
+    }
   } else {
-    // Direct print fallback
-    window.print();
+    if (clone) clone.remove();
+    printResume();
   }
 }
 
 function printResume() {
-  window.print();
+  const doc = document.getElementById('resumeDocument');
+  if (!doc) return;
+  
+  const printWindow = window.open('', '_blank', 'width=850,height=1000');
+  if (!printWindow) {
+    window.print();
+    return;
+  }
+  
+  const css = `
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #fff; color: #1f2937; padding: 18mm 16mm; font-size: 11.5px; line-height: 1.45; }
+    .res-doc-header { border-bottom: 2px solid #1565c0; padding-bottom: 10px; margin-bottom: 12px; }
+    .res-doc-name { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 3px; }
+    .res-doc-title { font-size: 12px; font-weight: 700; color: #1565c0; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .res-doc-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 10.5px; color: #475569; }
+    .res-doc-section { margin-bottom: 12px; page-break-inside: avoid; break-inside: avoid; }
+    .res-doc-sec-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #1565c0; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 6px; }
+    .res-doc-summary { font-size: 11px; color: #334155; line-height: 1.55; text-align: justify; }
+    .res-doc-skills { display: flex; flex-wrap: wrap; gap: 4px; }
+    .res-doc-skill-badge { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
+    .res-doc-job { margin-bottom: 9px; page-break-inside: avoid; break-inside: avoid; }
+    .res-doc-job-head { display: flex; justify-content: space-between; align-items: baseline; }
+    .res-doc-job-title { font-size: 11.5px; font-weight: 700; color: #0f172a; }
+    .res-doc-job-dates { font-size: 10px; font-weight: 600; color: #64748b; }
+    .res-doc-job-sub { font-size: 10.5px; font-weight: 600; color: #1565c0; margin-bottom: 3px; }
+    .res-doc-job-bullets { padding-left: 15px; font-size: 10.5px; color: #334155; line-height: 1.45; }
+    .res-doc-edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; page-break-inside: avoid; break-inside: avoid; }
+    .res-doc-edu-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 5px 8px; }
+    .res-doc-edu-degree { font-size: 11px; font-weight: 700; color: #0f172a; }
+    .res-doc-edu-school { font-size: 10px; color: #475569; }
+    .res-doc-license-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 4px; padding: 5px 8px; }
+    .res-doc-license-title { font-size: 11px; font-weight: 700; color: #166534; }
+    .res-doc-license-num { font-size: 10px; font-weight: 600; color: #15803d; }
+    @page { size: A4 portrait; margin: 10mm; }
+  `;
+  
+  printWindow.document.write(`<!DOCTYPE html><html><head><title>${document.getElementById('raName')?.value || 'Resume'} - Full Print</title><style>${css}</style></head><body>${doc.innerHTML}</body></html>`);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => {
+    printWindow.print();
+    printWindow.close();
+  }, 400);
 }
 
 function copyResumeText() {
