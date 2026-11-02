@@ -1163,6 +1163,33 @@ function syncApplicantDataToResume() {
   if (raSummary && !raSummary.value.trim() && bio) {
     raSummary.value = bio;
   }
+
+  // Smart profession alignment if title is empty
+  const raTitle = document.getElementById('raTitle');
+  if (raTitle && !raTitle.value.trim() && typeof selectedProf !== 'undefined') {
+    const profTitles = {
+      nurse: 'Registered General Nurse (BSN, RN) — Ward & Acute Care',
+      caregiver: 'Senior Healthcare Assistant & Certified Eldercare Specialist',
+      construction: 'Experienced Construction Supervisor & Skilled Tradesperson',
+      welder: 'Certified Industrial Welder & Metal Fabricator (SMAW / GMAW / GTAW)',
+      electrician: 'Licensed Industrial & Commercial Electrician',
+      plumber: 'Certified Plumbing & Pipefitting Specialist',
+      truck: 'Heavy Commercial Vehicle & Long-Haul Transport Driver',
+      storekeeper: 'Warehouse Inventory & Logistics Storekeeper',
+      massage_therapist: 'Licensed Remedial & Therapeutic Massage Practitioner',
+      occupational_therapist: 'Registered Clinical Occupational Therapist',
+      social_worker: 'Certified Community & Healthcare Social Worker',
+      pharmacist: 'Licensed Clinical Pharmacist (B.Pharm)',
+      physiotherapist: 'Registered Physical Therapist & Rehabilitation Specialist',
+      carpenter: 'Master Carpenter & Structural Joiner',
+      gardener: 'Professional Landscape & Grounds Maintenance Specialist',
+      factory_worker: 'Industrial Production & Assembly Operations Specialist'
+    };
+    if (profTitles[selectedProf]) {
+      raTitle.value = profTitles[selectedProf];
+      renderSkillSuggestions(selectedProf === 'caregiver' ? 'caregiver' : (selectedProf === 'welder' || selectedProf === 'electrician' || selectedProf === 'plumber') ? 'trade' : (selectedProf === 'truck' || selectedProf === 'storekeeper') ? 'driver' : 'nurse');
+    }
+  }
 }
 
 function syncResumeDataToApplicant() {
@@ -1656,7 +1683,19 @@ function getCleanResumeExportClone() {
 }
 
 async function attachResumeToApplication() {
-  const name = document.getElementById('raName')?.value.trim() || 'Applicant';
+  const nameInput = document.getElementById('raName');
+  const nameVal = nameInput?.value.trim() || '';
+  if (!nameVal || nameVal === 'Your Full Name') {
+    showToast('Please enter your full name in the resume editor before attaching.', 'error');
+    if (nameInput) {
+      nameInput.focus();
+      nameInput.style.borderColor = '#ef5350';
+      setTimeout(() => { nameInput.style.borderColor = ''; }, 2000);
+    }
+    if (typeof switchResumeMobileTab === 'function') switchResumeMobileTab('edit');
+    return;
+  }
+  const name = nameVal;
   const cleanName = name.replace(/[^a-zA-Z0-9]/g, '_');
   const fileName = `${cleanName}_International_Resume.pdf`;
 
@@ -1762,6 +1801,13 @@ async function downloadResumePdf() {
   const cleanName = name.replace(/[^a-zA-Z0-9]/g, '_');
   const fileName = `${cleanName}_International_Resume.pdf`;
 
+  const btn = document.querySelector('.ra-toolbar-actions button[title*="Download PDF"]');
+  const origHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PDF...';
+  }
+
   const clone = getCleanResumeExportClone();
 
   if (window.html2pdf && clone) {
@@ -1789,6 +1835,7 @@ async function downloadResumePdf() {
       printResume();
     } finally {
       clone.remove();
+      if (btn) { btn.disabled = false; btn.innerHTML = origHtml; }
     }
   } else {
     if (clone) clone.remove();
