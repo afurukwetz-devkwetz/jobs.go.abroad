@@ -999,15 +999,33 @@ label:not(.radio-lbl){
   padding: 34px 28px;
 }
 
-/* Header Top Actions Bar */
-.header-top-nav {
-  position: absolute;
-  top: 14px;
-  right: 18px;
+/* Site Top Navigation Bar */
+.site-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  padding: 0 4px;
+  width: 100%;
+  gap: 12px;
+}
+.govt-lic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.4px;
+}
+.top-bar-right {
   display: flex;
   align-items: center;
   gap: 10px;
-  z-index: 10;
+  flex-wrap: wrap;
 }
 .hdr-btn {
   border-radius: 20px;
@@ -1044,12 +1062,15 @@ label:not(.radio-lbl){
   transform: translateY(-2px);
 }
 
-@media (max-width: 680px) {
-  .header-top-nav {
-    position: static;
-    margin-bottom: 16px;
+@media (max-width: 640px) {
+  .site-top-bar {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .top-bar-right {
     justify-content: center;
-    flex-wrap: wrap;
   }
 }
 
@@ -2068,5 +2089,29 @@ label:not(.radio-lbl){
   @page {
     size: A4 portrait;
     margin: 10mm;
+  }
+}
+
+
+/* .tab-responsive-rules */
+.tabs {
+  position: relative;
+  overflow-x: auto;
+}
+.tab {
+  white-space: nowrap;
+}
+@media (max-width: 580px) {
+  .tabs {
+    gap: 4px;
+    padding: 4px;
+  }
+  .tab {
+    font-size: 0.74rem;
+    padding: 10px 4px;
+    gap: 5px;
+  }
+  .tab i {
+    font-size: 0.8rem;
   }
 }
