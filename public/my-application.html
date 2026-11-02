@@ -305,7 +305,12 @@
 <div id="dashboardPage">
   <nav class="dash-nav">
     <div class="logo"><span>✈️</span> Global Job Connect</div>
-    <button class="btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <a href="/?tab=resume" target="_blank" style="background:rgba(245,158,11,0.18);border:1px solid rgba(245,158,11,0.4);color:#fef08a;padding:7px 13px;border-radius:10px;text-decoration:none;font-size:0.8rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+        <i class="fas fa-wand-magic-sparkles"></i> Resume Assistant
+      </a>
+      <button class="btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
   </nav>
 
   <div class="dash-body">
@@ -587,17 +592,27 @@ async function loadDashboard() {
     document.getElementById('infoBio').textContent          = a.bio || 'No bio provided.';
 
     // Documents
-    const docsList = document.getElementById('docsList');
+        const docsList = document.getElementById('docsList');
+    let docsHtml = '';
     if (a.cvFile) {
-      docsList.innerHTML = `
+      docsHtml = `
         <div class="doc-item">
           <i class="fas fa-file-alt"></i>
           <span class="doc-name">CV / Resume</span>
           <a href="${a.cvFile}" target="_blank" rel="noopener"><i class="fas fa-download"></i> View</a>
         </div>`;
     } else {
-      docsList.innerHTML = '<p class="no-doc">No CV uploaded yet.</p>';
+      docsHtml = '<p class="no-doc">No CV uploaded yet.</p>';
     }
+    docsHtml += `
+      <div style="margin-top:10px;padding:12px;background:rgba(21,101,192,0.12);border:1px solid rgba(66,165,245,0.25);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-wand-magic-sparkles" style="color:#60a5fa;"></i>
+          <span>Need to build or update your international ATS resume?</span>
+        </div>
+        <a href="/?tab=resume" target="_blank" style="background:#1565c0;color:#fff;padding:6px 14px;border-radius:8px;text-decoration:none;font-size:0.78rem;font-weight:600;display:inline-flex;align-items:center;gap:6px;"><i class="fas fa-file-pen"></i> Resume Assistant</a>
+      </div>`;
+    docsList.innerHTML = docsHtml;
 
     // Requested Documents
     const reqDocs = document.getElementById('requestedDocs');

@@ -39,7 +39,14 @@
 <div class="page-wrap">
 
   <header class="site-header" style="position:relative;">
-    <a href="/my-application" style="position:absolute;top:16px;right:20px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 12px;border-radius:20px;text-decoration:none;font-size:0.8rem;font-weight:600;display:flex;align-items:center;gap:6px;transition:all 0.2s;"><i class="fas fa-user-circle"></i> Applicant Login</a>
+    <div class="header-top-nav">
+      <button type="button" onclick="showPanel('resume')" class="hdr-btn hdr-btn-resume">
+        <i class="fas fa-wand-magic-sparkles"></i> Resume Assistant
+      </button>
+      <a href="/my-application" class="hdr-btn hdr-btn-login">
+        <i class="fas fa-user-circle"></i> Applicant Login
+      </a>
+    </div>
     <div class="logo-ring"><i class="fas fa-plane-departure"></i></div>
     <h1>GLOBAL JOB CONNECT</h1>
     <p class="tagline">Work Anywhere. Grow Everywhere. 🇺🇸 🇬🇧 🇩🇪 🇨🇦 🇦🇺 🇳🇿 🇩🇰 🇳🇴 🇱🇺 🇳🇱</p>
@@ -69,6 +76,10 @@
       <button id="tabTrack" class="tab" role="tab" aria-selected="false"
               onclick="showPanel('track')">
         <i class="fas fa-magnifying-glass"></i> Track Application
+      </button>
+      <button id="tabResume" class="tab" role="tab" aria-selected="false"
+              onclick="showPanel('resume')">
+        <i class="fas fa-wand-magic-sparkles"></i> Resume Assistant
       </button>
     </div>
 
@@ -439,6 +450,17 @@
         <!-- CV Upload -->
         <div class="field">
           <label>Upload CV / Resume <span style="color:#ef5350;">*</span></label>
+          <!-- Resume Assistant Callout Banner -->
+          <div class="resume-assist-callout">
+            <div class="rac-content">
+              <span class="rac-badge"><i class="fas fa-wand-magic-sparkles"></i> Free AI Tool</span>
+              <p class="rac-title">Don't have an international CV ready?</p>
+              <p class="rac-sub">Build an ATS-ready, embassy-compliant resume in 2 minutes with our built-in assistant and auto-attach it.</p>
+            </div>
+            <button type="button" class="btn-rac" onclick="showPanel('resume')">
+              <i class="fas fa-wand-magic-sparkles"></i> Build My CV Now
+            </button>
+          </div>
           <div class="cv-drop" id="cvDrop">
             <input type="file" id="cvFile" accept=".pdf,.doc,.docx" onchange="handleCvFile(this)">
             <i class="fas fa-cloud-arrow-up cv-icon"></i>
@@ -535,6 +557,362 @@
         <a href="#" onclick="showPanel('reg'); return false;">← Back to Apply</a>
       </p>
     </section><!-- /panelTrack -->
+
+    <!-- ══════════════ RESUME BUILD ASSISTANT PANEL ══════════════ -->
+    <section id="panelResume" hidden role="tabpanel" class="panel-resume">
+      <!-- Assistant Header & Badges -->
+      <div class="ra-header">
+        <div class="ra-header-left">
+          <div class="ra-title-row">
+            <span class="ra-ai-badge"><i class="fas fa-wand-magic-sparkles"></i> AI-Powered</span>
+            <h3>International Resume Build Assistant</h3>
+          </div>
+          <p class="ra-subtitle">
+            Generate an ATS-optimized, embassy-compliant CV tailored for international nursing, healthcare, and overseas skilled trade jobs in the UK, USA, Canada, Germany, Australia &amp; New Zealand.
+          </p>
+        </div>
+        
+        <!-- Quick Sample Profiles -->
+        <div class="ra-samples-bar">
+          <span class="ra-samples-label"><i class="fas fa-bolt"></i> Auto-Fill Sample:</span>
+          <div class="ra-samples-btns">
+            <button type="button" class="ra-sample-pill" onclick="loadResumeSample('nurse')">
+              <i class="fas fa-user-nurse"></i> Registered Nurse
+            </button>
+            <button type="button" class="ra-sample-pill" onclick="loadResumeSample('caregiver')">
+              <i class="fas fa-hand-holding-heart"></i> Caregiver / Aide
+            </button>
+            <button type="button" class="ra-sample-pill" onclick="loadResumeSample('welder')">
+              <i class="fas fa-fire-burner"></i> Skilled Welder / Trade
+            </button>
+            <button type="button" class="ra-sample-pill ra-sample-clear" onclick="clearResumeForm()">
+              <i class="fas fa-trash-can"></i> Clear
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATS Score & Readiness Tracker -->
+      <div class="ra-score-card">
+        <div class="ra-score-header">
+          <div class="ra-score-info">
+            <span class="ra-score-title"><i class="fas fa-shield-halved"></i> International ATS Readiness:</span>
+            <span id="raScoreText" class="ra-score-val">85% — Strong International Profile</span>
+          </div>
+          <span class="ra-score-badge" id="raScoreBadge"><i class="fas fa-circle-check"></i> Embassy Ready</span>
+        </div>
+        <div class="ra-progress-track">
+          <div class="ra-progress-fill" id="raScoreFill" style="width: 85%;"></div>
+        </div>
+        <div class="ra-tips-row" id="raTipsRow">
+          <!-- Dynamic tips rendered here -->
+        </div>
+      </div>
+
+      <!-- Mobile View Switcher (Visible on smaller screens) -->
+      <div class="ra-mobile-nav">
+        <button type="button" id="raBtnEditView" class="ra-mob-btn active" onclick="switchResumeMobileTab('edit')">
+          <i class="fas fa-pen-to-square"></i> Edit Details
+        </button>
+        <button type="button" id="raBtnPreviewView" class="ra-mob-btn" onclick="switchResumeMobileTab('preview')">
+          <i class="fas fa-eye"></i> View Live Resume
+        </button>
+      </div>
+
+      <!-- Main Two-Column Layout -->
+      <div class="ra-grid">
+        
+        <!-- LEFT COLUMN: Editor Form -->
+        <div class="ra-editor-col" id="raEditorCol">
+          
+          <!-- Section 1: Personal & Target Role -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <span class="ra-step-num">1</span>
+              <h4>Contact &amp; Target Placement</h4>
+            </div>
+            
+            <div class="ra-form-row">
+              <div class="field">
+                <label>Full Name <span style="color:#ef5350;">*</span></label>
+                <div class="input-wrap">
+                  <i class="fas fa-user"></i>
+                  <input type="text" id="raName" placeholder="e.g. Sarah Jenkins, RN" oninput="updateResumePreview()">
+                </div>
+              </div>
+              <div class="field">
+                <label>Target Professional Title <span style="color:#ef5350;">*</span></label>
+                <div class="input-wrap">
+                  <i class="fas fa-briefcase"></i>
+                  <input type="text" id="raTitle" placeholder="e.g. Registered General Nurse (BSN, RN)" oninput="updateResumePreview()">
+                </div>
+              </div>
+            </div>
+
+            <div class="ra-form-row">
+              <div class="field">
+                <label>Email Address <span style="color:#ef5350;">*</span></label>
+                <div class="input-wrap">
+                  <i class="fas fa-envelope"></i>
+                  <input type="email" id="raEmail" placeholder="e.g. sarah.jenkins@example.com" oninput="updateResumePreview()">
+                </div>
+              </div>
+              <div class="field">
+                <label>Phone / WhatsApp <span style="color:#ef5350;">*</span></label>
+                <div class="input-wrap">
+                  <i class="fas fa-phone"></i>
+                  <input type="tel" id="raPhone" placeholder="e.g. +44 7911 123456" oninput="updateResumePreview()">
+                </div>
+              </div>
+            </div>
+
+            <div class="ra-form-row">
+              <div class="field">
+                <label>Current Location (City, Country)</label>
+                <div class="input-wrap">
+                  <i class="fas fa-location-dot"></i>
+                  <input type="text" id="raLocation" placeholder="e.g. Nairobi, Kenya" oninput="updateResumePreview()">
+                </div>
+              </div>
+              <div class="field">
+                <label>Relocation &amp; Passport Status</label>
+                <div class="input-wrap">
+                  <i class="fas fa-passport"></i>
+                  <select id="raRelocationStatus" onchange="updateResumePreview()">
+                    <option value="Valid Passport — Ready for Immediate Relocation">Valid Passport — Ready for Immediate Relocation</option>
+                    <option value="Valid Passport — Available in 1-2 Months">Valid Passport — Available in 1-2 Months</option>
+                    <option value="Passport in Renewal / Processing">Passport in Renewal / Processing</option>
+                    <option value="Open to Visa Sponsorship &amp; Relocation">Open to Visa Sponsorship &amp; Relocation</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Target Destination Countries</label>
+              <div class="ra-dest-pills" id="raDestPills">
+                <label class="ra-dest-chip"><input type="checkbox" value="United Kingdom" checked onchange="updateResumePreview()"> 🇬🇧 United Kingdom</label>
+                <label class="ra-dest-chip"><input type="checkbox" value="United States" checked onchange="updateResumePreview()"> 🇺🇸 United States</label>
+                <label class="ra-dest-chip"><input type="checkbox" value="Canada" checked onchange="updateResumePreview()"> 🇨🇦 Canada</label>
+                <label class="ra-dest-chip"><input type="checkbox" value="Germany" onchange="updateResumePreview()"> 🇩🇪 Germany</label>
+                <label class="ra-dest-chip"><input type="checkbox" value="Australia" checked onchange="updateResumePreview()"> 🇦🇺 Australia</label>
+                <label class="ra-dest-chip"><input type="checkbox" value="New Zealand" onchange="updateResumePreview()"> 🇳🇿 New Zealand</label>
+                <label class="ra-dest-chip"><input type="checkbox" value="Ireland" onchange="updateResumePreview()"> 🇮🇪 Ireland</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: AI Professional Summary -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <span class="ra-step-num">2</span>
+              <h4>Professional Summary &amp; Objective</h4>
+            </div>
+            
+            <div class="ra-ai-prompt-bar">
+              <span class="ra-prompt-label"><i class="fas fa-wand-magic-sparkles"></i> 1-Click AI Pre-write:</span>
+              <div class="ra-prompt-btns">
+                <button type="button" class="ra-prompt-btn" onclick="applyAiSummary('nurse')"><i class="fas fa-user-nurse"></i> Nurse Summary</button>
+                <button type="button" class="ra-prompt-btn" onclick="applyAiSummary('caregiver')"><i class="fas fa-hand-holding-heart"></i> Caregiver Summary</button>
+                <button type="button" class="ra-prompt-btn" onclick="applyAiSummary('trade')"><i class="fas fa-screwdriver-wrench"></i> Skilled Trade</button>
+                <button type="button" class="ra-prompt-btn" onclick="applyAiSummary('driver')"><i class="fas fa-truck"></i> Driver &amp; Logistics</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Executive Profile Summary</label>
+              <textarea id="raSummary" rows="4" class="ra-textarea" placeholder="Write a compelling overview of your qualifications, clinical or trade experience, and enthusiasm for international placement..." oninput="updateResumePreview()"></textarea>
+              <span style="font-size:0.73rem;color:rgba(255,255,255,0.55);display:block;margin-top:5px;">
+                💡 Highlight total years of experience, core clinical or trade specialty, and international relocation willingness.
+              </span>
+            </div>
+          </div>
+
+          <!-- Section 3: Work Experience Repeater -->
+          <div class="ra-card">
+            <div class="ra-card-head" style="justify-content:space-between; width:100%;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="ra-step-num">3</span>
+                <h4>Professional Work Experience</h4>
+              </div>
+              <button type="button" class="btn-add-item" onclick="addExperienceItem()">
+                <i class="fas fa-plus"></i> Add Job
+              </button>
+            </div>
+            
+            <div id="raExperienceContainer" class="ra-repeater-container">
+              <!-- Dynamically populated experience cards -->
+            </div>
+          </div>
+
+          <!-- Section 4: Education & Professional Licensure -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <span class="ra-step-num">4</span>
+              <h4>Education &amp; Professional Licensure</h4>
+            </div>
+
+            <div class="ra-form-row">
+              <div class="field">
+                <label>Highest Degree / Diploma <span style="color:#ef5350;">*</span></label>
+                <div class="input-wrap">
+                  <i class="fas fa-graduation-cap"></i>
+                  <input type="text" id="raDegree" placeholder="e.g. Bachelor of Science in Nursing (BSN)" oninput="updateResumePreview()">
+                </div>
+              </div>
+              <div class="field">
+                <label>College / University / School <span style="color:#ef5350;">*</span></label>
+                <div class="input-wrap">
+                  <i class="fas fa-university"></i>
+                  <input type="text" id="raSchool" placeholder="e.g. Nairobi Medical Training College" oninput="updateResumePreview()">
+                </div>
+              </div>
+            </div>
+
+            <div class="ra-form-row">
+              <div class="field">
+                <label>Graduation Year / Period</label>
+                <div class="input-wrap">
+                  <i class="fas fa-calendar"></i>
+                  <input type="text" id="raGradYear" placeholder="e.g. 2019" oninput="updateResumePreview()">
+                </div>
+              </div>
+              <div class="field">
+                <label>Professional License / Reg Number <span style="color:#ef5350;">*</span></label>
+                <div class="input-wrap">
+                  <i class="fas fa-id-card"></i>
+                  <input type="text" id="raLicense" placeholder="e.g. NCK-RN-98421 / State Board / Trade Cert #" oninput="updateResumePreview()">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 5: Skills & Competencies -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <span class="ra-step-num">5</span>
+              <h4>Key Clinical &amp; Technical Skills</h4>
+            </div>
+
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.65);margin-bottom:10px;">
+              Click quick-add chips below or type your own skill to add:
+            </p>
+
+            <div class="ra-skill-chips-pool" id="raSkillSuggestions">
+              <!-- Populated by script based on profession -->
+            </div>
+
+            <div class="ra-skill-input-row" style="margin-top:14px;display:flex;gap:8px;">
+              <div class="input-wrap" style="flex:1;">
+                <i class="fas fa-star"></i>
+                <input type="text" id="raCustomSkillInput" placeholder="Add specific skill (e.g. Wound Care, ICU Ventilators)..." onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomSkill();}">
+              </div>
+              <button type="button" class="btn-sm-action" onclick="addCustomSkill()"><i class="fas fa-plus"></i> Add</button>
+            </div>
+
+            <div class="ra-active-skills-list" id="raActiveSkillsList">
+              <!-- Active skill tags rendered here -->
+            </div>
+          </div>
+
+          <!-- Section 6: Certifications & Languages -->
+          <div class="ra-card">
+            <div class="ra-card-head">
+              <span class="ra-step-num">6</span>
+              <h4>Certifications &amp; Languages</h4>
+            </div>
+
+            <div class="ra-form-row">
+              <div class="field">
+                <label>Certifications (comma separated)</label>
+                <div class="input-wrap">
+                  <i class="fas fa-certificate"></i>
+                  <input type="text" id="raCerts" placeholder="e.g. BLS, ACLS, CPR, Infection Control, OSHA 30" oninput="updateResumePreview()">
+                </div>
+              </div>
+              <div class="field">
+                <label>Languages (with proficiency)</label>
+                <div class="input-wrap">
+                  <i class="fas fa-language"></i>
+                  <input type="text" id="raLanguages" placeholder="e.g. English (Fluent/C1), German (B1), Swahili (Native)" oninput="updateResumePreview()">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /ra-editor-col -->
+
+        <!-- RIGHT COLUMN: Live A4 Document Preview & Export -->
+        <div class="ra-preview-col" id="raPreviewCol">
+          
+          <div class="ra-preview-sticky">
+            
+            <!-- Toolbar -->
+            <div class="ra-preview-toolbar">
+              <div class="ra-toolbar-left">
+                <span class="ra-toolbar-label"><i class="fas fa-palette"></i> Theme:</span>
+                <div class="ra-theme-picker">
+                  <button type="button" class="ra-theme-btn active" data-theme="sapphire" onclick="setResumeTheme('sapphire')" title="Classic Sapphire Blue">
+                    <span class="dot dot-sapphire"></span> Sapphire
+                  </button>
+                  <button type="button" class="ra-theme-btn" data-theme="emerald" onclick="setResumeTheme('emerald')" title="Healthcare Emerald">
+                    <span class="dot dot-emerald"></span> Emerald
+                  </button>
+                  <button type="button" class="ra-theme-btn" data-theme="charcoal" onclick="setResumeTheme('charcoal')" title="Executive Monochrome ATS">
+                    <span class="dot dot-charcoal"></span> Charcoal
+                  </button>
+                </div>
+              </div>
+
+              <div class="ra-toolbar-actions">
+                <button type="button" class="ra-btn-action" onclick="copyResumeText()" title="Copy Formatted Text">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+                <button type="button" class="ra-btn-action" onclick="printResume()" title="Print / Save via Browser">
+                  <i class="fas fa-print"></i> Print
+                </button>
+                <button type="button" class="ra-btn-action" onclick="downloadResumePdf()" title="Download PDF File">
+                  <i class="fas fa-file-arrow-down"></i> PDF
+                </button>
+              </div>
+            </div>
+
+            <!-- Primary High-Impact CTA: Attach to Registration Application -->
+            <button type="button" class="btn-attach-application" id="btnAttachCv" onclick="attachResumeToApplication()">
+              <div class="btn-attach-inner">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <div style="text-align:left;">
+                  <span class="btn-attach-title">Attach Directly to Application Form</span>
+                  <span class="btn-attach-sub">Auto-generates PDF &amp; sets your CV for submission</span>
+                </div>
+              </div>
+              <i class="fas fa-arrow-right btn-attach-arrow"></i>
+            </button>
+
+            <!-- Document Canvas Container -->
+            <div class="resume-sheet-wrapper">
+              <div id="resumeDocument" class="resume-sheet theme-sapphire">
+                <!-- Live rendered resume -->
+              </div>
+            </div>
+
+            <div class="ra-preview-footer">
+              <i class="fas fa-check-double" style="color:#34d399;"></i>
+              <span>Formatted to standard A4 specifications for UK NHS, US Health Systems, Canadian &amp; German visa verification.</span>
+            </div>
+
+          </div><!-- /ra-preview-sticky -->
+
+        </div><!-- /ra-preview-col -->
+
+      </div><!-- /ra-grid -->
+
+      <!-- Back to Apply link -->
+      <p class="switch-link" style="margin-top:28px">
+        <a href="#" onclick="showPanel('reg'); return false;">← Back to Application Form</a>
+      </p>
+
+    </section><!-- /panelResume -->
 
   </div><!-- /card -->
 
@@ -841,7 +1219,8 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="config.js?v=6"></script>
-<script src="script.js?v=17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="script.js?v=18"></script>
 <!-- Fee Alert Modal -->
 <div id="feeModal" class="modal-overlay" style="display:none;">
   <div class="modal-content" style="max-width:520px;">
